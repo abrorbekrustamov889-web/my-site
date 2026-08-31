@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>UzLocal — O'zbekiston Ustalar, Do'konlar va Xizmatlar Platformasi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0E2A3B;      /* chuqur registon ko'k-yashili */
+    --night-2:#123449;
+    --tile:#1C8C93;       /* Registon kafel firuzasi */
+    --tile-2:#2CB0AE;
+    --gold:#C9A24B;       /* madrasa zarhali oltini */
+    --gold-2:#E4C878;
+    --clay:#B3572E;       /* pishiq g'isht */
+    --paper:#F7F3EA;      /* devor suvog'i */
+    --ink:#12222B;
+  }
+  *{font-family:'Manrope',sans-serif;}
+  .font-display{font-family:'Marcellus',serif;}
+  body{background:var(--paper); color:var(--ink);}
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--tile); border-radius:8px;}
+
+  .ikat-pattern{
+    background-color:var(--night);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(44,176,174,0.20) 0, transparent 45%),
+      radial-gradient(circle at 80% 20%, rgba(201,162,75,0.18) 0, transparent 40%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 26px);
+  }
+  .tile-divider{
+    height:14px;
+    background-image: linear-gradient(45deg, var(--tile-2) 25%, transparent 25%),
+                       linear-gradient(-45deg, var(--tile-2) 25%, transparent 25%),
+                       linear-gradient(45deg, transparent 75%, var(--gold) 75%),
+                       linear-gradient(-45deg, transparent 75%, var(--gold) 75%);
+    background-size:14px 14px;
+    background-position:0 0, 0 7px, 7px -7px, -7px 0px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid #E7DFCB;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .card:hover{ transform:translateY(-3px); box-shadow:0 10px 26px -12px rgba(18,52,73,0.35); border-color:var(--tile);}
+  .card-vip{
+    border:2px solid var(--gold);
+    background:linear-gradient(180deg, #FFFDF6 0%, #FFF9EA 100%);
+    box-shadow:0 0 0 1px rgba(201,162,75,0.35), 0 12px 28px -14px rgba(201,162,75,0.55);
+  }
+  .card-vip:hover{ box-shadow:0 0 0 1px rgba(201,162,75,0.5), 0 16px 34px -14px rgba(201,162,75,0.7);}
+  .vip-badge{
+    background:linear-gradient(135deg, var(--gold-2), var(--gold));
+    color:#3B2C05;
+  }
+  .btn-tile{ background:var(--tile); color:#fff; }
+  .btn-tile:hover{ background:var(--tile-2); }
+  .btn-gold{ background:var(--gold); color:#3B2C05; }
+  .btn-gold:hover{ background:var(--gold-2); }
+  .chip{ border:1px solid #DDD3B8; }
+  .chip.active{ background:var(--night); color:#fff; border-color:var(--night); }
+  .modal-backdrop{ background:rgba(14,42,59,0.55); backdrop-filter: blur(2px); }
+  .map-sim{
+    background-color:#DCEFEC;
+    background-image:
+      linear-gradient(rgba(28,140,147,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28,140,147,0.15) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+  .pulse-pin{ animation: pinPulse 1.8s ease-in-out infinite; }
+  @keyframes pinPulse{ 0%,100%{ transform:scale(1); opacity:1;} 50%{ transform:scale(1.15); opacity:.75;} }
+  .fade-in{ animation:fadeIn .25s ease both; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  input[type="text"]:focus, select:focus, textarea:focus{ outline:none; box-shadow:0 0 0 3px rgba(28,140,147,0.25); border-color:var(--tile);}
+  .star{ color:var(--gold); }
+  .skeleton{ background:linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size:400% 100%; animation:sk 1.4s ease infinite; }
+  @keyframes sk{ 0%{background-position:100% 50%} 100%{background-position:0 50%} }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ================= HEADER ================= -->
+<header class="ikat-pattern text-white relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-10 relative z-10">
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--gold);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v2h18V7L12 2z" fill="#12222B"/><path d="M4 10h16v2H4zM5 13h2v7H5zM10 13h2v7h-2zM15 13h2v7h-2zM3 21h18v1.5H3z" fill="#12222B"/></svg>
+        </div>
+        <span class="font-display text-xl tracking-wide">UzLocal</span>
+      </div>
+      <button id="openAddBtn" class="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full btn-gold font-semibold text-sm shadow-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        E'lon berish
+      </button>
+    </div>
+
+    <div class="max-w-3xl">
+      <p class="uppercase tracking-[0.25em] text-xs sm:text-sm mb-3" style="color:var(--gold-2);">14 ta viloyat &middot; minglab ustalar &middot; bitta manzil</p>
+      <h1 class="font-display text-3xl sm:text-5xl leading-tight mb-4">Sizga kerakli usta yoki xizmatni <span style="color:var(--gold-2)">bir necha soniyada</span> toping</h1>
+      <p class="text-white/70 text-sm sm:text-base mb-6">Santexnikdan tortib klining xizmatigacha — O'zbekistonning barcha hududlaridagi tekshirilgan mutaxassislar shu yerda.</p>
+    </div>
+
+    <!-- Tezkor qidiruv -->
+    <div class="bg-white rounded-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 shadow-2xl max-w-3xl">
+      <div class="flex items-center gap-2 flex-1 px-3">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#123449" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" type="text" placeholder="Masalan: santexnik, gilam do'koni, stomatolog..." class="w-full py-2.5 text-[var(--ink)] placeholder-gray-400 text-sm sm:text-base border-none focus:ring-0">
+      </div>
+      <button id="heroSearchBtn" class="btn-tile font-semibold rounded-xl px-6 py-2.5 text-sm sm:text-base">Qidirish</button>
+    </div>
+  </div>
+  <div class="tile-divider"></div>
+</header>
+
+<!-- ================= FILTERS ================= -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 -mt-1 relative z-10">
+  <div class="bg-white rounded-2xl shadow-lg border border-[#EDE6D2] p-4 sm:p-5 mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 mb-1.5">Viloyat</label>
+      <select id="filterViloyat" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white"></select>
+    </div>
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 mb-1.5">Kategoriya</label>
+      <select id="filterKategoriya" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white"></select>
+    </div>
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 mb-1.5">Saralash</label>
+      <select id="filterSort" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white">
+        <option value="vip">Avval VIP e'lonlar</option>
+        <option value="reyting">Eng yuqori reytingli</option>
+        <option value="arzon">Arzon narxlar</option>
+        <option value="sharhlar">Ko'p sharhli</option>
+      </select>
+    </div>
+    <div class="flex items-end">
+      <button id="resetFilters" class="w-full border border-gray-200 hover:border-[var(--tile)] hover:text-[var(--tile)] rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-500 transition">Filtrlarni tozalash</button>
+    </div>
+  </div>
+
+  <!-- kategoriya chip lar (mobil-friendly tezkor tanlov) -->
+  <div id="categoryChips" class="flex gap-2 overflow-x-auto no-scrollbar mt-4 pb-1"></div>
+
+  <div class="flex items-center justify-between mt-5 mb-3">
+    <p id="resultsCount" class="text-sm text-gray-500 font-medium"></p>
+    <button id="openAddBtnMobile" class="sm:hidden flex items-center gap-1 px-3 py-2 rounded-full btn-gold font-semibold text-xs shadow">
+      + E'lon berish
+    </button>
+  </div>
+</section>
+
+<!-- ================= GRID ================= -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
+  <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
+  <div id="emptyState" class="hidden text-center py-20">
+    <p class="font-display text-2xl text-gray-400 mb-2">Hech narsa topilmadi</p>
+    <p class="text-gray-400 text-sm">Qidiruv so'zini yoki filtrlarni o'zgartirib ko'ring.</p>
+  </div>
+</main>
+
+<footer class="ikat-pattern text-white/70 text-center py-6 text-xs sm:text-sm">
+  © 2026 UzLocal — O'zbekiston Ustalar, Do'konlar va Xizmatlar Platformasi. Barcha ma'lumotlar namoyish uchun.
+</footer>
+
+<!-- ================= MODAL: PROFIL ================= -->
+<div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4">
+  <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto fade-in" id="profileModalContent"></div>
+</div>
+
+<!-- ================= MODAL: E'LON QO'SHISH ================= -->
+<div id="addModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4">
+  <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto fade-in">
+    <div class="ikat-pattern rounded-t-2xl px-5 py-4 flex items-center justify-between">
+      <h3 class="font-display text-xl text-white">Yangi e'lon berish</h3>
+      <button id="closeAddModal" class="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
+    </div>
+    <form id="addForm" class="p-5 space-y-3">
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Ism yoki biznes nomi *</label>
+        <input required name="nomi" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm" placeholder="Masalan: Bekzod Usta Elektrik">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Kategoriya *</label>
+          <select required name="kategoriya" id="addKategoriya" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Soha *</label>
+          <select required name="soha" id="addSoha" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm"></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Viloyat *</label>
+          <select required name="viloyat" id="addViloyat" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Tuman *</label>
+          <input required name="tuman" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm" placeholder="Tuman nomi">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Narxi</label>
+          <input name="narxi" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm" placeholder="Kelishuv asosida">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Telefon *</label>
+          <input required name="tel" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm" placeholder="+998 90 123 45 67">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Telegram username</label>
+        <input name="telegram" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm" placeholder="@username">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Qisqa tavsif</label>
+        <textarea name="tavsif" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm" placeholder="Xizmatingiz haqida 2-3 gap"></textarea>
+      </div>
+      <button type="submit" class="w-full btn-tile font-semibold rounded-lg py-3 text-sm mt-2">E'lonni joylashtirish</button>
+      <p class="text-[11px] text-gray-400 text-center pt-1">E'lon yuborilgandan so'ng ro'yxatda darhol ko'rinadi (namoyish rejimi).</p>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-[var(--night)] text-white px-5 py-3 rounded-full text-sm font-medium shadow-2xl hidden z-[60] fade-in"></div>
+
+<script>
+/* =========================================================
+   1. MA'LUMOTLAR BAZASI ASOSI (viloyatlar, kategoriyalar)
+========================================================= */
+const VILOYATLAR = {
+  "Toshkent sh.": ["Chilonzor", "Yunusobod", "Mirzo Ulug'bek", "Yashnobod", "Shayxontohur", "Olmazor", "Yakkasaroy"],
+  "Toshkent vil.": ["Nurafshon", "Chirchiq", "Angren", "Bekobod", "Yangiyo'l", "Ohangaron"],
+  "Samarqand": ["Samarqand sh.", "Urgut", "Bulung'ur", "Kattaqo'rg'on", "Payariq"],
+  "Buxoro": ["Buxoro sh.", "G'ijduvon", "Kogon", "Vobkent", "Qorako'l"],
+  "Farg'ona": ["Farg'ona sh.", "Marg'ilon", "Qo'qon", "Quva", "Rishton"],
+  "Namangan": ["Namangan sh.", "Chust", "Pop", "Uychi", "Kosonsoy"],
+  "Andijon": ["Andijon sh.", "Xonobod", "Asaka", "Shahrixon", "Marhamat"],
+  "Qashqadaryo": ["Qarshi", "Shahrisabz", "Kitob", "G'uzor", "Koson"],
+  "Surxondaryo": ["Termiz", "Denov", "Sherobod", "Boysun", "Sho'rchi"],
+  "Jizzax": ["Jizzax sh.", "G'allaorol", "Zomin", "Do'stlik", "Paxtakor"],
+  "Sirdaryo": ["Guliston", "Yangiyer", "Shirin", "Boyovut", "Sardoba"],
+  "Navoiy": ["Navoiy sh.", "Zarafshon", "Konimex", "Karmana", "Uchquduq"],
+  "Xorazm": ["Urganch", "Xiva", "Xonqa", "Shovot", "Gurlan"],
+  "Qoraqalpog'iston": ["Nukus", "Xo'jayli", "Beruniy", "Taxtako'pir", "Chimboy"]
+};
+const VILOYAT_LIST = Object.keys(VILOYATLAR);
+
+const KATEGORIYALAR = {
+  "Ustalar": ["Santexnik", "Elektrik", "Konditsioner montaji", "Muzlatgich ta'miri", "Mebel yig'uvchi", "Payvandchi", "Bo'yoqchi usta", "Kafelchi", "Duradgor", "Qurilish brigadasi"],
+  "Do'konlar": ["Gilam do'koni", "Qurilish mollari", "Maishiy texnika", "Kiyim-kechak", "Oziq-ovqat mahsulotlari", "Zargarlik buyumlari", "Kitob do'koni", "Mebel salon"],
+  "Tibbiyot": ["Stomatologiya", "Terapevt qabuli", "Pediatr", "Ginekologiya", "Massaj xizmati", "Uyga shifokor chaqirish"],
+  "Ta'lim": ["Ingliz tili kursi", "Matematika repetitorlik", "Kompyuter kursi", "Haydovchilik maktabi", "Musiqa maktabi", "IT kursi"],
+  "Avto-Xizmat": ["Avtoservis", "Shinamontaj", "Avtoyuvish", "Diagnostika markazi", "Rul mexanigi", "Avto elektrik"],
+  "Klining": ["Uy tozalash", "Ofis tozalash", "Gilam yuvish xizmati", "Deraza tozalash", "Umumiy tozalash (generalka)"]
+};
+const KATEGORIYA_LIST = Object.keys(KATEGORIYALAR);
+const KATEGORIYA_ICON = {
+  "Ustalar":"🛠️", "Do'konlar":"🏪", "Tibbiyot":"⚕️", "Ta'lim":"🎓", "Avto-Xizmat":"🚗", "Klining":"🧹"
+};
+
+const ISM_PREFIX = ["Ali","Vali","Bekzod","Jasur","Sardor","Aziz","Botir","Davron","Elyor","Farrux",
+  "G'ayrat","Husan","Islom","Jahongir","Komil","Laziz","Muzaffar","Nodir","Odil","Pulat",
+  "Rustam","Sanjar","Temur","Ulug'bek","Xurshid","Yusuf","Zafar","Sherzod","Otabek","Diyor"];
+const AYOL_ISM = ["Gulnora","Nilufar","Zarina","Malika","Madina","Shahnoza","Nodira","Feruza","Dilnoza","Kamola"];
+
+const DUKON_NOM = ["Samarqand","Buxoro","Registon","Al-Xorazmiy","Ipak Yo'li","Zarafshon","Vodiy","Baraka",
+  "Oltin Vodiy","Yaqin Atrofda","Do'stlik","Nur","Shifo","Vatan","Marvarid","Farovon","Osiyo","Vasl"];
+
+const TAVSIF_SHABLON = {
+  "Santexnik": "Suv o'tkazish, kran va vodoprovod tizimlarini o'rnatish hamda ta'mirlash bo'yicha tajribali mutaxassis. Tezkor va sifatli xizmat kafolatlanadi.",
+  "Elektrik": "Elektr simlarini tortish, rozetka va yoritgichlarni o'rnatish, avariya holatlarini bartaraf etish. Uy va ofislarga chiqib xizmat ko'rsatiladi.",
+  "Konditsioner montaji": "Konditsioner o'rnatish, ko'chirish va texnik xizmat ko'rsatish. Barcha marka va modellar bilan ishlaymiz.",
+  "Muzlatgich ta'miri": "Muzlatgich va sovutish tizimlarini diagnostika qilish hamda ta'mirlash. Uyga chiqib xizmat ko'rsatamiz, kafolat beriladi.",
+  "Mebel yig'uvchi": "Yangi mebellarni yig'ish, eski mebellarni ko'chirishda yordam va mustahkamlash xizmatlari.",
+  "Payvandchi": "Metall konstruksiyalar, darvoza va panjaralarni payvandlash. Professional uskunalar bilan ishlaymiz.",
+  "Bo'yoqchi usta": "Devor va fasadlarni bo'yash, shpaklyovka ishlari. Sifatli materiallar bilan ishlash imkoniyati mavjud.",
+  "Kafelchi": "Hammom va oshxona uchun kafel-plitka yotqizish ishlari. Aniq va tekis natija kafolatlanadi.",
+  "Duradgor": "Yog'och konstruksiyalar, eshik-deraza va mebel tayyorlash bo'yicha xizmatlar.",
+  "Qurilish brigadasi": "To'liq qurilish va ta'mirlash ishlari: poydevordan bo'yoqqacha. Tajribali jamoa bilan ishlaymiz.",
+  "Gilam do'koni": "Turkiya va mahalliy ishlab chiqarish gilamlarining katta assortimenti. Yetkazib berish xizmati mavjud.",
+  "Qurilish mollari": "Sement, g'isht, bo'yoq va boshqa qurilish materiallari ombordan to'g'ridan-to'g'ri narxlarda.",
+  "Maishiy texnika": "Muzlatgich, kir yuvish mashinasi va boshqa maishiy texnikalar rasmiy kafolat bilan.",
+  "Kiyim-kechak": "Erkaklar va ayollar uchun sifatli kiyimlar, mavsumiy chegirmalar doimiy mavjud.",
+  "Oziq-ovqat mahsulotlari": "Yangi va sifatli oziq-ovqat mahsulotlari, kundalik yetkazib berish xizmati bilan.",
+  "Zargarlik buyumlari": "Kumush va oltin taqinchoqlar, individual buyurtma asosida zargarlik ishlari.",
+  "Kitob do'koni": "Badiiy, ilmiy va o'quv adabiyotlarining keng assortimenti bir joyda.",
+  "Mebel salon": "Zamonaviy va klassik uslubdagi mebellar, o'lchov bo'yicha buyurtma qilish imkoniyati.",
+  "Stomatologiya": "Tish davolash, implantatsiya va oq qilish xizmatlari zamonaviy uskunalarda.",
+  "Terapevt qabuli": "Umumiy tibbiy ko'rik va konsultatsiya, zarur bo'lsa uyga chaqirish xizmati.",
+  "Pediatr": "Bolalar salomatligi bo'yicha konsultatsiya va davolash, tajribali shifokorlar jamoasi.",
+  "Ginekologiya": "Ayollar salomatligi bo'yicha to'liq konsultatsiya va tekshiruv xizmatlari.",
+  "Massaj xizmati": "Davolovchi va umumiy tiklovchi massaj, uyga chiqish imkoniyati mavjud.",
+  "Uyga shifokor chaqirish": "Har qanday vaqtda uyingizga malakali shifokor tashrifi va birlamchi yordam.",
+  "Ingliz tili kursi": "Boshlang'ich darajadan yuqori darajagacha ingliz tili o'rgatish, tajribali ustozlar bilan.",
+  "Matematika repetitorlik": "Maktab va abituriyentlar uchun matematikadan individual va guruh darslari.",
+  "Kompyuter kursi": "Office dasturlari, grafik dizayn va dasturlashning boshlang'ich kurslari.",
+  "Haydovchilik maktabi": "Nazariy va amaliy haydovchilik darslari, tajribali instruktorlar bilan.",
+  "Musiqa maktabi": "Gitara, pianino va boshqa musiqa asboblarini o'rgatish, barcha yosh toifalari uchun.",
+  "IT kursi": "Dasturlash tillari va zamonaviy IT yo'nalishlar bo'yicha amaliy kurslar.",
+  "Avtoservis": "Barcha turdagi avtomobillarni diagnostika qilish va ta'mirlash xizmatlari.",
+  "Shinamontaj": "G'ildirak almashtirish, balandlashtirish va shina ta'mirlash xizmatlari tez va sifatli.",
+  "Avtoyuvish": "Avtomobil tashqi va ichki tozalash, kimyoviy tozalash xizmatlari mavjud.",
+  "Diagnostika markazi": "Zamonaviy kompyuter diagnostikasi orqali avtomobil nosozliklarini aniqlash.",
+  "Rul mexanigi": "Rul boshqaruv tizimi va ilg'or amortizatorlarni ta'mirlash xizmatlari.",
+  "Avto elektrik": "Avtomobil elektr jihozlari va signalizatsiya tizimlarini o'rnatish hamda ta'mirlash.",
+  "Uy tozalash": "Kvartira va hovlilarni professional tozalash, ekologik toza vositalar bilan.",
+  "Ofis tozalash": "Ish joylarini muntazam va sifatli tozalash xizmati, moslashuvchan jadval.",
+  "Gilam yuvish xizmati": "Gilam va palaslarni chuqur yuvish, uyga olib ketish-yetkazish xizmati bilan.",
+  "Deraza tozalash": "Balandlikdagi va oddiy derazalarni professional tozalash xizmati.",
+  "Umumiy tozalash (generalka)": "Ta'mirdan keyingi va umumiy generalka tozalash xizmatlari to'liq jihozlar bilan."
+};
+
+function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function pick(arr){ return arr[randInt(0, arr.length-1)]; }
+function randPhone(){
+  const codes = ["90","91","93","94","95","97","98","99","33","71"];
+  return `+998 ${pick(codes)} ${randInt(100,999)} ${randInt(10,99)} ${randInt(10,99)}`;
+}
+function randTelegram(name){
+  return "@" + name.toLowerCase().replace(/[^a-z0-9']/g,"").replace(/'/g,"") + randInt(1,999);
+}
+function randPrice(kategoriya){
+  if(kategoriya==="Do'konlar") return `${(randInt(15,900)*1000).toLocaleString('ru-RU')} UZS dan`;
+  if(Math.random()<0.25) return "Kelishuv asosida";
+  return `${(randInt(30,600)*1000).toLocaleString('ru-RU')} UZS dan`;
+}
+
+/* =========================================================
+   2. 90+ TA OB'EKTDAN IBORAT MOCK MA'LUMOTLAR BAZASINI YARATISH
+========================================================= */
+function generateListings(){
+  const list = [];
+  let id = 1;
+  VILOYAT_LIST.forEach(viloyat => {
+    KATEGORIYA_LIST.forEach(kategoriya => {
+      // har bir viloyat-kategoriya kombinatsiyasi uchun kamida 1, ba'zilarida 2 ta yozuv
+      const count = Math.random() < 0.35 ? 2 : 1;
+      for(let i=0;i<count;i++){
+        const soha = pick(KATEGORIYALAR[kategoriya]);
+        const tuman = pick(VILOYATLAR[viloyat]);
+        let nomi;
+        if(kategoriya === "Do'konlar" || kategoriya === "Ta'lim" || kategoriya === "Avto-Xizmat" || kategoriya === "Tibbiyot" || kategoriya === "Klining"){
+          nomi = `"${pick(DUKON_NOM)}" ${soha}`;
+        } else {
+          const useAyol = Math.random() < 0.15;
+          const ism = useAyol ? pick(AYOL_ISM) : pick(ISM_PREFIX);
+          nomi = `${ism} Usta — ${soha}`;
+        }
+        const reyting = (randInt(40,50)/10).toFixed(1);
+        list.push({
+          id: id++,
+          nomi,
+          kategoriya,
+          soha,
+          viloyat,
+          tuman,
+          narxi: randPrice(kategoriya),
+          tel: randPhone(),
+          telegram: randTelegram(nomi.replace(/["]/g,'').split(' ')[0] + soha.split(' ')[0]),
+          reyting: parseFloat(reyting),
+          sharhlar_soni: randInt(3, 240),
+          tavsif: TAVSIF_SHABLON[soha] || "Sifatli va tezkor xizmat ko'rsatamiz. Mijozlarimiz fikri biz uchun muhim.",
+          vip: Math.random() < 0.16
+        });
+      }
+    });
+  });
+  return list;
+}
+
+let LISTINGS = generateListings();
+
+/* =========================================================
+   3. HOLAT (STATE) VA FILTR MANTIQI
+========================================================= */
+const state = {
+  search: "",
+  viloyat: "",
+  kategoriya: "",
+  sort: "vip"
+};
+
+function populateSelect(el, options, allLabel){
+  el.innerHTML = `<option value="">${allLabel}</option>` + options.map(o=>`<option value="${o}">${o}</option>`).join("");
+}
+
+function initFilters(){
+  populateSelect(document.getElementById('filterViloyat'), VILOYAT_LIST, "Barcha viloyatlar");
+  populateSelect(document.getElementById('filterKategoriya'), KATEGORIYA_LIST, "Barcha kategoriyalar");
+  populateSelect(document.getElementById('addViloyat'), VILOYAT_LIST, "Tanlang");
+
+  const kategoriyaSelectAdd = document.getElementById('addKategoriya');
+  populateSelect(kategoriyaSelectAdd, KATEGORIYA_LIST, "Tanlang");
+  updateSohaOptions(KATEGORIYA_LIST[0]);
+  kategoriyaSelectAdd.addEventListener('change', e => updateSohaOptions(e.target.value));
+
+  // kategoriya chips
+  const chipsWrap = document.getElementById('categoryChips');
+  const allChip = document.createElement('button');
+  allChip.className = "chip active shrink-0 px-4 py-2 rounded-full text-sm font-semibold bg-white";
+  allChip.textContent = "Barchasi";
+  allChip.dataset.value = "";
+  chipsWrap.appendChild(allChip);
+  KATEGORIYA_LIST.forEach(k=>{
+    const b = document.createElement('button');
+    b.className = "chip shrink-0 px-4 py-2 rounded-full text-sm font-semibold bg-white whitespace-nowrap";
+    b.textContent = `${KATEGORIYA_ICON[k]} ${k}`;
+    b.dataset.value = k;
+    chipsWrap.appendChild(b);
+  });
+  chipsWrap.addEventListener('click', e=>{
+    const btn = e.target.closest('button.chip');
+    if(!btn) return;
+    [...chipsWrap.children].forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    state.kategoriya = btn.dataset.value;
+    document.getElementById('filterKategoriya').value = btn.dataset.value;
+    render();
+  });
+}
+
+function updateSohaOptions(kategoriya){
+  const sohaSelect = document.getElementById('addSoha');
+  populateSelect(sohaSelect, KATEGORIYALAR[kategoriya] || [], "Tanlang");
+}
+
+function getFiltered(){
+  let data = LISTINGS.filter(item=>{
+    const matchSearch = state.search === "" ||
+      item.nomi.toLowerCase().includes(state.search) ||
+      item.soha.toLowerCase().includes(state.search) ||
+      item.kategoriya.toLowerCase().includes(state.search) ||
+      item.viloyat.toLowerCase().includes(state.search) ||
+      item.tuman.toLowerCase().includes(state.search);
+    const matchViloyat = state.viloyat === "" || item.viloyat === state.viloyat;
+    const matchKategoriya = state.kategoriya === "" || item.kategoriya === state.kategoriya;
+    return matchSearch && matchViloyat && matchKategoriya;
+  });
+
+  switch(state.sort){
+    case "reyting":
+      data.sort((a,b)=> b.reyting - a.reyting);
+      break;
+    case "arzon":
+      data.sort((a,b)=> extractPrice(a.narxi) - extractPrice(b.narxi));
+      break;
+    case "sharhlar":
+      data.sort((a,b)=> b.sharhlar_soni - a.sharhlar_soni);
+      break;
+    case "vip":
+    default:
+      data.sort((a,b)=> (b.vip - a.vip) || (b.reyting - a.reyting));
+      break;
+  }
+  // VIP har doim eng tepada (sort turidan qat'iy nazar)
+  data.sort((a,b)=> (b.vip - a.vip));
+  return data;
+}
+function extractPrice(str){
+  if(!str || str.toLowerCase().includes("kelishuv")) return Number.MAX_SAFE_INTEGER;
+  const n = str.replace(/[^\d]/g,"");
+  return n ? parseInt(n) : Number.MAX_SAFE_INTEGER;
+}
+
+/* =========================================================
+   4. RENDER
+========================================================= */
+function cardTemplate(item){
+  const vipClass = item.vip ? "card-vip" : "";
+  const vipBadge = item.vip ? `<span class="vip-badge text-[10px] font-extrabold px-2 py-1 rounded-full uppercase tracking-wide shrink-0">★ VIP</span>` : "";
+  const stars = "★".repeat(Math.round(item.reyting)) + "☆".repeat(5-Math.round(item.reyting));
+  return `
+  <div class="card ${vipClass} rounded-2xl p-4 flex flex-col gap-3 cursor-pointer" data-id="${item.id}" onclick="openProfile(${item.id})">
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex items-start gap-2 min-w-0">
+        <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center text-lg" style="background:#EAF6F5;">${KATEGORIYA_ICON[item.kategoriya]}</div>
+        <div class="min-w-0">
+          <h3 class="font-bold text-sm sm:text-base leading-tight truncate">${item.nomi}</h3>
+          <p class="text-xs text-gray-500 truncate">${item.soha}</p>
+        </div>
+      </div>
+      ${vipBadge}
+    </div>
+
+    <div class="flex items-center gap-1.5 text-xs text-gray-500">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      ${item.tuman}, ${item.viloyat}
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-1 text-xs">
+        <span class="star text-sm leading-none">${stars}</span>
+        <span class="font-semibold">${item.reyting.toFixed(1)}</span>
+        <span class="text-gray-400">(${item.sharhlar_soni})</span>
+      </div>
+      <span class="text-xs font-bold" style="color:var(--tile)">${item.narxi}</span>
+    </div>
+
+    <p class="text-xs text-gray-500 line-clamp-2">${item.tavsif}</p>
+
+    <div class="flex gap-2 mt-1" onclick="event.stopPropagation()">
+      <a href="tel:${item.tel.replace(/\s/g,'')}" class="flex-1 btn-tile text-center rounded-lg py-2 text-xs font-semibold flex items-center justify-center gap-1">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/></svg>
+        Qo'ng'iroq
+      </a>
+      <a href="https://t.me/${item.telegram.replace('@','')}" target="_blank" class="flex-1 rounded-lg py-2 text-xs font-semibold flex items-center justify-center gap-1 border" style="border-color:var(--tile); color:var(--tile);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21.94 4.5 18.6 20.3c-.25 1.1-.9 1.38-1.83.86l-5.06-3.73-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.16 9.4-8.5c.41-.36-.09-.56-.63-.2L7.02 13.1l-5.03-1.57c-1.1-.34-1.12-1.1.23-1.63L20.5 3.14c.91-.34 1.71.21 1.44 1.36z"/></svg>
+        Telegram
+      </a>
+    </div>
+  </div>`;
+}
+
+function render(){
+  const data = getFiltered();
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('resultsCount').textContent = `${data.length} ta natija topildi`;
+  if(data.length === 0){
+    grid.innerHTML = "";
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  grid.innerHTML = data.map(cardTemplate).join("");
+}
+
+/* =========================================================
+   5. PROFIL MODALKASI (xarita simulyatsiyasi bilan)
+========================================================= */
+function openProfile(id){
+  const item = LISTINGS.find(l=>l.id===id);
+  if(!item) return;
+  const stars = "★".repeat(Math.round(item.reyting)) + "☆".repeat(5-Math.round(item.reyting));
+  const lat = (39 + Math.random()*3.5).toFixed(4);
+  const lng = (60 + Math.random()*10).toFixed(4);
+
+  document.getElementById('profileModalContent').innerHTML = `
+    <div class="ikat-pattern rounded-t-2xl px-5 py-5 relative">
+      <button onclick="closeProfile()" class="absolute top-3 right-4 text-white/70 hover:text-white text-2xl leading-none">&times;</button>
+      ${item.vip ? `<span class="vip-badge inline-block text-[10px] font-extrabold px-2 py-1 rounded-full uppercase mb-2">★ VIP e'lon</span>` : ""}
+      <h2 class="font-display text-2xl text-white">${item.nomi}</h2>
+      <p class="text-white/70 text-sm">${item.soha} &middot; ${item.kategoriya}</p>
+      <div class="flex items-center gap-1 mt-2 text-sm">
+        <span class="star">${stars}</span>
+        <span class="text-white font-semibold">${item.reyting.toFixed(1)}</span>
+        <span class="text-white/60">(${item.sharhlar_soni} ta sharh)</span>
+      </div>
+    </div>
+    <div class="p-5 space-y-4">
+      <p class="text-sm text-gray-600 leading-relaxed">${item.tavsif}</p>
+
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-400 mb-0.5">Manzil</p>
+          <p class="font-semibold">${item.tuman}, ${item.viloyat}</p>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-3">
+          <p class="text-xs text-gray-400 mb-0.5">Narxi</p>
+          <p class="font-semibold" style="color:var(--tile)">${item.narxi}</p>
+        </div>
+      </div>
+
+      <!-- Xarita simulyatsiyasi -->
+      <div class="map-sim rounded-xl h-40 relative overflow-hidden flex items-center justify-center">
+        <div class="pulse-pin flex flex-col items-center">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="#B3572E"><path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8Z"/><circle cx="12" cy="10" r="3" fill="#fff"/></svg>
+        </div>
+        <span class="absolute bottom-2 left-2 bg-white/90 text-[11px] px-2 py-1 rounded-md font-medium text-gray-600">
+          ${lat}° N, ${lng}° E &middot; ${item.tuman}
+        </span>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <a href="tel:${item.tel.replace(/\s/g,'')}" class="flex-1 btn-tile text-center rounded-xl py-3 text-sm font-semibold">📞 ${item.tel}</a>
+        <a href="https://t.me/${item.telegram.replace('@','')}" target="_blank" class="flex-1 text-center rounded-xl py-3 text-sm font-semibold border" style="border-color:var(--tile); color:var(--tile);">${item.telegram}</a>
+      </div>
+    </div>
+  `;
+  document.getElementById('profileModal').classList.remove('hidden');
+  document.getElementById('profileModal').classList.add('flex');
+}
+function closeProfile(){
+  document.getElementById('profileModal').classList.add('hidden');
+  document.getElementById('profileModal').classList.remove('flex');
+}
+document.getElementById('profileModal').addEventListener('click', e=>{
+  if(e.target.id === 'profileModal') closeProfile();
+});
+
+/* =========================================================
+   6. E'LON QO'SHISH MODALKASI
+========================================================= */
+function openAddModal(){
+  document.getElementById('addModal').classList.remove('hidden');
+  document.getElementById('addModal').classList.add('flex');
+}
+function closeAddModal(){
+  document.getElementById('addModal').classList.add('hidden');
+  document.getElementById('addModal').classList.remove('flex');
+}
+document.getElementById('openAddBtn').addEventListener('click', openAddModal);
+document.getElementById('openAddBtnMobile').addEventListener('click', openAddModal);
+document.getElementById('closeAddModal').addEventListener('click', closeAddModal);
+document.getElementById('addModal').addEventListener('click', e=>{
+  if(e.target.id === 'addModal') closeAddModal();
+});
+
+document.getElementById('addForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const kategoriya = fd.get('kategoriya');
+  const soha = fd.get('soha');
+  const newItem = {
+    id: Date.now(),
+    nomi: fd.get('nomi'),
+    kategoriya,
+    soha,
+    viloyat: fd.get('viloyat'),
+    tuman: fd.get('tuman'),
+    narxi: fd.get('narxi') || "Kelishuv asosida",
+    tel: fd.get('tel'),
+    telegram: fd.get('telegram') || "@user",
+    reyting: 4.5,
+    sharhlar_soni: 0,
+    tavsif: fd.get('tavsif') || (TAVSIF_SHABLON[soha] || "Yangi qo'shilgan xizmat."),
+    vip: false
+  };
+  LISTINGS.unshift(newItem);
+  e.target.reset();
+  updateSohaOptions(KATEGORIYA_LIST[0]);
+  closeAddModal();
+  showToast("✅ E'loningiz muvaffaqiyatli joylashtirildi!");
+  render();
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.classList.add('hidden'), 2800);
+}
+
+/* =========================================================
+   7. FILTR EVENT LISTENERLARI (live search)
+========================================================= */
+document.getElementById('searchInput').addEventListener('input', e=>{
+  state.search = e.target.value.trim().toLowerCase();
+  render();
+});
+document.getElementById('heroSearchBtn').addEventListener('click', ()=>{
+  window.scrollTo({top: document.getElementById('cardsGrid').offsetTop - 90, behavior:'smooth'});
+});
+document.getElementById('filterViloyat').addEventListener('change', e=>{
+  state.viloyat = e.target.value;
+  render();
+});
+document.getElementById('filterKategoriya').addEventListener('change', e=>{
+  state.kategoriya = e.target.value;
+  // chip larni ham sinxronlashtirish
+  [...document.getElementById('categoryChips').children].forEach(c=>{
+    c.classList.toggle('active', c.dataset.value === e.target.value);
+  });
+  render();
+});
+document.getElementById('filterSort').addEventListener('change', e=>{
+  state.sort = e.target.value;
+  render();
+});
+document.getElementById('resetFilters').addEventListener('click', ()=>{
+  state.search = ""; state.viloyat = ""; state.kategoriya = ""; state.sort = "vip";
+  document.getElementById('searchInput').value = "";
+  document.getElementById('filterViloyat').value = "";
+  document.getElementById('filterKategoriya').value = "";
+  document.getElementById('filterSort').value = "vip";
+  [...document.getElementById('categoryChips').children].forEach((c,i)=> c.classList.toggle('active', i===0));
+  render();
+});
+
+/* =========================================================
+   8. TELEGRAM WEB APP MOSLASHUVI
+========================================================= */
+(function initTelegramWebApp(){
+  try{
+    if(window.Telegram && window.Telegram.WebApp){
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+      tg.setHeaderColor && tg.setHeaderColor('#0E2A3B');
+    }
+  }catch(err){ /* TWA muhitidan tashqarida ishga tushsa, e'tiborsiz qoldiriladi */ }
+})();
+
+/* =========================================================
+   9. ISHGA TUSHIRISH
+========================================================= */
+initFilters();
+render();
+</script>
+</body>
+</html>
