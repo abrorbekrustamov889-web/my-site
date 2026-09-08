@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Khanate Restaurant — Toshkent markazida milliy taomlar, samimiy muhit va jonli musiqa uyg‘unligi. Stol band qiling.">
+  <meta name="theme-color" content="#0d0c0a">
+  <title>Khanate Restaurant — Ta’m. Muhit. Unutilmas oqshom.</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0d0c0a',
+            surface: '#171512',
+            gold: '#c9a45c',
+            cream: '#f4ebdd',
+            muted: '#a9a39a'
+          },
+          fontFamily: {
+            display: ['Cormorant Garamond', 'serif'],
+            sans: ['Manrope', 'sans-serif']
+          },
+          boxShadow: {
+            luxury: '0 25px 80px rgba(0,0,0,.35)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --ink:#0d0c0a;
+      --surface:#171512;
+      --gold:#c9a45c;
+      --cream:#f4ebdd;
+      --muted:#a9a39a;
+    }
+
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--ink);
+      color:var(--cream);
+      font-family:'Manrope',sans-serif;
+      overflow-x:hidden;
+    }
+    ::selection { background:var(--gold); color:var(--ink); }
+
+    .display { font-family:'Cormorant Garamond',serif; }
+    .gold-text { color:var(--gold); }
+    .section-pad { padding:clamp(72px,9vw,140px) 0; }
+
+    .grain {
+      position:fixed; inset:0; pointer-events:none; z-index:70; opacity:.035;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+    }
+
+    .nav-scrolled {
+      background:rgba(13,12,10,.86)!important;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(201,164,92,.14);
+    }
+
+    .hero-bg {
+      background-image:
+        linear-gradient(90deg,rgba(13,12,10,.9) 0%,rgba(13,12,10,.62) 45%,rgba(13,12,10,.35) 100%),
+        linear-gradient(0deg,rgba(13,12,10,.72) 0%,transparent 35%),
+        url('https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=2200&q=88');
+      background-size:cover;
+      background-position:center;
+      transform:scale(1.02);
+    }
+
+    .gold-line {
+      height:1px;
+      background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    }
+
+    .btn-gold {
+      background:var(--gold);
+      color:var(--ink);
+      transition:transform .3s ease, box-shadow .3s ease, background .3s ease;
+    }
+    .btn-gold:hover {
+      transform:translateY(-2px);
+      box-shadow:0 14px 38px rgba(201,164,92,.18);
+      background:#d8b875;
+    }
+
+    .btn-outline {
+      border:1px solid rgba(244,235,221,.28);
+      background:rgba(255,255,255,.025);
+      transition:.3s ease;
+    }
+    .btn-outline:hover {
+      border-color:var(--gold);
+      background:rgba(201,164,92,.08);
+    }
+
+    .image-card { overflow:hidden; }
+    .image-card img { transition:transform .8s cubic-bezier(.2,.7,.2,1); }
+    .image-card:hover img { transform:scale(1.055); }
+
+    .reveal {
+      opacity:0;
+      transform:translateY(28px);
+      transition:opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible { opacity:1; transform:none; }
+
+    .menu-card {
+      border:1px solid rgba(244,235,221,.09);
+      background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+      transition:.35s ease;
+    }
+    .menu-card:hover {
+      transform:translateY(-5px);
+      border-color:rgba(201,164,92,.35);
+      background:linear-gradient(145deg,rgba(201,164,92,.075),rgba(255,255,255,.018));
+    }
+
+    .modal-backdrop {
+      background:rgba(0,0,0,.72);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+
+    .input {
+      width:100%;
+      background:#0f0e0c;
+      border:1px solid rgba(244,235,221,.13);
+      color:var(--cream);
+      border-radius:12px;
+      padding:14px 15px;
+      outline:none;
+      transition:.25s ease;
+    }
+    .input:focus {
+      border-color:rgba(201,164,92,.75);
+      box-shadow:0 0 0 3px rgba(201,164,92,.08);
+    }
+    .input::placeholder { color:#77736d; }
+
+    .stat-number { font-variant-numeric:tabular-nums; }
+
+    .gallery-tall { min-height:520px; }
+    .gallery-mid { min-height:350px; }
+
+    @media (max-width:767px) {
+      .hero-bg {
+        background-position:58% center;
+        background-image:
+          linear-gradient(90deg,rgba(13,12,10,.82),rgba(13,12,10,.45)),
+          linear-gradient(0deg,rgba(13,12,10,.8),transparent 55%),
+          url('https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1600&q=85');
+      }
+      .gallery-tall { min-height:380px; }
+      .gallery-mid { min-height:260px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+
+  <!-- NAVIGATION -->
+  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 border-b border-transparent transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+      <div class="h-[78px] flex items-center justify-between">
+        <a href="#home" class="flex items-center gap-3 group" aria-label="Khanate Restaurant bosh sahifa">
+          <div class="w-10 h-10 rounded-full border border-gold/60 flex items-center justify-center">
+            <span class="display text-2xl gold-text">K</span>
+          </div>
+          <div>
+            <div class="tracking-[.25em] text-sm font-bold">KHANATE</div>
+            <div class="text-[9px] tracking-[.38em] text-muted">RESTAURANT</div>
+          </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-7 text-[12px] font-semibold tracking-wide text-cream/80">
+          <a href="#home" class="hover:text-gold transition">Bosh sahifa</a>
+          <a href="#about" class="hover:text-gold transition">Biz haqimizda</a>
+          <a href="#menu" class="hover:text-gold transition">Taomnoma</a>
+          <a href="#gallery" class="hover:text-gold transition">Galereya</a>
+          <a href="#reviews" class="hover:text-gold transition">Sharhlar</a>
+          <a href="#contact" class="hover:text-gold transition">Aloqa</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <a href="tel:+998770006666" class="hidden sm:flex items-center gap-2 text-sm text-cream/80 hover:text-gold transition">
+            <i data-lucide="phone" class="w-4 h-4"></i>
+            <span>+998 77 000 66 66</span>
+          </a>
+          <button data-booking-open class="btn-gold px-4 sm:px-5 py-3 rounded-full text-[11px] font-extrabold tracking-[.08em] uppercase">
+            Stol band qilish
+          </button>
+          <button id="mobileMenuBtn" class="lg:hidden w-11 h-11 rounded-full border border-white/15 flex items-center justify-center" aria-label="Menyuni ochish">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobileMenu" class="hidden lg:hidden border-t border-white/10 bg-ink/95 backdrop-blur-xl">
+      <nav class="max-w-7xl mx-auto px-5 py-5 flex flex-col text-sm">
+        <a href="#home" class="py-3 border-b border-white/5">Bosh sahifa</a>
+        <a href="#about" class="py-3 border-b border-white/5">Biz haqimizda</a>
+        <a href="#menu" class="py-3 border-b border-white/5">Taomnoma</a>
+        <a href="#gallery" class="py-3 border-b border-white/5">Galereya</a>
+        <a href="#reviews" class="py-3 border-b border-white/5">Sharhlar</a>
+        <a href="#contact" class="py-3">Aloqa</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section id="home" class="relative min-h-screen flex items-center overflow-hidden">
+      <div class="absolute inset-0 hero-bg"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_72%_35%,rgba(201,164,92,.12),transparent_25%)]"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-7 lg:px-10 w-full pt-28 pb-20">
+        <div class="max-w-3xl reveal">
+          <div class="flex items-center gap-3 mb-7">
+            <span class="w-12 h-px bg-gold"></span>
+            <span class="text-[11px] sm:text-xs tracking-[.28em] uppercase font-bold text-gold">Toshkent markazida milliy ta’m va muhit</span>
+          </div>
+
+          <h1 class="display text-[clamp(58px,8.2vw,112px)] leading-[.82] font-medium tracking-[-.035em]">
+            Ta’m.<br>
+            <span class="italic gold-text">Muhit.</span><br>
+            Unutilmas oqshom.
+          </h1>
+
+          <p class="mt-8 max-w-xl text-base sm:text-lg leading-8 text-cream/70">
+            Khanate Restaurant — milliy taomlar, samimiy muhit va jonli musiqa uyg‘unlashadigan maskan.
+            Yaqinlaringiz bilan mazali kechani biz bilan boshlang.
+          </p>
+
+          <div class="mt-9 flex flex-wrap gap-3">
+            <button data-booking-open class="btn-gold rounded-full px-7 py-4 text-xs font-extrabold tracking-[.12em] uppercase flex items-center gap-2">
+              Stol band qilish
+              <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+            </button>
+            <a href="#menu" class="btn-outline rounded-full px-7 py-4 text-xs font-extrabold tracking-[.12em] uppercase flex items-center gap-2">
+              Taomnoma bilan tanishish
+              <i data-lucide="arrow-down" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-16 lg:mt-24 grid grid-cols-2 md:grid-cols-5 gap-px bg-white/10 border border-white/10 rounded-2xl overflow-hidden max-w-5xl reveal">
+          <div class="bg-ink/65 backdrop-blur-md p-5">
+            <div class="text-2xl font-bold stat-number">4.2<span class="text-gold">/5</span></div>
+            <div class="text-[10px] uppercase tracking-[.18em] text-muted mt-1">Google reyting</div>
+          </div>
+          <div class="bg-ink/65 backdrop-blur-md p-5">
+            <div class="text-2xl font-bold">78<span class="text-gold">+</span></div>
+            <div class="text-[10px] uppercase tracking-[.18em] text-muted mt-1">Mehmon sharhi</div>
+          </div>
+          <div class="bg-ink/65 backdrop-blur-md p-5">
+            <div class="text-2xl font-bold">LIVE</div>
+            <div class="text-[10px] uppercase tracking-[.18em] text-muted mt-1">Jonli musiqa</div>
+          </div>
+          <div class="bg-ink/65 backdrop-blur-md p-5">
+            <div class="text-2xl font-bold">2</div>
+            <div class="text-[10px] uppercase tracking-[.18em] text-muted mt-1">Qavatli maskan</div>
+          </div>
+          <div class="col-span-2 md:col-span-1 bg-ink/65 backdrop-blur-md p-5">
+            <div class="text-2xl font-bold">00:00</div>
+            <div class="text-[10px] uppercase tracking-[.18em] text-muted mt-1">Gacha ochiq</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-8 right-7 hidden md:flex items-center gap-3 text-[10px] tracking-[.25em] uppercase text-white/45 [writing-mode:vertical-rl]">
+        Scroll to explore
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section-pad bg-ink">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="grid lg:grid-cols-[.8fr_1.2fr] gap-14 lg:gap-24 items-center">
+          <div class="image-card rounded-[28px] relative reveal">
+            <img
+              src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=85"
+              alt="Milliy taomlar bilan bezatilgan dasturxon"
+              class="w-full h-[540px] object-cover rounded-[28px]"
+              loading="lazy"
+            >
+            <div class="absolute -bottom-5 -right-3 sm:-right-6 bg-surface border border-gold/20 rounded-2xl px-5 py-4 shadow-luxury">
+              <div class="text-[10px] tracking-[.2em] uppercase text-muted">Khanate</div>
+              <div class="display text-2xl gold-text italic">Samimiyat bilan</div>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <div class="flex items-center gap-3 mb-5">
+              <span class="w-10 h-px bg-gold"></span>
+              <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Biz haqimizda</span>
+            </div>
+            <h2 class="display text-5xl sm:text-6xl lg:text-7xl leading-[.92] font-medium">
+              Toshkentdagi oqshomingiz uchun <span class="italic gold-text">o‘ziga xos manzil.</span>
+            </h2>
+            <p class="mt-7 text-cream/60 leading-8 max-w-2xl">
+              Khanate’da biz uchun yaxshi kechki ovqat — faqat taom emas. Bu yaqinlar bilan suhbat,
+              dasturxon atrofidagi iliq kayfiyat va musiqaga boy xotiradir. Menyumizda o‘zbek oshxonasining
+              sevimli ta’mlari, yangi salatlar va to‘yimli kaboblar markaziy o‘rin tutadi.
+            </p>
+
+            <div class="mt-10 grid sm:grid-cols-3 gap-5">
+              <div class="border-t border-white/10 pt-5">
+                <i data-lucide="utensils" class="w-5 h-5 text-gold mb-4"></i>
+                <h3 class="font-bold">Milliy ta’m</h3>
+                <p class="text-xs text-muted leading-6 mt-2">O‘zbek dasturxonining tanish va sevimli ta’mlari.</p>
+              </div>
+              <div class="border-t border-white/10 pt-5">
+                <i data-lucide="music-2" class="w-5 h-5 text-gold mb-4"></i>
+                <h3 class="font-bold">Jonli musiqa</h3>
+                <p class="text-xs text-muted leading-6 mt-2">Solo ijro va sokin, yoqimli oqshom kayfiyati.</p>
+              </div>
+              <div class="border-t border-white/10 pt-5">
+                <i data-lucide="building-2" class="w-5 h-5 text-gold mb-4"></i>
+                <h3 class="font-bold">Ikki qavat</h3>
+                <p class="text-xs text-muted leading-6 mt-2">Turli uchrashuvlar uchun qulay restoran muhiti.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGNATURE -->
+    <section class="section-pad bg-surface/70 border-y border-white/5">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-7 reveal">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="w-10 h-px bg-gold"></span>
+              <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Khanate tanlovi</span>
+            </div>
+            <h2 class="display text-5xl sm:text-6xl leading-none">Khanate ta’mini <span class="italic gold-text">birinchi luqmadanoq</span> his qiling.</h2>
+          </div>
+          <a href="#menu" class="text-xs font-bold tracking-[.12em] uppercase text-gold flex items-center gap-2 hover:gap-3 transition-all">
+            To‘liq taomnoma <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-5 mt-12">
+          <article class="lg:col-span-7 image-card rounded-[28px] relative min-h-[530px] reveal">
+            <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1400&q=85"
+                 alt="Karsildoq karp baliq taomi" class="absolute inset-0 w-full h-full object-cover rounded-[28px]" loading="lazy">
+            <div class="absolute inset-0 rounded-[28px] bg-gradient-to-t from-black/85 via-black/10 to-transparent"></div>
+            <div class="absolute top-6 left-6">
+              <span class="bg-gold text-ink px-3 py-1.5 rounded-full text-[9px] font-extrabold tracking-[.16em]">CHEF'S CHOICE</span>
+            </div>
+            <div class="absolute bottom-7 left-7 right-7">
+              <div class="text-[10px] uppercase tracking-[.2em] text-gold mb-2">Signature</div>
+              <h3 class="display text-4xl sm:text-5xl">Karsildoq karp</h3>
+              <p class="text-sm text-white/65 mt-2 max-w-md">Qarsildoq qobiq, yumshoq ichki tuzilma va to‘yingan ta’m.</p>
+            </div>
+          </article>
+
+          <div class="lg:col-span-5 grid gap-5">
+            <article class="image-card rounded-[28px] relative min-h-[255px] reveal">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=85"
+                   alt="O‘zbek kaboblari" class="absolute inset-0 w-full h-full object-cover rounded-[28px]" loading="lazy">
+              <div class="absolute inset-0 rounded-[28px] bg-gradient-to-t from-black/80 to-transparent"></div>
+              <div class="absolute bottom-6 left-6">
+                <div class="text-[10px] uppercase tracking-[.2em] text-gold">Milliy</div>
+                <h3 class="display text-3xl">Kaboblar</h3>
+              </div>
+            </article>
+            <article class="image-card rounded-[28px] relative min-h-[255px] reveal">
+              <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=85"
+                   alt="Yangi salatlar" class="absolute inset-0 w-full h-full object-cover rounded-[28px]" loading="lazy">
+              <div class="absolute inset-0 rounded-[28px] bg-gradient-to-t from-black/80 to-transparent"></div>
+              <div class="absolute bottom-6 left-6">
+                <div class="text-[10px] uppercase tracking-[.2em] text-gold">Fresh</div>
+                <h3 class="display text-3xl">Barra salatlar</h3>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="section-pad bg-ink">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="text-center max-w-3xl mx-auto reveal">
+          <div class="flex justify-center items-center gap-3 mb-4">
+            <span class="w-10 h-px bg-gold"></span>
+            <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Taomnoma</span>
+            <span class="w-10 h-px bg-gold"></span>
+          </div>
+          <h2 class="display text-5xl sm:text-6xl">Dasturxondagi <span class="italic gold-text">eng yaxshi tanlovlar.</span></h2>
+          <p class="mt-5 text-sm leading-7 text-muted">Narxlar yangilanib turishi mumkin. Aniq narx va mavjudlik uchun administrator bilan bog‘laning.</p>
+        </div>
+
+        <div id="menuTabs" class="mt-10 flex flex-wrap justify-center gap-2">
+          <button data-filter="all" class="menu-filter active px-5 py-2.5 rounded-full text-[11px] font-bold tracking-wide border border-gold bg-gold text-ink">Barchasi</button>
+          <button data-filter="kabob" class="menu-filter px-5 py-2.5 rounded-full text-[11px] font-bold tracking-wide border border-white/10 text-white/60 hover:border-gold/50 transition">Kaboblar</button>
+          <button data-filter="asosiy" class="menu-filter px-5 py-2.5 rounded-full text-[11px] font-bold tracking-wide border border-white/10 text-white/60 hover:border-gold/50 transition">Asosiy taomlar</button>
+          <button data-filter="salat" class="menu-filter px-5 py-2.5 rounded-full text-[11px] font-bold tracking-wide border border-white/10 text-white/60 hover:border-gold/50 transition">Salatlar</button>
+        </div>
+
+        <div id="menuGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10"></div>
+      </div>
+    </section>
+
+    <!-- LIVE MUSIC -->
+    <section class="relative section-pad overflow-hidden">
+      <div class="absolute inset-0">
+        <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=2200&q=85"
+             alt="" class="w-full h-full object-cover opacity-35" loading="lazy">
+        <div class="absolute inset-0 bg-ink/75"></div>
+      </div>
+      <div class="relative max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="max-w-3xl reveal">
+          <div class="flex items-center gap-3 mb-5">
+            <span class="w-10 h-px bg-gold"></span>
+            <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Live atmosphere</span>
+          </div>
+          <h2 class="display text-6xl sm:text-7xl lg:text-8xl leading-[.82]">Taomingizga <span class="italic gold-text">musiqa</span> hamroh bo‘lsin.</h2>
+          <p class="mt-7 text-base leading-8 text-white/65 max-w-2xl">
+            Jonli ijro, iliq yorug‘lik va suhbatga mos muhit — Khanate oqshomining o‘ziga xos qismi.
+            Solo xonanda yoki gitarachi ijrosi bilan kechangizga yana bir xotira qo‘shing.
+          </p>
+          <button data-booking-open class="btn-outline mt-8 rounded-full px-6 py-3.5 text-xs font-extrabold tracking-[.12em] uppercase inline-flex items-center gap-2">
+            Oqshomni rejalashtirish <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="section-pad bg-surface/60">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="w-10 h-px bg-gold"></span>
+              <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Galereya</span>
+            </div>
+            <h2 class="display text-5xl sm:text-6xl">Faqat ovqat emas. <span class="italic gold-text">Bu — oqshom.</span></h2>
+          </div>
+          <p class="max-w-sm text-sm text-muted leading-7">Taom, musiqa va odamlar bir joyda uchrashadigan iliq muhit.</p>
+        </div>
+
+        <div class="grid md:grid-cols-12 gap-4 mt-12">
+          <button class="gallery-item image-card md:col-span-7 gallery-tall rounded-[25px] relative text-left reveal"
+                  data-image="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1800&q=90"
+                  data-caption="Khanate — kechki muhit">
+            <img src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1400&q=85" alt="Restoran interyeri" class="w-full h-full object-cover rounded-[25px]" loading="lazy">
+            <span class="absolute bottom-5 left-5 bg-black/50 backdrop-blur px-4 py-2 rounded-full text-[10px] tracking-[.15em] uppercase">Muhit</span>
+          </button>
+
+          <div class="md:col-span-5 grid grid-rows-2 gap-4">
+            <button class="gallery-item image-card gallery-mid rounded-[25px] relative text-left reveal"
+                    data-image="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1600&q=90"
+                    data-caption="Milliy dasturxon">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=85" alt="Taomlar" class="w-full h-full object-cover rounded-[25px]" loading="lazy">
+              <span class="absolute bottom-5 left-5 bg-black/50 backdrop-blur px-4 py-2 rounded-full text-[10px] tracking-[.15em] uppercase">Taom</span>
+            </button>
+            <button class="gallery-item image-card gallery-mid rounded-[25px] relative text-left reveal"
+                    data-image="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1600&q=90"
+                    data-caption="Jonli musiqa">
+              <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=85" alt="Jonli musiqa" class="w-full h-full object-cover rounded-[25px]" loading="lazy">
+              <span class="absolute bottom-5 left-5 bg-black/50 backdrop-blur px-4 py-2 rounded-full text-[10px] tracking-[.15em] uppercase">Live</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section id="reviews" class="section-pad bg-ink">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="grid lg:grid-cols-[.65fr_1.35fr] gap-14 items-start">
+          <div class="reveal">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="w-10 h-px bg-gold"></span>
+              <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Mehmonlar fikri</span>
+            </div>
+            <div class="display text-[110px] leading-none gold-text">4.2</div>
+            <div class="flex gap-1 mt-1" aria-label="4.2 out of 5 stars">
+              <i data-lucide="star" class="w-5 h-5 fill-current text-gold"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current text-gold"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current text-gold"></i>
+              <i data-lucide="star" class="w-5 h-5 fill-current text-gold"></i>
+              <i data-lucide="star-half" class="w-5 h-5 text-gold"></i>
+            </div>
+            <p class="text-sm text-muted mt-4">Google’da 78+ mehmon sharhi.</p>
+          </div>
+
+          <div class="grid gap-4">
+            <article class="p-7 sm:p-9 rounded-[25px] border border-white/8 bg-white/[.025] reveal">
+              <div class="flex gap-1 mb-5">
+                <i data-lucide="quote" class="w-5 h-5 text-gold"></i>
+              </div>
+              <p class="display text-2xl sm:text-3xl leading-snug">“Karp baliq qarsildoq, yog‘li emas va juda mazali. Jonli musiqa ham yoqimli taassurot qoldirdi.”</p>
+              <div class="mt-6 text-[11px] tracking-[.16em] uppercase text-muted">SoephySue Soochipto</div>
+            </article>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+              <article class="p-7 rounded-[25px] border border-white/8 bg-white/[.025] reveal">
+                <i data-lucide="quote" class="w-5 h-5 text-gold mb-5"></i>
+                <p class="text-sm leading-7 text-white/70">“Taomlar juda mazali, musiqa yoqimli. Umuman olganda, hammasi yaxshi.”</p>
+                <div class="mt-5 text-[10px] tracking-[.16em] uppercase text-muted">Sophia Rustem</div>
+              </article>
+              <article class="p-7 rounded-[25px] border border-white/8 bg-white/[.025] reveal">
+                <i data-lucide="quote" class="w-5 h-5 text-gold mb-5"></i>
+                <p class="text-sm leading-7 text-white/70">“Great Uzbek food with nice atmosphere.”</p>
+                <div class="mt-5 text-[10px] tracking-[.16em] uppercase text-muted">MohD AlshaB</div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OCCASIONS -->
+    <section class="section-pad bg-surface border-y border-white/5">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="text-center reveal">
+          <div class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Har bir uchrashuv uchun</div>
+          <h2 class="display text-5xl sm:text-6xl mt-3">Bugungi oqshomingiz <span class="italic gold-text">qanday bo‘ladi?</span></h2>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+          <div class="p-7 rounded-[22px] border border-white/8 hover:border-gold/30 transition reveal">
+            <i data-lucide="heart" class="w-5 h-5 text-gold"></i>
+            <h3 class="display text-3xl mt-8">Oilaviy kechki ovqat</h3>
+            <p class="text-xs text-muted leading-6 mt-3">Yaqinlar bilan bir dasturxon atrofida.</p>
+          </div>
+          <div class="p-7 rounded-[22px] border border-white/8 hover:border-gold/30 transition reveal">
+            <i data-lucide="users" class="w-5 h-5 text-gold"></i>
+            <h3 class="display text-3xl mt-8">Do‘stlar bilan</h3>
+            <p class="text-xs text-muted leading-6 mt-3">Uchrashuv, suhbat va yaxshi taomlar.</p>
+          </div>
+          <div class="p-7 rounded-[22px] border border-white/8 hover:border-gold/30 transition reveal">
+            <i data-lucide="gift" class="w-5 h-5 text-gold"></i>
+            <h3 class="display text-3xl mt-8">Mehmon kutish</h3>
+            <p class="text-xs text-muted leading-6 mt-3">Toshkentdagi mehmonlaringiz uchun.</p>
+          </div>
+          <div class="p-7 rounded-[22px] border border-white/8 hover:border-gold/30 transition reveal">
+            <i data-lucide="sparkles" class="w-5 h-5 text-gold"></i>
+            <h3 class="display text-3xl mt-8">Maxsus oqshom</h3>
+            <p class="text-xs text-muted leading-6 mt-3">Muhim kun uchun iliq va mazali manzil.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOOKING CTA -->
+    <section class="section-pad bg-ink">
+      <div class="max-w-6xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="relative overflow-hidden rounded-[32px] border border-gold/20 bg-[radial-gradient(circle_at_80%_20%,rgba(201,164,92,.18),transparent_30%),linear-gradient(135deg,#191611,#0f0e0c)] p-8 sm:p-12 lg:p-16 reveal">
+          <div class="absolute -right-24 -bottom-28 w-72 h-72 rounded-full border border-gold/15"></div>
+          <div class="absolute -right-8 -bottom-12 w-44 h-44 rounded-full border border-gold/10"></div>
+          <div class="relative max-w-3xl">
+            <div class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Stolingizni oldindan band qiling</div>
+            <h2 class="display text-5xl sm:text-6xl lg:text-7xl mt-4 leading-[.9]">Yaxshi oqshom <span class="italic gold-text">oldindan boshlanadi.</span></h2>
+            <p class="text-sm sm:text-base text-white/60 leading-7 mt-6 max-w-2xl">
+              Ismingiz, telefon raqamingiz va tashrif tafsilotlarini qoldiring. Administrator so‘rovingizni qabul qilib,
+              bandlovni tasdiqlash uchun siz bilan bog‘lanadi.
+            </p>
+            <button data-booking-open class="btn-gold mt-8 rounded-full px-7 py-4 text-xs font-extrabold tracking-[.12em] uppercase inline-flex items-center gap-2">
+              Stol band qilish <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section-pad bg-surface border-t border-white/5">
+      <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-24">
+          <div class="reveal">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="w-10 h-px bg-gold"></span>
+              <span class="text-[11px] tracking-[.25em] uppercase text-gold font-bold">Aloqa</span>
+            </div>
+            <h2 class="display text-6xl">Keling. <span class="italic gold-text">Joyingiz tayyor.</span></h2>
+            <p class="text-sm text-muted leading-7 mt-6 max-w-xl">Tashrifingizni oldindan rejalashtiring yoki savollaringiz bo‘lsa, biz bilan bog‘laning.</p>
+
+            <div class="mt-10 space-y-6">
+              <a href="tel:+998770006666" class="flex items-start gap-4 group">
+                <div class="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center group-hover:border-gold/50 transition">
+                  <i data-lucide="phone" class="w-4 h-4 text-gold"></i>
+                </div>
+                <div>
+                  <div class="text-[10px] uppercase tracking-[.18em] text-muted">Telefon</div>
+                  <div class="mt-1 text-lg group-hover:text-gold transition">+998 77 000 66 66</div>
+                </div>
+              </a>
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-gold"></i>
+                </div>
+                <div>
+                  <div class="text-[10px] uppercase tracking-[.18em] text-muted">Manzil</div>
+                  <div class="mt-1 text-lg">Abdulla Qodiriy ko‘chasi 25, Toshkent</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center">
+                  <i data-lucide="clock-3" class="w-4 h-4 text-gold"></i>
+                </div>
+                <div>
+                  <div class="text-[10px] uppercase tracking-[.18em] text-muted">Ish vaqti</div>
+                  <div class="mt-1 text-lg">Har kuni · 00:00 gacha</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-[28px] overflow-hidden border border-white/10 min-h-[440px] reveal">
+            <iframe
+              title="Khanate Restaurant xaritasi"
+              src="https://www.google.com/maps?q=Abdulla%20Qodiriy%20ko%27chasi%2025%2C%20Tashkent&output=embed"
+              class="w-full h-full min-h-[440px] border-0 grayscale opacity-80"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-ink border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10 py-12">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        <div>
+          <div class="tracking-[.28em] text-sm font-extrabold">KHANATE</div>
+          <div class="text-[9px] tracking-[.38em] text-muted mt-1">RESTAURANT</div>
+          <p class="text-xs text-muted mt-4 max-w-sm">Milliy ta’m. Samimiy muhit. Unutilmas oqshom.</p>
+        </div>
+        <div class="flex flex-wrap gap-5 text-xs text-white/55">
+          <a href="#about" class="hover:text-gold transition">Biz haqimizda</a>
+          <a href="#menu" class="hover:text-gold transition">Taomnoma</a>
+          <a href="#gallery" class="hover:text-gold transition">Galereya</a>
+          <a href="#reviews" class="hover:text-gold transition">Sharhlar</a>
+          <a href="#contact" class="hover:text-gold transition">Aloqa</a>
+        </div>
+      </div>
+      <div class="gold-line my-8 opacity-30"></div>
+      <div class="flex flex-col sm:flex-row justify-between gap-3 text-[10px] tracking-wide text-muted">
+        <span>© 2026 Khanate Restaurant. Barcha huquqlar himoyalangan.</span>
+        <span>Toshkent, O‘zbekiston</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- BOOKING MODAL -->
+  <div id="bookingModal" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 modal-backdrop">
+    <div class="w-full max-w-2xl max-h-[92vh] overflow-auto rounded-[28px] bg-surface border border-gold/20 shadow-luxury">
+      <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur border-b border-white/8 px-6 sm:px-8 py-5 flex items-center justify-between">
+        <div>
+          <div class="text-[10px] uppercase tracking-[.2em] text-gold font-bold">Khanate Restaurant</div>
+          <h3 class="display text-3xl mt-1">Stol band qilish</h3>
+        </div>
+        <button id="bookingClose" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-gold/50 transition" aria-label="Yopish">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="bookingForm" class="p-6 sm:p-8 space-y-5">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-xs text-white/60">Ism *</span>
+            <input name="name" required minlength="2" class="input mt-2" placeholder="Ismingiz">
+          </label>
+          <label class="block">
+            <span class="text-xs text-white/60">Telefon *</span>
+            <input name="phone" required class="input mt-2" placeholder="+998 90 123 45 67" inputmode="tel">
+          </label>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-4">
+          <label class="block">
+            <span class="text-xs text-white/60">Sana *</span>
+            <input name="date" id="bookingDate" type="date" required class="input mt-2">
+          </label>
+          <label class="block">
+            <span class="text-xs text-white/60">Vaqt *</span>
+            <input name="time" type="time" required class="input mt-2">
+          </label>
+          <label class="block">
+            <span class="text-xs text-white/60">Mehmonlar *</span>
+            <select name="guests" required class="input mt-2">
+              <option value="">Tanlang</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7</option><option>8</option>
+              <option>9</option><option>10</option><option>11</option><option>12+</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="text-xs text-white/60">Izoh</span>
+          <textarea name="note" rows="4" class="input mt-2 resize-none" placeholder="Maxsus istak, bayram, bolalar o‘rindig‘i va hokazo..."></textarea>
+        </label>
+
+        <div class="rounded-2xl border border-white/8 bg-black/15 p-4 text-xs text-muted leading-6">
+          So‘rov yuborilgach, administrator siz bilan telefon orqali bog‘lanib, bandlovni yakuniy tasdiqlaydi.
+        </div>
+
+        <button type="submit" class="btn-gold w-full rounded-full py-4 font-extrabold text-xs tracking-[.12em] uppercase">
+          Bandlov so‘rovini yuborish
+        </button>
+        <div id="bookingStatus" class="hidden text-center text-sm rounded-xl p-4"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- GALLERY MODAL -->
+  <div id="galleryModal" class="fixed inset-0 z-[90] hidden items-center justify-center p-4 modal-backdrop">
+    <button id="galleryClose" class="absolute top-5 right-5 z-10 w-11 h-11 rounded-full bg-black/50 border border-white/15 flex items-center justify-center" aria-label="Galereyani yopish">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="max-w-6xl w-full">
+      <img id="galleryModalImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl">
+      <div id="galleryCaption" class="text-center text-sm text-white/60 mt-4"></div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Menu data — prices are intentionally omitted because real prices were not provided.
+    const menuItems = [
+      {
+        category:'asosiy',
+        name:'Karsildoq karp',
+        desc:'Qarsildoq qobiq bilan tayyorlangan, ta’mi to‘yingan karp baliq.',
+        image:'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82'
+      },
+      {
+        category:'kabob',
+        name:'Milliy kabob',
+        desc:'O‘zbek dasturxonining klassik tanlovi — issiq va xushbo‘y.',
+        image:'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=82'
+      },
+      {
+        category:'salat',
+        name:'Barra salatlar',
+        desc:'Yangi mahsulotlar bilan tayyorlangan yengil va rang-barang salatlar.',
+        image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=82'
+      },
+      {
+        category:'kabob',
+        name:'Khanate kabob assorti',
+        desc:'Bir dasturxonda bir nechta sevimli kabob ta’mlari.',
+        image:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=900&q=82'
+      },
+      {
+        category:'asosiy',
+        name:'Khanate asosiy taomi',
+        desc:'To‘yimli, issiq va dasturxon markaziga mos asosiy tanlov.',
+        image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=82'
+      },
+      {
+        category:'salat',
+        name:'Yangi ko‘katlar salati',
+        desc:'Yengil garnir va yangi ko‘katlarning sodda uyg‘unligi.',
+        image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=82'
+      }
+    ];
+
+    const categoryLabels = {
+      kabob:'Kaboblar',
+      asosiy:'Asosiy taomlar',
+      salat:'Salatlar'
+    };
+
+    function renderMenu(filter='all') {
+      const grid = document.getElementById('menuGrid');
+      const items = filter === 'all' ? menuItems : menuItems.filter(item => item.category === filter);
+
+      grid.innerHTML = items.map(item => `
+        <article class="menu-card rounded-[22px] overflow-hidden reveal visible">
+          <div class="h-56 overflow-hidden">
+            <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition duration-700 hover:scale-105" loading="lazy">
+          </div>
+          <div class="p-6">
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-[9px] tracking-[.18em] uppercase text-gold font-bold">${categoryLabels[item.category]}</span>
+              <span class="text-[9px] uppercase tracking-[.15em] text-muted">Khanate</span>
+            </div>
+            <h3 class="display text-3xl mt-3">${item.name}</h3>
+            <p class="text-xs text-muted leading-6 mt-2">${item.desc}</p>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    renderMenu();
+
+    document.querySelectorAll('.menu-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.menu-filter').forEach(b => {
+          b.classList.remove('active','bg-gold','text-ink','border-gold');
+          b.classList.add('border-white/10','text-white/60');
+        });
+        btn.classList.add('active','bg-gold','text-ink','border-gold');
+        btn.classList.remove('border-white/10','text-white/60');
+        renderMenu(btn.dataset.filter);
+      });
+    });
+
+    // Navbar
+    const navbar = document.getElementById('navbar');
+    function updateNav() {
+      navbar.classList.toggle('nav-scrolled', window.scrollY > 30);
+    }
+    updateNav();
+    window.addEventListener('scroll', updateNav, {passive:true});
+
+    // Mobile menu
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      mobileMenuBtn.innerHTML = mobileMenu.classList.contains('hidden')
+        ? '<i data-lucide="menu" class="w-5 h-5"></i>'
+        : '<i data-lucide="x" class="w-5 h-5"></i>';
+      lucide.createIcons();
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {threshold:.12});
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Booking modal
+    const bookingModal = document.getElementById('bookingModal');
+    const bookingForm = document.getElementById('bookingForm');
+    const bookingStatus = document.getElementById('bookingStatus');
+    const bookingDate = document.getElementById('bookingDate');
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    bookingDate.min = `${yyyy}-${mm}-${dd}`;
+
+    function openBooking() {
+      bookingModal.classList.remove('hidden');
+      bookingModal.classList.add('flex');
+      document.body.style.overflow='hidden';
+      setTimeout(() => bookingForm.querySelector('input[name="name"]').focus(), 100);
+    }
+    function closeBooking() {
+      bookingModal.classList.add('hidden');
+      bookingModal.classList.remove('flex');
+      document.body.style.overflow='';
+    }
+
+    document.querySelectorAll('[data-booking-open]').forEach(btn => btn.addEventListener('click', openBooking));
+    document.getElementById('bookingClose').addEventListener('click', closeBooking);
+    bookingModal.addEventListener('click', e => { if (e.target === bookingModal) closeBooking(); });
+
+    // Demo-safe booking handler.
+    // For production: replace the fetch URL with your backend endpoint, e.g. /api/booking.
+    bookingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      bookingStatus.className = 'text-center text-sm rounded-xl p-4 bg-gold/10 border border-gold/20 text-gold';
+      bookingStatus.textContent = 'So‘rov tayyorlanmoqda...';
+      bookingStatus.classList.remove('hidden');
+
+      const data = Object.fromEntries(new FormData(bookingForm).entries());
+
+      /*
+        PRODUCTION TELEGRAM FLOW:
+        fetch('/api/booking', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(data)
+        })
+        .then(...)
+
+        Telegram bot tokenni HECH QACHON frontendga yozmang.
+      */
+
+      await new Promise(resolve => setTimeout(resolve, 700));
+
+      bookingStatus.textContent = 'So‘rovingiz qabul qilindi! Administrator tez orada siz bilan bog‘lanadi.';
+      bookingForm.reset();
+    });
+
+    // Gallery lightbox
+    const galleryModal = document.getElementById('galleryModal');
+    const galleryImage = document.getElementById('galleryModalImage');
+    const galleryCaption = document.getElementById('galleryCaption');
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      item.addEventListener('click', () => {
+        galleryImage.src = item.dataset.image;
+        galleryImage.alt = item.dataset.caption || 'Khanate Restaurant';
+        galleryCaption.textContent = item.dataset.caption || '';
+        galleryModal.classList.remove('hidden');
+        galleryModal.classList.add('flex');
+        document.body.style.overflow='hidden';
+      });
+    });
+
+    function closeGallery() {
+      galleryModal.classList.add('hidden');
+      galleryModal.classList.remove('flex');
+      document.body.style.overflow='';
+      galleryImage.src='';
+    }
+    document.getElementById('galleryClose').addEventListener('click', closeGallery);
+    galleryModal.addEventListener('click', e => { if (e.target === galleryModal) closeGallery(); });
+
+    // ESC closes modals
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeBooking();
+        closeGallery();
+      }
+    });
+  </script>
+</body>
+</html>
