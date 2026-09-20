@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Milliy Stadioni — O'zbekiston futbolining zamonaviy raqamli sahifasi." />
+  <title>Milliy Stadioni — O‘zbekiston</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            ink: '#07090d',
+            lime: '#c8ff45',
+            ice: '#eaf4ff',
+          },
+          boxShadow: {
+            glow: '0 0 50px rgba(200,255,69,.16)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#07090d;
+      --panel:#0d1118;
+      --panel2:#111722;
+      --line:rgba(255,255,255,.09);
+      --muted:#8e99a9;
+      --white:#f5f7fb;
+      --lime:#c8ff45;
+      --blue:#65a8ff;
+      --cyan:#4df4df;
+    }
+    *{box-sizing:border-box;scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--white);
+      background:
+        radial-gradient(circle at 75% 10%,rgba(70,135,255,.13),transparent 27%),
+        radial-gradient(circle at 15% 30%,rgba(200,255,69,.07),transparent 22%),
+        var(--bg);
+      font-family:"DM Sans",sans-serif;
+      overflow-x:hidden;
+    }
+    h1,h2,h3,h4,.display{font-family:"Space Grotesk",sans-serif}
+    a{text-decoration:none;color:inherit}
+    ::selection{background:var(--lime);color:#071008}
+    .noise:before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:100;
+      opacity:.035;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .grid-bg{
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(to bottom,black 0%,transparent 85%);
+    }
+    .glass{
+      background:rgba(13,17,24,.68);
+      border:1px solid var(--line);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+    }
+    .card{
+      background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.018));
+      border:1px solid var(--line);
+      box-shadow:0 25px 80px rgba(0,0,0,.2);
+    }
+    .hero-img{
+      background:
+        linear-gradient(90deg,rgba(7,9,13,.96) 0%,rgba(7,9,13,.76) 30%,rgba(7,9,13,.08) 72%,rgba(7,9,13,.75) 100%),
+        linear-gradient(0deg,rgba(7,9,13,.88),transparent 45%),
+        url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=2200&q=90") center/cover;
+      transform:scale(1.04);
+    }
+    .stadium-photo{
+      background:
+        linear-gradient(180deg,transparent 35%,rgba(0,0,0,.88)),
+        url("https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1400&q=85") center/cover;
+    }
+    .photo-2{
+      background:
+        linear-gradient(180deg,transparent 25%,rgba(0,0,0,.9)),
+        url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=85") center/cover;
+    }
+    .photo-3{
+      background:
+        linear-gradient(180deg,transparent 25%,rgba(0,0,0,.9)),
+        url("https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=1200&q=85") center/cover;
+    }
+    .photo-4{
+      background:
+        linear-gradient(180deg,transparent 25%,rgba(0,0,0,.9)),
+        url("https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1200&q=85") center/cover;
+    }
+    .lime-btn{
+      background:var(--lime);color:#071008;
+      transition:.25s ease;
+    }
+    .lime-btn:hover{transform:translateY(-2px);box-shadow:0 15px 45px rgba(200,255,69,.2)}
+    .outline-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.035)}
+    .outline-btn:hover{background:rgba(255,255,255,.075)}
+    .marquee{white-space:nowrap}
+    .marquee-track{display:flex;width:max-content;animation:marquee 22s linear infinite}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+    .pulse-dot{animation:pulse 1.8s infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,255,69,.3)}50%{box-shadow:0 0 0 9px rgba(200,255,69,0)}}
+    .float{animation:float 5s ease-in-out infinite}
+    @keyframes float{50%{transform:translateY(-10px)}}
+    .reveal{opacity:0;transform:translateY(30px)}
+    .counter{font-variant-numeric:tabular-nums}
+    .line-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .nav-link{position:relative;color:#aab3c0;transition:.2s}
+    .nav-link:hover,.nav-link.active{color:#fff}
+    .nav-link:after{content:"";position:absolute;left:0;bottom:-9px;width:0;height:2px;background:var(--lime);transition:.25s}
+    .nav-link:hover:after,.nav-link.active:after{width:100%}
+    .rating-stars{letter-spacing:2px;color:var(--lime)}
+    .modal{opacity:0;pointer-events:none;transition:.25s}
+    .modal.open{opacity:1;pointer-events:auto}
+    .mobile-menu{max-height:0;overflow:hidden;transition:max-height .35s ease}
+    .mobile-menu.open{max-height:450px}
+    @media(max-width:900px){
+      .hero-img{background-position:62% center}
+    }
+    @media(max-width:640px){
+      .hero-img{background-position:68% center}
+      .grid-bg{background-size:28px 28px}
+    }
+  </style>
+</head>
+
+<body class="noise">
+  <!-- HEADER -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-3 sm:px-5 lg:px-8 pt-3">
+    <nav class="glass max-w-7xl mx-auto rounded-2xl px-4 sm:px-6 py-3">
+      <div class="flex items-center justify-between gap-4">
+        <a href="#home" class="flex items-center gap-3 shrink-0">
+          <div class="w-10 h-10 rounded-xl bg-lime flex items-center justify-center">
+            <i data-lucide="landmark" class="w-5 h-5 text-black"></i>
+          </div>
+          <div>
+            <div class="font-bold tracking-tight leading-none">MILLIY</div>
+            <div class="text-[10px] text-slate-400 tracking-[.28em] mt-1">STADIONI</div>
+          </div>
+        </a>
+
+        <div class="hidden lg:flex items-center gap-7 text-sm">
+          <a class="nav-link active" href="#home">Bosh sahifa</a>
+          <a class="nav-link" href="#about">Stadion</a>
+          <a class="nav-link" href="#gallery">Galereya</a>
+          <a class="nav-link" href="#reviews">Sharhlar</a>
+          <a class="nav-link" href="#location">Manzil</a>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-2">
+          <a href="tel:+998123456789" class="outline-btn rounded-xl px-4 py-2.5 text-sm flex items-center gap-2">
+            <i data-lucide="phone" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Bog‘lanish</span>
+          </a>
+          <a href="#location" class="lime-btn rounded-xl px-4 py-2.5 text-sm font-bold flex items-center gap-2">
+            <i data-lucide="navigation" class="w-4 h-4"></i>
+            Yo‘l
+          </a>
+        </div>
+
+        <button id="menuBtn" class="lg:hidden w-10 h-10 rounded-xl outline-btn flex items-center justify-center">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="mobileMenu" class="mobile-menu lg:hidden">
+        <div class="pt-4 pb-2 grid gap-2 text-sm">
+          <a class="px-3 py-3 rounded-xl hover:bg-white/5" href="#home">Bosh sahifa</a>
+          <a class="px-3 py-3 rounded-xl hover:bg-white/5" href="#about">Stadion</a>
+          <a class="px-3 py-3 rounded-xl hover:bg-white/5" href="#gallery">Galereya</a>
+          <a class="px-3 py-3 rounded-xl hover:bg-white/5" href="#reviews">Sharhlar</a>
+          <a class="px-3 py-3 rounded-xl hover:bg-white/5" href="#location">Manzil</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main id="home">
+    <section class="relative min-h-[760px] md:min-h-[850px] flex items-end overflow-hidden">
+      <div class="absolute inset-0 hero-img" id="heroImg"></div>
+      <div class="absolute inset-0 grid-bg"></div>
+
+      <div class="relative z-10 w-full max-w-7xl mx-auto px-5 lg:px-8 pb-20 md:pb-28 pt-40">
+        <div class="max-w-4xl">
+          <div class="hero-tag inline-flex items-center gap-2 rounded-full glass px-3 py-2 text-xs text-slate-300 mb-6">
+            <span class="w-2 h-2 rounded-full bg-lime pulse-dot"></span>
+            Toshkent · O‘zbekiston futboli
+          </div>
+
+          <h1 class="hero-title display text-[clamp(3.6rem,9vw,8.5rem)] font-semibold tracking-[-.065em] leading-[.86] max-w-5xl">
+            MILLIY<br><span class="text-lime">STADIONI.</span>
+          </h1>
+
+          <p class="hero-copy mt-7 max-w-xl text-base sm:text-lg leading-7 text-slate-300">
+            O‘zbekiston futbolining yirik maydonlaridan biri. Zamonaviy muxlis tajribasi,
+            katta futbol muhiti va stadion tarixini bitta raqamli sahifada kashf eting.
+          </p>
+
+          <div class="hero-actions flex flex-wrap gap-3 mt-8">
+            <a href="#about" class="lime-btn rounded-2xl px-5 py-3.5 font-bold flex items-center gap-2">
+              Stadion haqida
+              <i data-lucide="arrow-down-right" class="w-5 h-5"></i>
+            </a>
+            <a href="#gallery" class="outline-btn rounded-2xl px-5 py-3.5 font-semibold flex items-center gap-2">
+              <i data-lucide="images" class="w-5 h-5"></i>
+              Rasmlarni ko‘rish
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-5xl">
+          <div class="glass rounded-2xl p-4">
+            <div class="text-2xl sm:text-3xl font-bold counter" data-target="4.6" data-decimals="1">0</div>
+            <div class="text-xs text-slate-400 mt-1">Google reytingi</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-2xl sm:text-3xl font-bold counter" data-target="1267">0</div>
+            <div class="text-xs text-slate-400 mt-1">Sharhlar</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-2xl sm:text-3xl font-bold">Toshkent</div>
+            <div class="text-xs text-slate-400 mt-1">Shahar</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-2xl sm:text-3xl font-bold">76H7+P9</div>
+            <div class="text-xs text-slate-400 mt-1">Plus Code</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="border-y border-white/10 bg-white/[.025] overflow-hidden">
+      <div class="marquee-track py-4">
+        <div class="marquee flex items-center gap-8 pr-8 text-xs uppercase tracking-[.32em] text-slate-400">
+          <span>Football</span><b class="text-lime">✦</b><span>Tashkent</span><b class="text-lime">✦</b><span>Uzbekistan</span><b class="text-lime">✦</b><span>Stadium</span><b class="text-lime">✦</b><span>National Arena</span><b class="text-lime">✦</b>
+        </div>
+        <div class="marquee flex items-center gap-8 pr-8 text-xs uppercase tracking-[.32em] text-slate-400">
+          <span>Football</span><b class="text-lime">✦</b><span>Tashkent</span><b class="text-lime">✦</b><span>Uzbekistan</span><b class="text-lime">✦</b><span>Stadium</span><b class="text-lime">✦</b><span>National Arena</span><b class="text-lime">✦</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about" class="relative py-24 md:py-32">
+      <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="grid lg:grid-cols-[.8fr_1.2fr] gap-12 lg:gap-20 items-start">
+          <div class="reveal">
+            <div class="text-xs uppercase tracking-[.3em] text-lime font-bold">01 / Stadion</div>
+            <h2 class="display text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-.045em] mt-5">
+              Futbol uchun<br><span class="text-slate-500">katta sahna.</span>
+            </h2>
+          </div>
+
+          <div class="reveal">
+            <p class="text-xl md:text-2xl leading-9 text-slate-200 max-w-3xl">
+              Milliy Stadioni — Toshkentdagi futbol muxlislari uchun muhim sport maskanlaridan biri.
+              Ushbu sahifa Google xarita ma’lumotlari, tashrif buyuruvchilar sharhlari va vizual galereya
+              asosida premium landing-page ko‘rinishida ishlab chiqilgan.
+            </p>
+
+            <div class="grid sm:grid-cols-3 gap-3 mt-10">
+              <div class="card rounded-2xl p-5">
+                <i data-lucide="trophy" class="w-6 h-6 text-lime"></i>
+                <h3 class="font-bold mt-5">Futbol</h3>
+                <p class="text-sm text-slate-400 mt-2">Katta futbol atmosferasi va muxlislar uchun keng maydon.</p>
+              </div>
+              <div class="card rounded-2xl p-5">
+                <i data-lucide="users" class="w-6 h-6 text-lime"></i>
+                <h3 class="font-bold mt-5">Muxlislar</h3>
+                <p class="text-sm text-slate-400 mt-2">Stadion tajribasining markazida tomoshabinlar turadi.</p>
+              </div>
+              <div class="card rounded-2xl p-5">
+                <i data-lucide="map-pin" class="w-6 h-6 text-lime"></i>
+                <h3 class="font-bold mt-5">Toshkent</h3>
+                <p class="text-sm text-slate-400 mt-2">O‘zbekiston poytaxtidagi sport infratuzilmasi.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-16 grid lg:grid-cols-[1.35fr_.65fr] gap-4">
+          <div class="stadium-photo min-h-[440px] rounded-3xl relative overflow-hidden reveal">
+            <div class="absolute inset-x-0 bottom-0 p-6 md:p-8">
+              <div class="flex items-end justify-between gap-4">
+                <div>
+                  <div class="text-xs uppercase tracking-[.25em] text-lime">Arena</div>
+                  <h3 class="text-3xl md:text-4xl font-bold mt-2">Matchday ruhi</h3>
+                </div>
+                <div class="hidden sm:flex w-12 h-12 rounded-full glass items-center justify-center">
+                  <i data-lucide="expand" class="w-5 h-5"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-rows-2 gap-4">
+            <div class="card rounded-3xl p-6 md:p-8 reveal">
+              <div class="flex justify-between">
+                <span class="text-xs uppercase tracking-[.25em] text-slate-500">Rating</span>
+                <i data-lucide="star" class="w-5 h-5 text-lime fill-current"></i>
+              </div>
+              <div class="text-6xl font-bold tracking-tight mt-8">4.6</div>
+              <div class="rating-stars text-sm mt-2">★★★★★</div>
+              <p class="text-sm text-slate-400 mt-4">1 267 ta Google sharhi asosida.</p>
+            </div>
+            <div class="card rounded-3xl p-6 md:p-8 reveal">
+              <div class="flex justify-between">
+                <span class="text-xs uppercase tracking-[.25em] text-slate-500">Manzil</span>
+                <i data-lucide="navigation" class="w-5 h-5 text-lime"></i>
+              </div>
+              <div class="text-2xl font-bold mt-8">76H7+P9</div>
+              <p class="text-sm text-slate-400 mt-2">O‘zbekiston futboli, Toshkent.</p>
+              <a href="#location" class="inline-flex items-center gap-2 text-sm text-lime mt-5">Xaritani ochish <i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="py-24 md:py-28 border-y border-white/10 bg-white/[.018]">
+      <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 reveal">
+          <div>
+            <div class="text-xs uppercase tracking-[.3em] text-lime font-bold">02 / Experience</div>
+            <h2 class="display text-4xl md:text-6xl font-semibold tracking-[-.05em] mt-4">Stadion tajribasi.</h2>
+          </div>
+          <p class="text-slate-400 max-w-md leading-7">Tashrif buyuruvchilar qayd etgan muhim taassurotlarni ixcham va zamonaviy ko‘rinishda jamladik.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+          <article class="card rounded-3xl p-6 reveal">
+            <div class="w-12 h-12 rounded-2xl bg-lime/10 flex items-center justify-center">
+              <i data-lucide="maximize" class="text-lime"></i>
+            </div>
+            <h3 class="text-xl font-bold mt-7">Keng arena</h3>
+            <p class="text-sm text-slate-400 leading-6 mt-3">Katta tomoshabin oqimi uchun mo‘ljallangan stadion muhiti.</p>
+          </article>
+          <article class="card rounded-3xl p-6 reveal">
+            <div class="w-12 h-12 rounded-2xl bg-lime/10 flex items-center justify-center">
+              <i data-lucide="scan-line" class="text-lime"></i>
+            </div>
+            <h3 class="text-xl font-bold mt-7">Maydon</h3>
+            <p class="text-sm text-slate-400 leading-6 mt-3">Sharhlarda futbol maydonining sifati ijobiy qayd etilgan.</p>
+          </article>
+          <article class="card rounded-3xl p-6 reveal">
+            <div class="w-12 h-12 rounded-2xl bg-lime/10 flex items-center justify-center">
+              <i data-lucide="trees" class="text-lime"></i>
+            </div>
+            <h3 class="text-xl font-bold mt-7">Mashg‘ulot</h3>
+            <p class="text-sm text-slate-400 leading-6 mt-3">Mehmon sharhlarida mashg‘ulot maydonlari haqida ham fikrlar bor.</p>
+          </article>
+          <article class="card rounded-3xl p-6 reveal">
+            <div class="w-12 h-12 rounded-2xl bg-lime/10 flex items-center justify-center">
+              <i data-lucide="camera" class="text-lime"></i>
+            </div>
+            <h3 class="text-xl font-bold mt-7">Foto & video</h3>
+            <p class="text-sm text-slate-400 leading-6 mt-3">Mehmonlar yuklagan kontent bilan stadion atmosferasini ko‘ring.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="py-24 md:py-32">
+      <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 reveal">
+          <div>
+            <div class="text-xs uppercase tracking-[.3em] text-lime font-bold">03 / Gallery</div>
+            <h2 class="display text-4xl md:text-6xl font-semibold tracking-[-.05em] mt-4">Atmosferani ko‘ring.</h2>
+          </div>
+          <button id="galleryBtn" class="outline-btn rounded-xl px-4 py-3 text-sm flex items-center gap-2 w-fit">
+            <i data-lucide="play" class="w-4 h-4"></i> Slayd-shou
+          </button>
+        </div>
+
+        <div class="grid md:grid-cols-12 gap-4 mt-12">
+          <div class="md:col-span-7 min-h-[520px] stadium-photo rounded-3xl overflow-hidden relative reveal group cursor-pointer gallery-item" data-index="0">
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-7">
+              <div class="text-xs text-lime uppercase tracking-[.25em]">01 / Matchday</div>
+              <div class="text-2xl font-bold mt-2">Stadion atmosferasi</div>
+            </div>
+          </div>
+          <div class="md:col-span-5 grid gap-4">
+            <div class="photo-2 min-h-[250px] rounded-3xl overflow-hidden relative reveal group cursor-pointer gallery-item" data-index="1">
+              <div class="absolute bottom-0 p-6"><div class="text-xs text-lime uppercase tracking-[.25em]">02</div><div class="font-bold mt-1">Futbol energiyasi</div></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="photo-3 min-h-[250px] rounded-3xl overflow-hidden relative reveal group cursor-pointer gallery-item" data-index="2">
+                <div class="absolute bottom-0 p-5"><div class="text-xs text-lime">03</div><div class="font-bold mt-1">Muxlislar</div></div>
+              </div>
+              <div class="photo-4 min-h-[250px] rounded-3xl overflow-hidden relative reveal group cursor-pointer gallery-item" data-index="3">
+                <div class="absolute bottom-0 p-5"><div class="text-xs text-lime">04</div><div class="font-bold mt-1">Maydon</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section id="reviews" class="py-24 md:py-32 bg-white/[.018] border-y border-white/10">
+      <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="grid lg:grid-cols-[.75fr_1.25fr] gap-12 items-start">
+          <div class="reveal">
+            <div class="text-xs uppercase tracking-[.3em] text-lime font-bold">04 / Reviews</div>
+            <h2 class="display text-4xl md:text-6xl font-semibold tracking-[-.05em] mt-4">Mehmonlar<br><span class="text-slate-500">nima deydi?</span></h2>
+            <div class="mt-10 flex items-end gap-5">
+              <div class="text-7xl font-bold">4.6</div>
+              <div class="pb-2">
+                <div class="rating-stars">★★★★★</div>
+                <div class="text-sm text-slate-500 mt-1">1 267 ta sharh</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <article class="card rounded-3xl p-6 md:p-8 reveal">
+              <div class="flex items-start justify-between gap-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-full bg-gradient-to-br from-lime to-blue-400 text-black flex items-center justify-center font-bold">LE</div>
+                  <div>
+                    <div class="font-bold">Mahalliy ekspert</div>
+                    <div class="text-xs text-slate-500">98 ta sharh · 1 414 ta rasm</div>
+                  </div>
+                </div>
+                <div class="rating-stars text-xs">★★★★★</div>
+              </div>
+              <p class="mt-6 text-slate-200 leading-7">“This stadion is biggest stadion in Tashkent and this stadion national stadion Uzbekistan …”</p>
+              <div class="mt-5 text-xs text-slate-500">3 oy oldin</div>
+            </article>
+
+            <article class="card rounded-3xl p-6 md:p-8 reveal">
+              <div class="flex items-start justify-between gap-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center font-bold">OG</div>
+                  <div>
+                    <div class="font-bold">Oliver Gomersall</div>
+                    <div class="text-xs text-slate-500">Mahalliy ekspert · 362 ta sharh</div>
+                  </div>
+                </div>
+                <div class="rating-stars text-xs">★★★★★</div>
+              </div>
+              <p class="mt-6 text-slate-200 leading-7">“Absolutely barbaric scenes to one buy a ticket which is one ticket box for the whole stadium…”</p>
+              <div class="mt-5 text-xs text-slate-500">4 oy oldin</div>
+            </article>
+
+            <article class="card rounded-3xl p-6 md:p-8 reveal">
+              <div class="flex items-start justify-between gap-5">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center font-bold">DO</div>
+                  <div>
+                    <div class="font-bold">D. O.</div>
+                    <div class="text-xs text-slate-500">Mahalliy ekspert · 67 ta sharh</div>
+                  </div>
+                </div>
+                <div class="rating-stars text-xs">★★★★★</div>
+              </div>
+              <p class="mt-6 text-slate-200 leading-7">“The stadium is huge and fits many fans. Field is good quality. Stadium still lacks some modern features like good food options.”</p>
+              <div class="mt-5 text-xs text-slate-500">Tahrirlangan · 2 yil oldin</div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFO / CTA -->
+    <section id="location" class="py-24 md:py-32">
+      <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="grid lg:grid-cols-[1fr_.8fr] gap-4">
+          <div class="card rounded-3xl p-7 md:p-10 reveal">
+            <div class="flex items-center justify-between">
+              <div class="text-xs uppercase tracking-[.3em] text-lime font-bold">05 / Information</div>
+              <div class="w-10 h-10 rounded-xl bg-lime/10 flex items-center justify-center"><i data-lucide="info" class="text-lime w-5"></i></div>
+            </div>
+            <h2 class="display text-4xl md:text-5xl font-semibold tracking-[-.045em] mt-6">Tashrif uchun<br>asosiy ma’lumotlar.</h2>
+
+            <div class="mt-10 divide-y divide-white/10">
+              <div class="py-5 flex justify-between gap-5"><span class="text-slate-500">Nomi</span><strong>Milliy Stadioni</strong></div>
+              <div class="py-5 flex justify-between gap-5"><span class="text-slate-500">Kategoriya</span><strong>Stadion</strong></div>
+              <div class="py-5 flex justify-between gap-5"><span class="text-slate-500">Telefon</span><a class="text-lime" href="tel:+998123456789">+998 12 345 67 89</a></div>
+              <div class="py-5 flex justify-between gap-5"><span class="text-slate-500">Manzil</span><strong class="text-right">76H7+P9, O‘zbekiston</strong></div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mt-8">
+              <a href="tel:+998123456789" class="lime-btn rounded-xl px-5 py-3 font-bold inline-flex items-center gap-2">
+                <i data-lucide="phone" class="w-4 h-4"></i> Qo‘ng‘iroq
+              </a>
+              <a href="https://www.google.com/maps/search/?api=1&query=76H7%2BP9%2C%20Uzbekistan" target="_blank" rel="noopener" class="outline-btn rounded-xl px-5 py-3 font-bold inline-flex items-center gap-2">
+                <i data-lucide="map" class="w-4 h-4"></i> Google Maps
+              </a>
+            </div>
+          </div>
+
+          <div class="rounded-3xl overflow-hidden min-h-[520px] relative card reveal">
+            <iframe
+              title="Milliy Stadioni xaritasi"
+              class="absolute inset-0 w-full h-full grayscale opacity-75"
+              loading="lazy"
+              src="https://www.google.com/maps?q=76H7%2BP9%2C%20Uzbekistan&output=embed">
+            </iframe>
+            <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#07090d]/75 via-transparent to-[#07090d]/10"></div>
+            <div class="absolute left-5 right-5 bottom-5 glass rounded-2xl p-5">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-lime flex items-center justify-center">
+                  <i data-lucide="map-pin" class="w-5 h-5 text-black"></i>
+                </div>
+                <div>
+                  <div class="font-bold">Milliy Stadioni</div>
+                  <div class="text-xs text-slate-400">76H7+P9 · O‘zbekiston</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative overflow-hidden rounded-3xl mt-4 bg-lime text-black p-8 md:p-12 reveal">
+          <div class="absolute -right-20 -top-32 w-80 h-80 rounded-full border-[50px] border-black/5"></div>
+          <div class="absolute right-20 -bottom-44 w-96 h-96 rounded-full border-[70px] border-black/5"></div>
+          <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div>
+              <div class="text-xs uppercase tracking-[.3em] font-bold opacity-60">MILLIY STADIONI</div>
+              <h2 class="display text-4xl md:text-6xl font-bold tracking-[-.05em] mt-4">Keyingi matchday<br>shu yerda boshlanadi.</h2>
+            </div>
+            <a href="https://www.google.com/maps/search/?api=1&query=76H7%2BP9%2C%20Uzbekistan" target="_blank" rel="noopener" class="bg-black text-white rounded-2xl px-6 py-4 font-bold flex items-center justify-center gap-2 shrink-0">
+              Yo‘lni ko‘rsatish <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8 py-10">
+      <div class="flex flex-col md:flex-row justify-between gap-8">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-lime flex items-center justify-center">
+              <i data-lucide="landmark" class="w-4 h-4 text-black"></i>
+            </div>
+            <div class="font-bold">MILLIY STADIONI</div>
+          </div>
+          <p class="text-sm text-slate-500 max-w-sm mt-4 leading-6">Toshkentdagi stadion haqida premium, responsive va animatsiyali landing-page konsepti.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-x-12 gap-y-3 text-sm text-slate-400">
+          <a href="#about" class="hover:text-white">Stadion</a>
+          <a href="#gallery" class="hover:text-white">Galereya</a>
+          <a href="#reviews" class="hover:text-white">Sharhlar</a>
+          <a href="#location" class="hover:text-white">Manzil</a>
+        </div>
+      </div>
+      <div class="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between gap-3 text-xs text-slate-600">
+        <span>© 2026 Milliy Stadioni concept.</span>
+        <span>Designed as a single-file HTML experience.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- IMAGE MODAL -->
+  <div id="imageModal" class="modal fixed inset-0 z-[80] bg-black/85 backdrop-blur-xl p-4 sm:p-8 flex items-center justify-center">
+    <button id="closeModal" class="absolute top-5 right-5 w-11 h-11 rounded-full glass flex items-center justify-center">
+      <i data-lucide="x" class="w-5"></i>
+    </button>
+    <div class="w-full max-w-5xl">
+      <div id="modalImage" class="rounded-3xl min-h-[55vh] sm:min-h-[70vh] bg-cover bg-center"></div>
+      <div class="flex items-center justify-between mt-4">
+        <div>
+          <div id="modalCounter" class="text-xs text-lime uppercase tracking-[.25em]"></div>
+          <div id="modalTitle" class="text-xl font-bold mt-1"></div>
+        </div>
+        <div class="flex gap-2">
+          <button id="prevBtn" class="w-11 h-11 rounded-xl outline-btn flex items-center justify-center"><i data-lucide="chevron-left"></i></button>
+          <button id="nextBtn" class="w-11 h-11 rounded-xl outline-btn flex items-center justify-center"><i data-lucide="chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+      const icon = menuBtn.querySelector('[data-lucide]');
+      icon.setAttribute('data-lucide', mobileMenu.classList.contains('open') ? 'x' : 'menu');
+      lucide.createIcons();
+    });
+    document.querySelectorAll('#mobileMenu a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+    // Hero animation
+    const heroTl = gsap.timeline({defaults:{ease:'power3.out'}});
+    heroTl
+      .from('.hero-tag',{y:30,opacity:0,duration:.8})
+      .from('.hero-title',{y:55,opacity:0,duration:1.05},'-=.45')
+      .from('.hero-copy',{y:25,opacity:0,duration:.7},'-=.55')
+      .from('.hero-actions',{y:20,opacity:0,duration:.65},'-=.4')
+      .from('.hero-actions ~ *',{y:15,opacity:0,duration:.6},'-=.3');
+
+    // Parallax
+    gsap.to('#heroImg',{
+      scale:1.12,
+      yPercent:8,
+      ease:'none',
+      scrollTrigger:{trigger:'#home',start:'top top',end:'bottom top',scrub:true}
+    });
+
+    // Reveal sections
+    gsap.utils.toArray('.reveal').forEach(el=>{
+      gsap.fromTo(el,
+        {opacity:0,y:35},
+        {opacity:1,y:0,duration:.85,ease:'power3.out',
+         scrollTrigger:{trigger:el,start:'top 86%',once:true}}
+      );
+    });
+
+    // Counters
+    document.querySelectorAll('.counter').forEach(el=>{
+      const target=parseFloat(el.dataset.target);
+      const decimals=parseInt(el.dataset.decimals||0);
+      ScrollTrigger.create({
+        trigger:el,start:'top 90%',once:true,
+        onEnter:()=>{
+          const obj={v:0};
+          gsap.to(obj,{v:target,duration:1.7,ease:'power2.out',
+            onUpdate:()=>el.textContent=obj.v.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g,' ')
+          });
+        }
+      });
+    });
+
+    // Active nav
+    const sections=[...document.querySelectorAll('main section[id]')];
+    const navLinks=[...document.querySelectorAll('.nav-link')];
+    sections.forEach(section=>{
+      ScrollTrigger.create({
+        trigger:section,start:'top 45%',end:'bottom 45%',
+        onEnter:()=>setActive(section.id),onEnterBack:()=>setActive(section.id)
+      });
+    });
+    function setActive(id){
+      navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+    }
+
+    // Gallery modal
+    const galleryData=[
+      {title:'Stadion atmosferasi',counter:'01 / Matchday',className:'stadium-photo'},
+      {title:'Futbol energiyasi',counter:'02 / Energy',className:'photo-2'},
+      {title:'Muxlislar',counter:'03 / Fans',className:'photo-3'},
+      {title:'Maydon',counter:'04 / Pitch',className:'photo-4'}
+    ];
+    let current=0;
+    const modal=document.getElementById('imageModal');
+    const modalImage=document.getElementById('modalImage');
+    const modalTitle=document.getElementById('modalTitle');
+    const modalCounter=document.getElementById('modalCounter');
+
+    function openGallery(index){
+      current=(index+galleryData.length)%galleryData.length;
+      const d=galleryData[current];
+      modalImage.className='rounded-3xl min-h-[55vh] sm:min-h-[70vh] bg-cover bg-center '+d.className;
+      modalTitle.textContent=d.title;
+      modalCounter.textContent=d.counter;
+      modal.classList.add('open');
+      document.body.style.overflow='hidden';
+    }
+    function closeGallery(){
+      modal.classList.remove('open');
+      document.body.style.overflow='';
+    }
+    document.querySelectorAll('.gallery-item').forEach(item=>{
+      item.addEventListener('click',()=>openGallery(+item.dataset.index));
+    });
+    document.getElementById('galleryBtn').addEventListener('click',()=>openGallery(0));
+    document.getElementById('closeModal').addEventListener('click',closeGallery);
+    document.getElementById('prevBtn').addEventListener('click',()=>openGallery(current-1));
+    document.getElementById('nextBtn').addEventListener('click',()=>openGallery(current+1));
+    modal.addEventListener('click',e=>{if(e.target===modal)closeGallery()});
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape')closeGallery();
+      if(e.key==='ArrowLeft')openGallery(current-1);
+      if(e.key==='ArrowRight')openGallery(current+1);
+    });
+
+    // Small hover tilt effect on cards
+    document.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('mousemove',e=>{
+        if(window.innerWidth<900)return;
+        const r=card.getBoundingClientRect();
+        const x=(e.clientX-r.left)/r.width-.5;
+        const y=(e.clientY-r.top)/r.height-.5;
+        gsap.to(card,{rotateY:x*3,rotateX:-y*3,duration:.25,transformPerspective:900});
+      });
+      card.addEventListener('mouseleave',()=>gsap.to(card,{rotateY:0,rotateX:0,duration:.4}));
+    });
+  </script>
+</body>
+</html>
