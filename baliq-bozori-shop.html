@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06141a">
+<title>Baliq Bozori – yangi tutilgan baliq onlayn do‘koni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#06141a;--sf:#0c1f27;--sf2:#112a34;--ln:rgba(190,234,242,.12);--ice:#bfeaf2;--txt:#e8f3f5;--mut:#8fa9b1;--co:#ff6a45;--co2:#ff8a6b;
+box-sizing:border-box}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--ink);color:var(--txt);font:400 17px/1.65 "Manrope",system-ui,sans-serif;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
+h1,h2,h3{font-family:"Bricolage Grotesque","Manrope",system-ui,sans-serif;margin:0;line-height:1.02;letter-spacing:-.025em}
+a{color:inherit}button,input,select{font:inherit}:focus-visible{outline:3px solid var(--co);outline-offset:3px;border-radius:8px}
+::selection{background:var(--co);color:#fff}
+.w{max-width:1240px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--co);color:#1a0a05;font:700 16px "Manrope",sans-serif;padding:15px 26px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;transition:transform .25s,box-shadow .25s,background .25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(255,106,69,.28);background:var(--co2)}
+.btn.o{background:rgba(255,255,255,.04);color:var(--txt);border:1px solid rgba(232,243,245,.3);box-shadow:none}.btn.o:hover{border-color:var(--ice);background:rgba(191,234,242,.08)}
+nav{position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top,0px);transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.s{background:rgba(6,20,26,.84);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-color:var(--ln)}
+.nb{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 22px "Bricolage Grotesque",sans-serif}.logo span.m{width:44px;height:44px;border-radius:50%;border:1px solid rgba(191,234,242,.5);display:grid;place-items:center;overflow:hidden}.logo svg{width:34px;height:auto}
+.links{display:flex;gap:30px;font-weight:600;font-size:15px;color:var(--mut)}.links a{text-decoration:none;transition:color .2s}.links a:hover{color:var(--txt)}
+.cartb{position:relative;background:rgba(255,255,255,.05);border:1px solid var(--ln);color:var(--txt);border-radius:999px;padding:11px 20px;cursor:pointer;font-weight:700;display:flex;gap:10px;align-items:center}.cartb i{font-style:normal;background:var(--co);color:#1a0a05;min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:13px}.cartb.bump{animation:pop .4s}@keyframes pop{50%{transform:scale(1.12)}}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;isolation:isolate}
+.hbg{position:absolute;inset:0;z-index:-3;background:radial-gradient(120% 90% at 78% 30%,#0f6b80 0%,#0a3f50 38%,#06141a 78%);background-size:cover;background-position:center}
+.hov{position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(6,20,26,.92),rgba(6,20,26,.55) 55%,rgba(6,20,26,.25)),linear-gradient(0deg,rgba(6,20,26,.95),transparent 38%)}
+.rays{position:absolute;inset:-20% 0 30% 0;z-index:-2;background:repeating-linear-gradient(104deg,transparent 0 90px,rgba(191,234,242,.07) 90px 150px,transparent 150px 260px);transform-origin:70% 0;animation:sway 12s ease-in-out infinite alternate;mask-image:linear-gradient(180deg,#000,transparent 85%);-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%)}
+@keyframes sway{from{transform:rotate(-3deg)}to{transform:rotate(4deg) translateX(40px)}}
+.b{position:absolute;bottom:-30px;border-radius:50%;border:1.5px solid rgba(191,234,242,.4);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.3),transparent 60%);animation:rise linear infinite;z-index:-1}@keyframes rise{to{transform:translate(20px,-110vh)}}
+.hg{display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:20px;padding:130px 0 40px}
+.hero h1{font-size:clamp(46px,7.4vw,98px);font-weight:800}.hero h1 em{font-style:normal;color:var(--ice)}
+.hero .lead{max-width:48ch;color:#c7dadf;font-size:19px;margin:22px 0 30px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.hf{position:relative}.hf .sw{animation:swim 10s ease-in-out infinite alternate;filter:drop-shadow(0 40px 40px rgba(0,0,0,.45))}.hf img{width:100%;max-height:560px;object-fit:cover;border-radius:28px}
+@keyframes swim{from{transform:translate(-5%,6px) rotate(-2deg)}to{transform:translate(5%,-16px) rotate(2deg)}}
+.pt{position:absolute;right:2%;top:4%;background:var(--co);color:#1a0a05;padding:12px 18px 12px 30px;font:800 20px "Bricolage Grotesque",sans-serif;clip-path:polygon(18px 0,100% 0,100% 100%,18px 100%,0 50%);animation:bob 3.4s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px) rotate(3deg)}}
+.tail{transform-box:view-box;transform-origin:188px 50px;animation:wag 1.5s ease-in-out infinite}@keyframes wag{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ln);margin-top:10px}.stats div{padding:22px 0 26px}.stats b{display:block;font:800 clamp(26px,3.4vw,40px) "Bricolage Grotesque",sans-serif;color:var(--ice)}.stats span{color:var(--mut);font-size:14px}
+section{padding:clamp(70px,9vw,120px) 0}
+.eyebrow{color:var(--co);font-weight:700;font-size:15px;margin-bottom:12px}
+h2{font-size:clamp(34px,5vw,60px);font-weight:800}.sub{color:var(--mut);max-width:56ch;margin:14px 0 0}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.cat{position:relative;overflow:hidden;border-radius:26px;border:1px solid var(--ln);background:linear-gradient(150deg,var(--sf2),var(--sf));padding:28px;min-height:250px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;text-align:left;color:inherit;transition:transform .4s,border-color .4s}
+.cat:hover{transform:translateY(-6px);border-color:rgba(191,234,242,.4)}.cat svg{position:absolute;right:-14%;top:10%;width:80%;opacity:.9;transition:transform .8s}.cat:hover svg{transform:translateX(-14px) rotate(-4deg) scale(1.05)}
+.cat h3{font-size:30px;position:relative}.cat p{margin:6px 0 0;color:var(--mut);font-size:15px;position:relative}
+.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:40px 0 26px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;flex:1}.tabs button{background:transparent;border:1px solid var(--ln);color:var(--mut);padding:10px 20px;border-radius:999px;cursor:pointer;font-weight:600;transition:.25s}.tabs button:hover{color:var(--txt);border-color:rgba(191,234,242,.4)}.tabs button[aria-pressed=true]{background:var(--ice);color:var(--ink);border-color:var(--ice)}
+.bar input,.bar select{background:var(--sf);border:1px solid var(--ln);color:var(--txt);border-radius:999px;padding:11px 18px;min-width:0}.bar input{width:200px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
+.card{border:1px solid var(--ln);border-radius:26px;background:linear-gradient(150deg,rgba(255,255,255,.05),rgba(255,255,255,.015));padding:12px 12px 18px;display:flex;flex-direction:column;gap:12px;opacity:0;transform:translateY(26px);transition:opacity .8s,transform .8s,border-color .35s,background .35s}
+.card.in{opacity:1;transform:none}.card:hover{border-color:rgba(191,234,242,.35);background:linear-gradient(150deg,rgba(191,234,242,.08),rgba(255,255,255,.02))}
+.vis{position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(90% 90% at 50% 35%,#1b5a6b,#0a2a35 70%);aspect-ratio:4/3;display:grid;place-items:center;cursor:zoom-in;border:0;padding:0;width:100%}
+.vis svg{width:92%;height:auto;transition:transform .9s cubic-bezier(.2,.7,.2,1);filter:drop-shadow(0 18px 18px rgba(0,0,0,.4))}.vis img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1)}.card:hover .vis svg,.card:hover .vis img{transform:scale(1.07)}
+.bd{position:absolute;left:12px;top:12px;background:rgba(6,20,26,.75);backdrop-filter:blur(8px);border:1px solid var(--ln);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;color:var(--ice)}
+.cb{padding:0 8px;display:flex;flex-direction:column;gap:10px;flex:1}.cb h3{font-size:25px}.cb .d{color:var(--mut);font-size:15px;line-height:1.5;flex:1}
+.pr{display:flex;align-items:baseline;gap:6px;font:800 24px "Bricolage Grotesque",sans-serif}.pr small{font:500 13px "Manrope",sans-serif;color:var(--mut)}
+.ctl{display:flex;gap:8px}.ctl select{flex:1;background:var(--sf);color:var(--txt);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;min-width:0}
+.st{display:inline-flex;align-items:center;border:1px solid var(--ln);border-radius:999px;background:var(--sf)}.st button{width:38px;height:40px;border:0;background:none;color:var(--txt);font-size:20px;cursor:pointer;border-radius:50%}.st output{min-width:50px;text-align:center;font-weight:700;font-size:15px}
+.card .btn{width:100%;padding:13px}
+.empty{grid-column:1/-1;text-align:center;color:var(--mut);padding:50px 0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:46px;border-top:1px solid var(--ln)}.steps div{padding:30px 28px 10px 0}.steps b{font:800 54px "Bricolage Grotesque",sans-serif;color:var(--co);display:block;line-height:1}.steps h3{font-size:24px;margin:14px 0 8px}.steps p{margin:0;color:var(--mut);font-size:15px}
+.band{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}.band div{background:var(--sf);border:1px solid var(--ln);border-radius:24px;padding:28px}.band svg{width:36px;height:36px;color:var(--ice);margin-bottom:14px}.band h3{font-size:22px;margin-bottom:6px}.band p{margin:0;color:var(--mut);font-size:15px}
+details{border-bottom:1px solid var(--ln);padding:22px 0}summary{cursor:pointer;font:700 20px "Bricolage Grotesque",sans-serif;list-style:none;display:flex;justify-content:space-between;gap:16px}summary::after{content:"+";color:var(--co);font-size:26px;line-height:1;transition:transform .3s}details[open] summary::after{transform:rotate(45deg)}details p{margin:12px 0 0;color:var(--mut);max-width:70ch}
+.fq{display:grid;grid-template-columns:1fr 1.5fr;gap:50px}
+.fin{margin:0 24px;border-radius:36px;padding:clamp(40px,7vw,90px);text-align:center;background:radial-gradient(100% 140% at 50% 0%,#14788d,#0a3f50 55%,#07202a);border:1px solid var(--ln)}.fin p{color:#c7dadf;margin:16px auto 28px;max-width:46ch}.fin .cta{justify-content:center}
+footer{padding:60px 0 100px;color:var(--mut);font-size:15px}footer .w{display:flex;flex-wrap:wrap;gap:20px 50px;justify-content:space-between}footer a{color:var(--txt);font-weight:600;text-decoration:none}
+.ov{position:fixed;inset:0;background:rgba(2,9,12,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:80}.ov.o{opacity:1;pointer-events:auto}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--sf);border-left:1px solid var(--ln);z-index:81;transform:translateX(104%);transition:transform .4s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px))}.dr.o{transform:none}
+.dh{display:flex;justify-content:space-between;align-items:center}.dh h3{font-size:28px}.x{border:1px solid var(--ln);background:transparent;color:var(--txt);width:42px;height:42px;border-radius:50%;font-size:18px;cursor:pointer}
+.items{flex:1;overflow:auto;margin:16px 0}.it{display:flex;gap:12px;align-items:center;border:1px solid var(--ln);border-radius:18px;padding:8px;margin-bottom:10px;background:var(--sf2)}.it .th{width:78px;height:58px;border-radius:12px;overflow:hidden;background:#0a2a35;display:grid;place-items:center}.th svg{width:100%}.th img{width:100%;height:100%;object-fit:cover}.it .m{flex:1;min-width:0}.it b{display:block}.it small{color:var(--mut)}
+.it .st button{width:32px;height:34px;font-size:17px}.it .st output{min-width:42px;font-size:14px}
+.em{color:var(--mut);text-align:center;padding:50px 10px}
+.sum{border-top:1px solid var(--ln);padding-top:12px;font-size:15px;color:var(--mut)}.sum div{display:flex;justify-content:space-between}.sum .tt{font:800 24px "Bricolage Grotesque",sans-serif;color:var(--txt);margin-top:6px}
+.dr input{width:100%;margin-top:8px;padding:13px 16px;border-radius:14px;border:1px solid var(--ln);background:var(--ink);color:var(--txt)}.dr input:focus{border-color:var(--ice);outline:0}.dr .btn{width:100%;margin-top:10px}.err{color:var(--co);font-size:14px;min-height:22px;margin-top:6px}
+.md{position:fixed;inset:0;z-index:82;display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}.md.o{opacity:1;pointer-events:auto}
+.mb{background:var(--sf);border:1px solid var(--ln);border-radius:30px;max-width:900px;width:100%;max-height:92vh;overflow:auto;display:grid;grid-template-columns:1.1fr 1fr;transform:translateY(24px) scale(.98);transition:transform .4s}.md.o .mb{transform:none}
+.mb .vis{border-radius:0;aspect-ratio:auto;min-height:340px;cursor:default;height:100%}.mi{padding:34px 30px;display:flex;flex-direction:column;gap:14px}.mi h3{font-size:38px}.mi ul{margin:0;padding:0;list-style:none;display:flex;gap:8px;flex-wrap:wrap}.mi li{border:1px solid var(--ln);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--ice)}
+.ts{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ice);color:var(--ink);font-weight:700;padding:12px 22px;border-radius:999px;opacity:0;transition:.35s;z-index:90;pointer-events:none}.ts.o{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.links{display:none}.hg{grid-template-columns:1fr;padding-top:110px}.hf{order:-1;max-width:520px}.cats,.steps,.band,.fq{grid-template-columns:1fr}.steps div{padding-right:0}.stats{grid-template-columns:repeat(2,1fr)}.mb{grid-template-columns:1fr}.mb .vis{min-height:240px}.bar input{width:100%}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.card{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<nav id="nv"><div class="w nb">
+  <a class="logo" href="#top"><span class="m" id="lg"></span>Baliq Bozori</a>
+  <div class="links"><a href="#katalog">Baliqlar</a><a href="#qanday">Qanday ishlaydi</a><a href="#savol">Savollar</a></div>
+  <button class="cartb" id="cb" type="button" aria-label="Savatni ochish">Savat <i id="cn">0</i></button>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="hbg" id="hbg"></div><div class="rays"></div><div class="hov"></div>
+  <div class="w">
+    <div class="hg">
+      <div>
+        <div class="eyebrow">Yangi tutilgan baliq, uyingizgacha</div>
+        <h1>Dasturxoningizga <em>eng yangi</em> baliq.</h1>
+        <p class="lead">Har kuni ertalab ovlangan baliq tozalab, muzda yetkazib beramiz. Tanlang, savatga soling, Telegramda buyurtma bering.</p>
+        <div class="cta"><a class="btn" href="#katalog">Baliq tanlash</a><a class="btn o" href="#qanday">Qanday ishlaydi</a></div>
+      </div>
+      <div class="hf" id="hf"></div>
+    </div>
+    <div class="stats"><div><b>8 tur</b><span>bugungi tanlov</span></div><div><b>Muzda</b><span>ovdan eshikkacha</span></div><div><b>2 soat</b><span>shahar ichida yetkazish</span></div><div><b>200 000+</b><span>soʻmdan tekin yetkazish</span></div></div>
+  </div>
+</header>
+
+<main>
+  <section><div class="w">
+    <div class="eyebrow">Kategoriyalar</div><h2>Suv turiga qarab tanlang</h2>
+    <p class="sub">Daryo, premium va dengiz baliqlari bitta joyda.</p>
+    <div class="cats" id="cats"></div>
+  </div></section>
+
+  <section id="katalog" style="padding-top:20px"><div class="w">
+    <div class="eyebrow">Bugungi ovlov</div><h2>Baliq katalogi</h2>
+    <div class="bar"><div class="tabs" id="tabs"></div><input id="q" type="search" placeholder="Baliq qidirish" aria-label="Qidirish"><select id="so" aria-label="Saralash"><option value="d">Odatiy tartib</option><option value="a">Arzonidan</option><option value="e">Qimmatidan</option></select></div>
+    <div class="grid" id="grid"></div>
+  </div></section>
+
+  <section id="qanday"><div class="w">
+    <div class="eyebrow">Jarayon</div><h2>Buyurtma uch qadamda</h2>
+    <div class="steps">
+      <div><b>1</b><h3>Baliqni tanlang</h3><p>Turini, necha kilo va qanday tozalanishini belgilang.</p></div>
+      <div><b>2</b><h3>Telegramda yuboring</h3><p>Savatdan ism, telefon va manzil yozing, tayyor xabar ochiladi.</p></div>
+      <div><b>3</b><h3>Muzda yetkazamiz</h3><p>Tozalab, sovuq holda eshigingizgacha olib boramiz.</p></div>
+    </div>
+    <div class="band">
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2v20M5 6l14 12M19 6L5 18M3 12h18"/></svg><h3>Sovuq zanjir</h3><p>Baliq ovdan yetkazilgunga qadar muzda saqlanadi.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="7" width="12" height="9" rx="1"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><h3>Tez yetkazish</h3><p>Shahar ichida 2 soat ichida, 200 000 soʻmdan tekin.</p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20L20 4M7 7l3 3M13 13l3 3M4 4l6 6"/></svg><h3>Tozalab beramiz</h3><p>Butun, tozalangan yoki fileʼ qilib, oʻzingiz tanlang.</p></div>
+    </div>
+  </div></section>
+
+  <section id="savol"><div class="w fq">
+    <div><div class="eyebrow">Savollar</div><h2>Koʻp soraladigan savollar</h2></div>
+    <div>
+      <details><summary>Buyurtma qanday beriladi?</summary><p>Baliqni savatga soling, ism, telefon va manzilni yozing. Tayyor buyurtma Telegramda ochiladi, siz “Yuborish”ni bosasiz.</p></details>
+      <details><summary>Yetkazish qancha turadi?</summary><p>200 000 soʻmdan yuqori buyurtmada tekin, undan kamida 15 000 soʻm.</p></details>
+      <details><summary>Qanday toʻlayman?</summary><p>Naqd, Click yoki Payme orqali, baliq yetib kelganda.</p></details>
+      <details><summary>Sifatidan qoniqmasam-chi?</summary><p>Biz bilan bogʻlaning, masalani darhol hal qilamiz.</p></details>
+    </div>
+  </div></section>
+
+  <div class="fin"><h2>Bugun nima pishiramiz?</h2><p>Eng yangi baliqni hoziroq buyurtma qiling, kechqurun dasturxoningizda boʻladi.</p><div class="cta"><a class="btn" href="#katalog">Katalogga oʻtish</a><a class="btn o" data-tg href="#" target="_blank" rel="noopener">Telegramda yozish</a></div></div>
+</main>
+
+<footer><div class="w"><div><b style="color:var(--txt)">Baliq Bozori</b><br>Manzil: shahar, koʻcha (oʻzgartiriladi)<br>Har kuni 7:00–21:00</div><div>Telefon: <a href="tel:+998900000000">+998 90 000 00 00</a><br>Telegram: <a data-tg href="#" target="_blank" rel="noopener">@your_username</a></div></div></footer>
+
+<div class="ov" id="ov"></div>
+<aside class="dr" id="dr" aria-label="Savat">
+  <div class="dh"><h3>Savatingiz</h3><button class="x" id="cx" type="button" aria-label="Yopish">✕</button></div>
+  <div class="items" id="it"></div><div class="sum" id="sm"></div>
+  <input id="nm" placeholder="Ismingiz" autocomplete="name"><input id="ph" placeholder="Telefon raqamingiz" inputmode="tel" autocomplete="tel"><input id="ad" placeholder="Yetkazish manzili" autocomplete="street-address">
+  <div class="err" id="er" aria-live="polite"></div>
+  <a class="btn" id="sd" href="#" target="_blank" rel="noopener">Telegramda buyurtma berish</a>
+</aside>
+<div class="md" id="md" role="dialog" aria-modal="true"><div class="mb" id="mb"></div></div>
+<div class="ts" id="ts" role="status"></div>
+
+<script>
+/* ===== SOZLAMALAR: shu yerni oʻzgartiring ===== */
+const TG="your_username";            // Telegram username (@siz)
+const FREE=200000, SHIP=15000;       // tekin yetkazish chegarasi va narxi
+/* Haqiqiy rasm havolalarini shu yerga qoʻying. Boʻsh qolsa, chizilgan baliq chiqadi. */
+const PHOTO={hero:"",sazan:"",amur:"",tolst:"",laqqa:"",tilap:"",forel:"",losos:"",skum:""};
+/* ============================================== */
+const P={
+ sazan:{n:"Sazan",c:"daryo",p:38000,b:"Mashhur",d:"Goʻshti toʻq va moyli. Dimlash va qovurish uchun ajoyib.",tg:["Qovurish","Dimlama","Sho‘rva"],h:34,top:"#5e4d22",mid:"#b08d3c",bot:"#ecdcaa",t:26,sc:1},
+ amur:{n:"Amur",c:"daryo",p:42000,b:"Daryo",d:"Choʻzinchoq, goʻshti mayin. Pechda pishirishga mos.",tg:["Pechda","Grill","Qovurish"],h:26,top:"#37442a",mid:"#7f8f4f",bot:"#dcdcae",t:24,sc:1},
+ tolst:{n:"Tolstolobik",c:"daryo",p:36000,b:"Hamyonbop",d:"Katta va kam suyakli. Sho‘rva va kabob uchun.",tg:["Sho‘rva","Kabob","Dimlama"],h:31,top:"#66737a",mid:"#a9b5b9",bot:"#f0f3f3",t:26,sc:1},
+ laqqa:{n:"Laqqa",c:"daryo",p:48000,b:"Suyagi kam",d:"Goʻshti oq va yumshoq, suyagi kam. Qovurishga bebaho.",tg:["Qovurish","Qozonda"],h:21,top:"#242722",mid:"#575a40",bot:"#bcb88f",t:12,wh:1,rt:1},
+ tilap:{n:"Tilapiya",c:"daryo",p:55000,b:"Yengil",d:"Toza oq goʻsht, mayin taʼm. Bolalar ham yaxshi koʻradi.",tg:["Pechda","Qovurish"],h:36,top:"#57535e",mid:"#c9777b",bot:"#f4d7cc",t:24,sc:1,bars:1},
+ forel:{n:"Forel",c:"premium",p:120000,b:"Premium",d:"Togʻ suvida oʻsgan. Pushti goʻsht, mayin va foydali.",tg:["Grill","Pechda","Tuzlash"],h:26,top:"#43563a",mid:"#9aa57a",bot:"#f2e8d0",t:26,sp:1,pink:1},
+ losos:{n:"Losos",c:"premium",p:210000,b:"Premium",d:"Omega-3 ga boy. Tuzlash va grillga eng yaxshi tanlov.",tg:["Tuzlash","Grill","Sushi"],h:27,top:"#34505d",mid:"#9cb3be",bot:"#f6f8f8",t:27,sp:1,sc:1},
+ skum:{n:"Skumbriya",c:"dengiz",p:62000,b:"Dengiz",d:"Dengiz baligʻi, yogʻli va xushboʻy. Dudlash va grill uchun.",tg:["Dudlash","Grill"],h:23,top:"#173f50",mid:"#5aa0b0",bot:"#e9f2f4",t:26,wave:1}
+};
+const OPT=["Butun","Tozalangan","Fileʼ"];
+const fmt=n=>n.toLocaleString("ru-RU").replace(/\u00a0/g," ");
+const $=id=>document.getElementById(id);
+function fish(k,u){const q=P[k],h=q.h,o=[];u=k+(u||"");
+ const body=`M12 50C28 ${50-h*.8} 70 ${50-h} 116 ${50-h*.9}S176 ${50-h*.3} 192 47L192 53C176 ${50+h*.3} 156 ${50+h*.85} 116 ${50+h*.9}S28 ${50+h*.8} 12 50Z`;
+ const tail=q.rt?"M186 46Q238 34 238 50Q238 66 186 54Z":`M186 50L236 ${50-q.t} Q219 50 236 ${50+q.t}Z`;
+ const dor=q.wh?`M78 ${50-h+2}Q125 ${50-h-9} 178 ${50-h*.3}Z`:`M90 ${50-h+3}Q112 ${50-h-20} 142 ${50-h*.45}Z`;
+ const fin=`fill="${q.mid}" stroke="${q.top}" stroke-width=".8" fill-opacity=".85"`;
+ if(q.sp)for(let i=0;i<22;i++)o.push(`<circle cx="${40+(i*37%140)}" cy="${50-h*.75+(i*53%(h*.95))}" r="${1.2+(i%3)*.45}" fill="#1b1b1b" opacity=".6"/>`);
+ if(q.bars)for(let i=0;i<5;i++)o.push(`<rect x="${62+i*20}" y="${50-h}" width="9" height="${h*2}" fill="#2a2030" opacity=".13"/>`);
+ if(q.wave)for(let i=0;i<7;i++)o.push(`<path d="M${50+i*17} ${50-h}q6 ${h*.35} 0 ${h*.7}t0 ${h*.5}" stroke="#0c2631" stroke-width="2.2" fill="none" opacity=".55"/>`);
+ if(q.pink)o.push(`<path d="M30 50Q110 47 190 50" stroke="#e08a8a" stroke-width="7" fill="none" opacity=".55"/>`);
+ return `<svg viewBox="-4 0 244 100" role="img" aria-label="${q.n}"><defs><linearGradient id="g${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${q.top}"/><stop offset=".48" stop-color="${q.mid}"/><stop offset="1" stop-color="${q.bot}"/></linearGradient><linearGradient id="s${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient><pattern id="p${u}" width="9" height="7" patternUnits="userSpaceOnUse"><path d="M0 7Q4.5 0 9 7" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width=".8"/></pattern><clipPath id="c${u}"><path d="${body}"/></clipPath></defs>
+ <g class="tail"><path d="${tail}" fill="${q.mid}" stroke="${q.top}" stroke-width=".8"/></g><path d="${dor}" ${fin}/><path d="M118 ${50+h*.9-2}Q134 ${50+h+13} 160 ${50+h*.5}Z" ${fin}/>
+ <path d="${body}" fill="url(#g${u})"/><g clip-path="url(#c${u})">${q.sc?`<rect width="240" height="100" fill="url(#p${u})"/>`:""}${o.join("")}<rect width="240" height="100" fill="url(#s${u})"/></g>
+ <path d="M52 ${50-h*.65}Q44 50 52 ${50+h*.65}" stroke="#000" stroke-opacity=".3" fill="none" stroke-width="1.6"/><path d="M62 ${50+h*.35}Q80 ${50+h*.95} 100 ${50+h*.7}Q82 ${50+h*.45} 62 ${50+h*.35}Z" ${fin}/>
+ ${q.wh?'<path d="M14 54Q6 62 2 74M14 47Q6 38 2 28M16 56Q12 68 8 80" stroke="'+q.top+'" stroke-width="1.6" fill="none" stroke-linecap="round"/>':""}
+ <path d="M13 52Q22 56 31 54" stroke="#000" stroke-opacity=".35" fill="none"/><circle cx="30" cy="${50-h*.15}" r="4.8" fill="#e9dfb8"/><circle cx="30" cy="${50-h*.15}" r="3.6" fill="#0d0d0d"/><circle cx="31.4" cy="${50-h*.15-1.3}" r="1.1" fill="#fff"/></svg>`}
+function vis(k,u){const s=PHOTO[k];return s?`<img src="${s}" alt="${P[k].n}" loading="lazy" onerror="this.outerHTML=window.__f('${k}','${u||""}')">`:fish(k,u)}
+window.__f=fish;
+/* hero */
+if(PHOTO.hero){$("hbg").style.backgroundImage=`url('${PHOTO.hero}')`;$("hf").innerHTML=""}
+else{$("hf").innerHTML=`<span class="pt">Forel 120 000 soʻm</span><div class="sw">${fish("forel","h")}</div>`}
+$("lg").innerHTML=fish("losos","l").replace('viewBox="-4 0 244 100"','viewBox="6 22 112 56"');
+document.querySelectorAll("[data-tg]").forEach(a=>a.href="https://t.me/"+TG);
+const hero=$("top");for(let i=0;i<16;i++){const b=document.createElement("span");b.className="b";const s=6+Math.random()*16;b.style.cssText=`left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${7+Math.random()*9}s;animation-delay:${-Math.random()*12}s`;hero.appendChild(b)}
+addEventListener("scroll",()=>$("nv").classList.toggle("s",scrollY>40),{passive:true});
+/* katalog */
+let cat="hammasi",cart={};try{cart=JSON.parse(localStorage.getItem("bb2")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("bb2",JSON.stringify(cart))}catch(e){}};
+const CAT=[["hammasi","Hammasi"],["daryo","Daryo"],["premium","Premium"],["dengiz","Dengiz"]];
+const CD={daryo:["Daryo baliqlari","Sazan, amur, laqqa va boshqalar","sazan"],premium:["Premium baliqlar","Forel va losos","losos"],dengiz:["Dengiz baliqlari","Yogʻli va xushboʻy skumbriya","skum"]};
+$("cats").innerHTML=Object.entries(CD).map(([k,v])=>`<button class="cat" type="button" data-c="${k}">${fish(v[2],"k")}<h3>${v[0]}</h3><p>${v[1]}</p></button>`).join("");
+$("cats").querySelectorAll(".cat").forEach(b=>b.onclick=()=>{cat=b.dataset.c;tabs();grid();$("katalog").scrollIntoView()});
+function tabs(){$("tabs").innerHTML=CAT.map(([k,l])=>`<button type="button" data-k="${k}" aria-pressed="${k===cat}">${l}</button>`).join("");$("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{cat=b.dataset.k;tabs();grid()})}
+const io="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.08}):null;
+function add(k,opt,kg){const key=k+"|"+opt;cart[key]=(cart[key]||0)+kg;save();draw();toast(P[k].n+" savatga qoʻshildi");const c=$("cb");c.classList.remove("bump");void c.offsetWidth;c.classList.add("bump")}
+function grid(){const g=$("grid"),s=$("q").value.trim().toLowerCase(),so=$("so").value;
+ let L=Object.entries(P).filter(([k,q])=>(cat==="hammasi"||q.c===cat)&&q.n.toLowerCase().includes(s));
+ if(so==="a")L.sort((a,b)=>a[1].p-b[1].p);if(so==="e")L.sort((a,b)=>b[1].p-a[1].p);
+ g.innerHTML=L.length?"":'<div class="empty">Hech narsa topilmadi. Boshqa nom yozib koʻring.</div>';
+ L.forEach(([k,q])=>{let kg=1;const c=document.createElement("article");c.className="card";
+  c.innerHTML=`<button class="vis" type="button" aria-label="${q.n} haqida batafsil">${vis(k,"c")}<span class="bd">${q.b}</span></button><div class="cb"><h3>${q.n}</h3><div class="d">${q.d}</div><div class="pr">${fmt(q.p)} <small>soʻm / kg</small></div><div class="ctl"><select aria-label="Tozalash usuli">${OPT.map(o=>`<option>${o}</option>`).join("")}</select><div class="st"><button type="button" aria-label="Kamaytirish">−</button><output>1 kg</output><button type="button" aria-label="Koʻpaytirish">+</button></div></div></div><button class="btn" type="button">Savatga qoʻshish</button>`;
+  const [m,p]=c.querySelectorAll(".st button"),o=c.querySelector("output"),sl=c.querySelector("select");
+  m.onclick=()=>{if(kg>1)o.textContent=--kg+" kg"};p.onclick=()=>{if(kg<30)o.textContent=++kg+" kg"};
+  c.querySelector(".card>.btn").onclick=()=>add(k,sl.value,kg);c.querySelector(".vis").onclick=()=>modal(k);
+  g.appendChild(c);io?io.observe(c):c.classList.add("in")})}
+$("q").oninput=grid;$("so").onchange=grid;
+/* modal */
+function modal(k){const q=P[k];let kg=1;$("mb").innerHTML=`<div class="vis">${vis(k,"m")}</div><div class="mi"><button class="x" type="button" id="mx" aria-label="Yopish" style="align-self:flex-end">✕</button><h3>${q.n}</h3><div class="pr">${fmt(q.p)} <small>soʻm / kg</small></div><p style="margin:0;color:var(--mut)">${q.d}</p><ul>${q.tg.map(t=>`<li>${t}</li>`).join("")}</ul><div class="ctl"><select aria-label="Tozalash usuli">${OPT.map(o=>`<option>${o}</option>`).join("")}</select><div class="st"><button type="button" aria-label="Kamaytirish">−</button><output>1 kg</output><button type="button" aria-label="Koʻpaytirish">+</button></div></div><button class="btn" type="button" id="ma">Savatga qoʻshish</button></div>`;
+ const [m,p]=$("mb").querySelectorAll(".st button"),o=$("mb").querySelector("output");m.onclick=()=>{if(kg>1)o.textContent=--kg+" kg"};p.onclick=()=>{if(kg<30)o.textContent=++kg+" kg"};
+ $("ma").onclick=()=>{add(k,$("mb").querySelector("select").value,kg);mclose()};$("mx").onclick=mclose;$("md").classList.add("o");$("ov").classList.add("o")}
+const mclose=()=>{$("md").classList.remove("o");if(!$("dr").classList.contains("o"))$("ov").classList.remove("o")};
+$("md").onclick=e=>{if(e.target===$("md"))mclose()};
+/* savat */
+function totals(){let s=0;for(const key in cart)s+=cart[key]*P[key.split("|")[0]].p;const sh=!s?0:s>=FREE?0:SHIP;return{s,sh,t:s+sh}}
+function draw(){const ks=Object.keys(cart).filter(x=>cart[x]>0&&P[x.split("|")[0]]);$("cn").textContent=ks.length;
+ $("it").innerHTML=ks.length?ks.map(x=>{const[k,o]=x.split("|");return `<div class="it"><div class="th">${vis(k,"i")}</div><div class="m"><b>${P[k].n}</b><small>${o} · ${fmt(P[k].p)} soʻm/kg</small></div><div class="st"><button data-x="${x}" data-d="-1" aria-label="Kamaytirish">−</button><output>${cart[x]} kg</output><button data-x="${x}" data-d="1" aria-label="Koʻpaytirish">+</button></div></div>`}).join(""):'<div class="em">Savat hozircha boʻsh. Katalogdan baliq tanlang.</div>';
+ $("it").querySelectorAll(".st button").forEach(b=>b.onclick=()=>{const x=b.dataset.x;cart[x]+=+b.dataset.d;if(cart[x]<=0)delete cart[x];save();draw()});
+ const T=totals();$("sm").innerHTML=`<div><span>Baliq</span><span>${fmt(T.s)} soʻm</span></div><div><span>Yetkazish</span><span>${T.s?T.sh?fmt(T.sh)+" soʻm":"tekin":"–"}</span></div><div class="tt"><span>Jami</span><span>${fmt(T.t)} soʻm</span></div>`}
+function msg(){const T=totals(),L=Object.keys(cart).filter(x=>P[x.split("|")[0]]).map(x=>{const[k,o]=x.split("|");return `• ${P[k].n} (${o}): ${cart[x]} kg × ${fmt(P[k].p)} = ${fmt(cart[x]*P[k].p)} soʻm`});
+ return `Assalomu alaykum! Buyurtma:\n${L.join("\n")}\nYetkazish: ${T.sh?fmt(T.sh)+" soʻm":"tekin"}\nJami: ${fmt(T.t)} soʻm\n\nIsm: ${$("nm").value}\nTelefon: ${$("ph").value}\nManzil: ${$("ad").value}`}
+$("sd").onclick=e=>{const er=$("er");if(!Object.keys(cart).length){e.preventDefault();er.textContent="Avval savatga baliq qoʻshing.";return}
+ if(!$("nm").value.trim()||!$("ph").value.trim()||!$("ad").value.trim()){e.preventDefault();er.textContent="Ism, telefon va manzilni toʻldiring.";return}
+ er.textContent="";e.currentTarget.href="https://t.me/"+TG+"?text="+encodeURIComponent(msg())};
+const dopen=v=>{$("dr").classList.toggle("o",v);$("ov").classList.toggle("o",v)};
+$("cb").onclick=()=>dopen(true);$("cx").onclick=()=>dopen(false);$("ov").onclick=()=>{dopen(false);mclose()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){dopen(false);mclose()}});
+let tt;function toast(s){const t=$("ts");t.textContent=s;t.classList.add("o");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("o"),1700)}
+tabs();grid();draw();
+</script>
+</body>
+</html>
