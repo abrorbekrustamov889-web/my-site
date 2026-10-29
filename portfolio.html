@@ -1,0 +1,879 @@
+<!--
+  ╔═══════════════════════════════════════════════════════╗
+  ║  BENTO PORTFOLIO — Premium Template v1.0             ║
+  ║                                                      ║
+  ║  CUSTOMIZATION GUIDE:                                ║
+  ║  1. Search "YOUR NAME" to update the name everywhere  ║
+  ║  2. Update typing phrases in the JS section           ║
+  ║  3. Swap tech icons by changing icon names            ║
+  ║  4. Replace project images, titles & descriptions     ║
+  ║  5. Edit timeline entries with your experience        ║
+  ║  6. Update social links (href="#") with your URLs     ║
+  ║  7. Connect contact form to your backend endpoint     ║
+  ╚═══════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alex Chen — Digital Creator & Developer</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconify Icons -->
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <!-- Google Fonts: Space Grotesk + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            space: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ========== BASE ========== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    ::selection { background: rgba(168,85,247,0.3); color: #fff; }
+
+    /* ========== GRADIENT TEXT ========== */
+    .gradient-text {
+      background: linear-gradient(135deg, #a855f7 0%, #3b82f6 50%, #22c55e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ========== GLASS CARD ========== */
+    .glass-card {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 1.5rem;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-card:hover {
+      border-color: rgba(168,85,247,0.2);
+      box-shadow: 0 0 40px rgba(168,85,247,0.08), 0 0 80px rgba(59,130,246,0.04);
+    }
+
+    /* Hero gradient border wrapper */
+    .hero-border {
+      padding: 1px;
+      border-radius: 1.5rem;
+      background: linear-gradient(135deg, rgba(168,85,247,0.35), rgba(59,130,246,0.15), rgba(34,197,94,0.08));
+    }
+
+    /* ========== KEYFRAME ANIMATIONS ========== */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.6); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Float animation for tech icons (staggered) */
+    .float-icon { animation: float 3s ease-in-out infinite; }
+    .float-icon:nth-child(2) { animation-delay: 0.5s; }
+    .float-icon:nth-child(3) { animation-delay: 1s; }
+    .float-icon:nth-child(4) { animation-delay: 1.5s; }
+    .float-icon:nth-child(5) { animation-delay: 0.3s; }
+    .float-icon:nth-child(6) { animation-delay: 0.8s; }
+    .float-icon:nth-child(7) { animation-delay: 1.3s; }
+    .float-icon:nth-child(8) { animation-delay: 1.8s; }
+
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+    /* Typing cursor */
+    .typing-cursor {
+      display: inline-block; width: 3px; height: 1.1em;
+      background: #a855f7; margin-left: 2px;
+      vertical-align: text-bottom; animation: blink 1s step-end infinite;
+    }
+
+    /* ========== SCROLL REVEAL ========== */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+    .reveal.revealed { opacity: 1; transform: translateY(0); }
+
+    /* ========== SOCIAL ICONS ========== */
+    .social-icon {
+      color: #6b7280; transition: all 0.3s ease;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .social-icon:hover {
+      color: #a855f7;
+      filter: drop-shadow(0 0 8px rgba(168,85,247,0.5));
+      transform: translateY(-2px);
+    }
+
+    /* ========== PROJECT CARDS ========== */
+    .project-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 1rem; overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .project-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(168,85,247,0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(168,85,247,0.1);
+    }
+    .project-card:hover .project-img { transform: scale(1.05); }
+    .project-img { transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); }
+
+    /* ========== TIMELINE ========== */
+    .timeline-line {
+      width: 2px;
+      background: linear-gradient(to bottom, #a855f7, #3b82f6, transparent);
+    }
+    .timeline-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #a855f7; box-shadow: 0 0 12px rgba(168,85,247,0.5);
+      flex-shrink: 0;
+    }
+
+    /* ========== FORM ========== */
+    .form-input {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 0.75rem; padding: 0.75rem 1rem;
+      color: #fff; font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem; transition: all 0.3s ease;
+      width: 100%; outline: none;
+    }
+    .form-input:focus {
+      border-color: rgba(168,85,247,0.5);
+      box-shadow: 0 0 20px rgba(168,85,247,0.1);
+      background: rgba(255,255,255,0.05);
+    }
+    .form-input::placeholder { color: #4b5563; }
+
+    /* Send button */
+    .send-btn {
+      background: linear-gradient(135deg, #a855f7, #3b82f6);
+      border: none; border-radius: 0.75rem;
+      padding: 0.75rem 2rem; color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600; font-size: 0.875rem;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(168,85,247,0.3);
+    }
+    .send-btn:active { transform: translateY(0); }
+    .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ========== TIC-TAC-TOE ========== */
+    .ttt-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 4px; max-width: 160px; margin: 0 auto;
+    }
+    .ttt-cell {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.03); border-radius: 8px;
+      cursor: pointer; font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 700;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .ttt-cell:hover:not(.taken) {
+      background: rgba(168,85,247,0.1);
+      border-color: rgba(168,85,247,0.2);
+    }
+    .ttt-cell.x { color: #a855f7; text-shadow: 0 0 10px rgba(168,85,247,0.5); }
+    .ttt-cell.o { color: #3b82f6; text-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .ttt-cell.win {
+      background: rgba(168,85,247,0.15);
+      border-color: rgba(168,85,247,0.4);
+      box-shadow: 0 0 15px rgba(168,85,247,0.2);
+    }
+    .ttt-cell.taken { cursor: default; }
+
+    /* ========== TECH ICON BOX ========== */
+    .tech-icon-box {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.5rem; padding: 0.75rem; border-radius: 0.75rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: all 0.3s ease;
+    }
+    .tech-icon-box:hover {
+      background: rgba(168,85,247,0.08);
+      border-color: rgba(168,85,247,0.2);
+      transform: translateY(-4px);
+    }
+
+    /* Tag pill */
+    .tag-pill {
+      padding: 0.2rem 0.6rem; border-radius: 9999px;
+      font-size: 0.68rem; font-family: 'JetBrains Mono', monospace;
+      background: rgba(168,85,247,0.1); color: #c084fc;
+      border: 1px solid rgba(168,85,247,0.15);
+    }
+
+    /* Outline button */
+    .btn-outline {
+      padding: 0.4rem 0.9rem; border-radius: 0.5rem;
+      font-size: 0.75rem; font-weight: 500;
+      transition: all 0.3s ease; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #d1d5db; background: transparent;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-outline:hover {
+      border-color: rgba(168,85,247,0.4);
+      color: #c084fc; background: rgba(168,85,247,0.08);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      padding: 1rem 1.5rem; border-radius: 0.75rem;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #4ade80; font-size: 0.875rem;
+      backdrop-filter: blur(20px);
+      transform: translateY(100px); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Background atmospheric orbs */
+    .bg-orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(120px); pointer-events: none; z-index: 0;
+    }
+
+    /* Counter numbers */
+    .counter-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem; font-weight: 700; line-height: 1;
+    }
+
+    /* Hero card tilt performance */
+    #hero-card { will-change: transform; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(168,85,247,0.5); }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .counter-number { font-size: 1.5rem; }
+      .ttt-grid { max-width: 140px; }
+      .ttt-cell { font-size: 1rem; }
+    }
+  </style>
+</head>
+
+<body class="relative">
+
+  <!-- ====== BACKGROUND ATMOSPHERIC ORBS ====== -->
+  <div class="bg-orb" style="width:600px;height:600px;top:-200px;left:-200px;background:rgba(168,85,247,0.07);"></div>
+  <div class="bg-orb" style="width:500px;height:500px;bottom:-150px;right:-150px;background:rgba(59,130,246,0.05);"></div>
+  <div class="bg-orb" style="width:400px;height:400px;bottom:30%;left:40%;background:rgba(34,197,94,0.03);"></div>
+
+  <!-- ====== HEADER / NAVIGATION ====== -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[rgba(10,10,10,0.8)] border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <!-- Logo — change "AC" to your initials -->
+      <a href="#" class="font-mono text-sm font-semibold gradient-text">AC.</a>
+
+      <!-- Navigation Links (hidden on mobile) -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#hero" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Home</a>
+        <a href="#projects" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Projects</a>
+        <a href="#experience" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Experience</a>
+        <a href="#contact" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Contact</a>
+      </nav>
+
+      <!-- Social Icons — update href="#" with your actual URLs -->
+      <div class="flex items-center gap-4">
+        <a href="#" class="social-icon" aria-label="GitHub"><iconify-icon icon="simple-icons:github" width="18"></iconify-icon></a>
+        <a href="#" class="social-icon" aria-label="LinkedIn"><iconify-icon icon="simple-icons:linkedin" width="18"></iconify-icon></a>
+        <a href="#" class="social-icon" aria-label="X / Twitter"><iconify-icon icon="simple-icons:x" width="16"></iconify-icon></a>
+        <a href="#" class="social-icon" aria-label="Instagram"><iconify-icon icon="simple-icons:instagram" width="18"></iconify-icon></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== MAIN BENTO GRID ====== -->
+  <main class="relative z-10 max-w-7xl mx-auto px-6 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5" style="grid-auto-rows:auto;">
+
+      <!-- ==================== HERO CARD (2 cols × 2 rows) ==================== -->
+      <div id="hero" class="md:col-span-2 lg:col-span-2 lg:row-span-2 reveal" data-delay="0">
+        <div class="hero-border h-full">
+          <div class="glass-card p-8 lg:p-10 h-full flex flex-col justify-between" id="hero-card">
+
+            <!-- Avatar + Available Badge -->
+            <div class="flex items-start justify-between">
+              <!-- Avatar — replace "AC" with your initials -->
+              <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-full p-[2px] bg-gradient-to-br from-purple-500 via-blue-500 to-green-500 flex-shrink-0">
+                <div class="w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center">
+                  <span class="font-mono text-xl lg:text-2xl font-bold gradient-text">AC</span>
+                </div>
+              </div>
+              <!-- Available for Work Badge -->
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
+                <span class="w-2 h-2 rounded-full bg-green-500 pulse-dot"></span>
+                <span class="text-xs font-medium text-green-400">Available for Work</span>
+              </div>
+            </div>
+
+            <!-- Name + Typing Effect -->
+            <div class="mt-8 lg:mt-10">
+              <!-- Change "Alex Chen" to YOUR NAME -->
+              <h1 class="text-3xl lg:text-4xl font-bold tracking-tight">
+                Hi, I'm <span class="gradient-text">Alex Chen</span>
+              </h1>
+              <div class="mt-3 text-lg lg:text-xl text-gray-400 font-light">
+                <span id="typing-text"></span><span class="typing-cursor"></span>
+              </div>
+            </div>
+
+            <!-- Bio — customize your description -->
+            <p class="mt-6 text-sm text-gray-500 leading-relaxed max-w-md">
+              Crafting pixel-perfect digital experiences at the intersection of design and engineering.
+              Passionate about building products that are both beautiful and performant.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="#contact" class="send-btn text-sm">Get in Touch</a>
+              <a href="#projects" class="btn-outline text-sm flex items-center gap-2 py-2.5 px-5">
+                <iconify-icon icon="lucide:folder-open" width="14"></iconify-icon> View Projects
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TECH STACK CARD (2 cols) ==================== -->
+      <div class="md:col-span-2 lg:col-span-2 reveal" data-delay="100">
+        <div class="glass-card p-6 h-full">
+          <div class="flex items-center gap-2 mb-5">
+            <iconify-icon icon="lucide:layers" width="16" class="text-purple-400"></iconify-icon>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Tech Stack</h3>
+          </div>
+          <!-- Change icons by swapping the icon="..." attribute -->
+          <div class="grid grid-cols-4 gap-3">
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:react" width="28" class="text-[#61DAFB]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">React</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:nextdotjs" width="28" class="text-white"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">Next.js</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:typescript" width="28" class="text-[#3178C6]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">TypeScript</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:nodedotjs" width="28" class="text-[#339933]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">Node.js</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:tailwindcss" width="28" class="text-[#06B6D4]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">Tailwind</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:figma" width="28" class="text-[#F24E1E]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">Figma</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:python" width="28" class="text-[#3776AB]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">Python</span>
+            </div>
+            <div class="tech-icon-box float-icon">
+              <iconify-icon icon="simple-icons:git" width="28" class="text-[#F05032]"></iconify-icon>
+              <span class="text-[10px] text-gray-500 font-mono">Git</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MINI GAME CARD — Tic-Tac-Toe (1 col) ==================== -->
+      <div class="reveal" data-delay="200">
+        <div class="glass-card p-5 h-full flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:gamepad-2" width="14" class="text-blue-400"></iconify-icon>
+              <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Mini Game</h3>
+            </div>
+            <button onclick="resetTTT()" class="text-[10px] text-gray-600 hover:text-purple-400 transition-colors font-mono cursor-pointer">RESET</button>
+          </div>
+          <p id="ttt-status" class="text-xs text-gray-500 mb-3 text-center font-mono">Your turn (X)</p>
+          <div class="ttt-grid" id="ttt-board"></div>
+          <div class="mt-3 flex justify-center gap-4 text-[10px] font-mono text-gray-600">
+            <span>X: <span id="ttt-x-score" class="text-purple-400">0</span></span>
+            <span>O: <span id="ttt-o-score" class="text-blue-400">0</span></span>
+            <span>Draw: <span id="ttt-draw-score" class="text-gray-400">0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== STATS CARD (1 col) ==================== -->
+      <!-- Update data-target values to your real numbers -->
+      <div class="reveal" data-delay="300" id="stats-section">
+        <div class="glass-card p-5 h-full flex flex-col justify-center">
+          <div class="space-y-5">
+            <div>
+              <div class="counter-number gradient-text" data-target="5" data-suffix="+">0+</div>
+              <p class="text-xs text-gray-500 mt-1">Years of Experience</p>
+            </div>
+            <div>
+              <div class="counter-number gradient-text" data-target="50" data-suffix="+">0+</div>
+              <p class="text-xs text-gray-500 mt-1">Projects Completed</p>
+            </div>
+            <div>
+              <div class="counter-number gradient-text" data-target="30" data-suffix="+">0+</div>
+              <p class="text-xs text-gray-500 mt-1">Happy Clients</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PROJECTS CARD (4 cols) ==================== -->
+      <div id="projects" class="md:col-span-2 lg:col-span-4 reveal" data-delay="400">
+        <div class="glass-card p-6 h-full">
+          <div class="flex items-center gap-2 mb-5">
+            <iconify-icon icon="lucide:rocket" width="16" class="text-green-400"></iconify-icon>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Featured Projects</h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Project 1 — update image, title, description, tags, and button links -->
+            <div class="project-card">
+              <div class="overflow-hidden">
+                <img src="https://picsum.photos/seed/nebula-dash-v2/600/400.jpg" alt="Nebula Dashboard" class="project-img w-full h-36 object-cover" loading="lazy">
+              </div>
+              <div class="p-4">
+                <h4 class="text-sm font-semibold text-white">Nebula Dashboard</h4>
+                <p class="text-xs text-gray-500 mt-1">Real-time analytics platform with interactive data visualizations.</p>
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                  <span class="tag-pill">React</span>
+                  <span class="tag-pill">TypeScript</span>
+                  <span class="tag-pill">D3.js</span>
+                </div>
+                <div class="flex gap-2 mt-4">
+                  <a href="#" class="btn-outline text-[11px] flex items-center gap-1"><iconify-icon icon="lucide:github" width="12"></iconify-icon> Code</a>
+                  <a href="#" class="btn-outline text-[11px] flex items-center gap-1"><iconify-icon icon="lucide:external-link" width="12"></iconify-icon> Demo</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="project-card">
+              <div class="overflow-hidden">
+                <img src="https://picsum.photos/seed/synthwave-ui-v3/600/400.jpg" alt="Synthwave UI" class="project-img w-full h-36 object-cover" loading="lazy">
+              </div>
+              <div class="p-4">
+                <h4 class="text-sm font-semibold text-white">Synthwave UI</h4>
+                <p class="text-xs text-gray-500 mt-1">A retro-futuristic design system with 50+ accessible components.</p>
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                  <span class="tag-pill">Figma</span>
+                  <span class="tag-pill">React</span>
+                  <span class="tag-pill">Storybook</span>
+                </div>
+                <div class="flex gap-2 mt-4">
+                  <a href="#" class="btn-outline text-[11px] flex items-center gap-1"><iconify-icon icon="lucide:github" width="12"></iconify-icon> Code</a>
+                  <a href="#" class="btn-outline text-[11px] flex items-center gap-1"><iconify-icon icon="lucide:external-link" width="12"></iconify-icon> Demo</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="project-card">
+              <div class="overflow-hidden">
+                <img src="https://picsum.photos/seed/cryptoflow-v4/600/400.jpg" alt="CryptoFlow" class="project-img w-full h-36 object-cover" loading="lazy">
+              </div>
+              <div class="p-4">
+                <h4 class="text-sm font-semibold text-white">CryptoFlow</h4>
+                <p class="text-xs text-gray-500 mt-1">Real-time cryptocurrency trading platform with WebSocket feeds.</p>
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                  <span class="tag-pill">Next.js</span>
+                  <span class="tag-pill">Node.js</span>
+                  <span class="tag-pill">WebSocket</span>
+                </div>
+                <div class="flex gap-2 mt-4">
+                  <a href="#" class="btn-outline text-[11px] flex items-center gap-1"><iconify-icon icon="lucide:github" width="12"></iconify-icon> Code</a>
+                  <a href="#" class="btn-outline text-[11px] flex items-center gap-1"><iconify-icon icon="lucide:external-link" width="12"></iconify-icon> Demo</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== EXPERIENCE / TIMELINE CARD (2 cols) ==================== -->
+      <!-- Update each timeline entry with your real experience -->
+      <div id="experience" class="md:col-span-2 lg:col-span-2 reveal" data-delay="500">
+        <div class="glass-card p-6 h-full">
+          <div class="flex items-center gap-2 mb-5">
+            <iconify-icon icon="lucide:briefcase" width="16" class="text-purple-400"></iconify-icon>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Experience</h3>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Entry 1 -->
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="timeline-dot"></div>
+                <div class="timeline-line flex-1 mt-1"></div>
+              </div>
+              <div class="pb-4">
+                <span class="text-[10px] font-mono text-purple-400 uppercase tracking-wider">2024 — Present</span>
+                <h4 class="text-sm font-semibold text-white mt-0.5">Senior Frontend Engineer</h4>
+                <p class="text-xs text-gray-500">Nexus Technologies — Leading design system architecture for enterprise products</p>
+              </div>
+            </div>
+            <!-- Entry 2 -->
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="timeline-dot" style="background:#3b82f6;box-shadow:0 0 12px rgba(59,130,246,0.5);"></div>
+                <div class="timeline-line flex-1 mt-1" style="background:linear-gradient(to bottom,#3b82f6,#22c55e,transparent);"></div>
+              </div>
+              <div class="pb-4">
+                <span class="text-[10px] font-mono text-blue-400 uppercase tracking-wider">2022 — 2024</span>
+                <h4 class="text-sm font-semibold text-white mt-0.5">Full-Stack Developer</h4>
+                <p class="text-xs text-gray-500">PixelForge Studio — Built scalable web applications for Fortune 500 clients</p>
+              </div>
+            </div>
+            <!-- Entry 3 -->
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="timeline-dot" style="background:#22c55e;box-shadow:0 0 12px rgba(34,197,94,0.5);"></div>
+                <div class="timeline-line flex-1 mt-1" style="background:linear-gradient(to bottom,#22c55e,transparent);"></div>
+              </div>
+              <div class="pb-4">
+                <span class="text-[10px] font-mono text-green-400 uppercase tracking-wider">2020 — 2022</span>
+                <h4 class="text-sm font-semibold text-white mt-0.5">Frontend Developer</h4>
+                <p class="text-xs text-gray-500">DigitalCraft Agency — Developed interactive experiences and landing pages</p>
+              </div>
+            </div>
+            <!-- Entry 4 -->
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="timeline-dot" style="background:#6b7280;box-shadow:0 0 12px rgba(107,114,128,0.3);"></div>
+              </div>
+              <div>
+                <span class="text-[10px] font-mono text-gray-500 uppercase tracking-wider">2018 — 2020</span>
+                <h4 class="text-sm font-semibold text-white mt-0.5">Freelance Developer</h4>
+                <p class="text-xs text-gray-500">Started the journey — building websites and mobile applications</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CONTACT CARD (2 cols) ==================== -->
+      <div id="contact" class="md:col-span-2 lg:col-span-2 reveal" data-delay="600">
+        <div class="glass-card p-6 h-full">
+          <div class="flex items-center gap-2 mb-5">
+            <iconify-icon icon="lucide:mail" width="16" class="text-blue-400"></iconify-icon>
+            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider">Get in Touch</h3>
+          </div>
+
+          <!-- Connect this form to your backend (e.g., Formspree, Netlify Forms, or custom API) -->
+          <form id="contact-form" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input type="text" placeholder="Your Name" class="form-input" required>
+              <input type="email" placeholder="your@email.com" class="form-input" required>
+            </div>
+            <textarea placeholder="Tell me about your project..." rows="3" class="form-input resize-none" required></textarea>
+            <div class="flex items-center justify-between">
+              <button type="submit" class="send-btn text-sm flex items-center gap-2">
+                <iconify-icon icon="lucide:send" width="14"></iconify-icon> Send Message
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </main>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="relative z-10 mt-12">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent mb-8"></div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-8">
+        <p class="text-xs text-gray-600 font-mono">© 2024 Alex Chen. All rights reserved.</p>
+        <p class="text-xs text-gray-600">Crafted with <span class="text-purple-500">♥</span> and precision.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification (hidden by default) -->
+  <div id="toast" class="toast">
+    <div class="flex items-center gap-2">
+      <iconify-icon icon="lucide:check-circle" width="16"></iconify-icon>
+      <span>Message sent successfully!</span>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       JAVASCRIPT — All interactive features
+       ==================================================================== -->
+  <script>
+    // ================================================================
+    // 1. TYPING EFFECT — cycles through phrases with cursor blink
+    //    Edit the phrases array to change what text is typed
+    // ================================================================
+    const phrases = [
+      'Full-Stack Developer',
+      'UI/UX Designer',
+      'Creative Technologist',
+      'Open Source Contributor'
+    ];
+    let phraseIdx = 0, charIdx = 0, isDeleting = false;
+    const typingEl = document.getElementById('typing-text');
+
+    function typeEffect() {
+      const current = phrases[phraseIdx];
+      if (isDeleting) {
+        typingEl.textContent = current.substring(0, charIdx - 1);
+        charIdx--;
+      } else {
+        typingEl.textContent = current.substring(0, charIdx + 1);
+        charIdx++;
+      }
+      let speed = isDeleting ? 25 : 70;
+      if (!isDeleting && charIdx === current.length) { speed = 2200; isDeleting = true; }
+      else if (isDeleting && charIdx === 0) { isDeleting = false; phraseIdx = (phraseIdx + 1) % phrases.length; speed = 400; }
+      setTimeout(typeEffect, speed);
+    }
+    typeEffect();
+
+    // ================================================================
+    // 2. SCROLL REVEAL — fade-in-up on scroll with staggered delays
+    // ================================================================
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('revealed'), parseInt(entry.target.dataset.delay || 0));
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ================================================================
+    // 3. SPOTLIGHT EFFECT — radial glow follows cursor on glass cards
+    // ================================================================
+    document.querySelectorAll('.glass-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.background = `radial-gradient(600px circle at ${x}px ${y}px, rgba(168,85,247,0.06), transparent 40%), rgba(255,255,255,0.03)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.background = 'rgba(255,255,255,0.03)';
+      });
+    });
+
+    // ================================================================
+    // 4. COUNTER ANIMATION — numbers count up when stats card is visible
+    // ================================================================
+    let countersAnimated = false;
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !countersAnimated) {
+          countersAnimated = true;
+          document.querySelectorAll('.counter-number').forEach(counter => {
+            const target = parseInt(counter.dataset.target);
+            const suffix = counter.dataset.suffix || '';
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+              current += increment;
+              if (current >= target) { current = target; clearInterval(timer); }
+              counter.textContent = Math.floor(current) + suffix;
+            }, 30);
+          });
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    const statsSection = document.getElementById('stats-section');
+    if (statsSection) counterObserver.observe(statsSection);
+
+    // ================================================================
+    // 5. TIC-TAC-TOE MINI GAME — fully playable vs simple AI
+    // ================================================================
+    let board = Array(9).fill(null);
+    let gameActive = true;
+    let scores = { x: 0, o: 0, draw: 0 };
+    const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+    function initTTT() {
+      const boardEl = document.getElementById('ttt-board');
+      boardEl.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'ttt-cell';
+        cell.addEventListener('click', () => handleTTTClick(i));
+        boardEl.appendChild(cell);
+      }
+    }
+
+    function handleTTTClick(index) {
+      if (!gameActive || board[index]) return;
+      board[index] = 'X';
+      updateTTTBoard();
+      if (checkWin('X')) { endTTT('X'); return; }
+      if (board.every(c => c)) { endTTT('draw'); return; }
+
+      gameActive = false;
+      document.getElementById('ttt-status').textContent = 'AI thinking...';
+      setTimeout(() => {
+        aiMove();
+        if (checkWin('O')) { endTTT('O'); return; }
+        if (board.every(c => c)) { endTTT('draw'); return; }
+        gameActive = true;
+        document.getElementById('ttt-status').textContent = 'Your turn (X)';
+      }, 350);
+    }
+
+    function aiMove() {
+      // 1. Try to win
+      for (let i = 0; i < 9; i++) { if (!board[i]) { board[i] = 'O'; if (checkWin('O')) { updateTTTBoard(); return; } board[i] = null; } }
+      // 2. Block player
+      for (let i = 0; i < 9; i++) { if (!board[i]) { board[i] = 'X'; if (checkWin('X')) { board[i] = 'O'; updateTTTBoard(); return; } board[i] = null; } }
+      // 3. Center
+      if (!board[4]) { board[4] = 'O'; updateTTTBoard(); return; }
+      // 4. Corner
+      const corners = [0,2,6,8].filter(i => !board[i]);
+      if (corners.length) { board[corners[Math.floor(Math.random() * corners.length)]] = 'O'; updateTTTBoard(); return; }
+      // 5. Any available
+      const avail = board.map((v,i) => v === null ? i : -1).filter(i => i !== -1);
+      board[avail[Math.floor(Math.random() * avail.length)]] = 'O';
+      updateTTTBoard();
+    }
+
+    function checkWin(p) { return winPatterns.some(pat => pat.every(i => board[i] === p)); }
+    function getWinPat(p) { return winPatterns.find(pat => pat.every(i => board[i] === p)); }
+
+    function updateTTTBoard() {
+      document.querySelectorAll('.ttt-cell').forEach((cell, i) => {
+        cell.textContent = board[i] || '';
+        cell.className = 'ttt-cell';
+        if (board[i] === 'X') cell.classList.add('x', 'taken');
+        if (board[i] === 'O') cell.classList.add('o', 'taken');
+      });
+    }
+
+    function endTTT(result) {
+      gameActive = false;
+      const status = document.getElementById('ttt-status');
+      if (result === 'draw') {
+        status.textContent = "It's a draw!";
+        scores.draw++;
+      } else {
+        const pat = getWinPat(result);
+        if (pat) { const cells = document.querySelectorAll('.ttt-cell'); pat.forEach(i => cells[i].classList.add('win')); }
+        status.textContent = result === 'X' ? 'You win! 🎉' : 'AI wins!';
+        scores[result === 'X' ? 'x' : 'o']++;
+      }
+      document.getElementById('ttt-x-score').textContent = scores.x;
+      document.getElementById('ttt-o-score').textContent = scores.o;
+      document.getElementById('ttt-draw-score').textContent = scores.draw;
+    }
+
+    function resetTTT() {
+      board = Array(9).fill(null);
+      gameActive = true;
+      document.getElementById('ttt-status').textContent = 'Your turn (X)';
+      updateTTTBoard();
+    }
+    initTTT();
+
+    // ================================================================
+    // 6. CONTACT FORM — simulates sending with loading state + toast
+    //    Replace the setTimeout with your actual API call
+    // ================================================================
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('button[type="submit"]');
+      const origHTML = btn.innerHTML;
+      btn.innerHTML = '<iconify-icon icon="lucide:loader-2" width="14" class="animate-spin"></iconify-icon> Sending...';
+      btn.disabled = true;
+
+      // Simulate API call — replace with fetch() to your endpoint
+      setTimeout(() => {
+        btn.innerHTML = origHTML;
+        btn.disabled = false;
+        this.reset();
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }, 1500);
+    });
+
+    // ================================================================
+    // 7. 3D TILT EFFECT on Hero Card (desktop only)
+    // ================================================================
+    const heroCard = document.getElementById('hero-card');
+    if (heroCard && window.innerWidth > 768) {
+      heroCard.addEventListener('mousemove', (e) => {
+        const rect = heroCard.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        heroCard.style.transition = 'none';
+        heroCard.style.transform = `perspective(1000px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
+      });
+      heroCard.addEventListener('mouseleave', () => {
+        heroCard.style.transition = 'transform 0.5s ease';
+        heroCard.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+      });
+    }
+
+    // ================================================================
+    // 8. PARALLAX BACKGROUND ORBS — subtle depth on scroll
+    // ================================================================
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      document.querySelectorAll('.bg-orb').forEach((orb, i) => {
+        orb.style.transform = `translateY(${y * (i + 1) * 0.02}px)`;
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>
