@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>So‘z Ustasi — Gamified Lug‘at Platformasi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          animation: {
+            'bounce-short': 'bounceShort 0.5s ease-in-out',
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+            'pop': 'pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            'float': 'float 3s ease-in-out infinite',
+          },
+          keyframes: {
+            bounceShort: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(6px, 0, 0)' },
+            },
+            pop: {
+              '0%': { transform: 'scale(0.9)', opacity: '0.7' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 3D Flashcard Flip Mechanics */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.6); }
+
+    /* Confetti particle */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300 selection:bg-violet-500 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- ==================== 1. AUTH / ONBOARDING SCREEN ==================== -->
+  <section id="auth-screen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <!-- Decorative Background Blobs -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="w-full max-w-md bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10 animate-pop">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-violet-600/30 animate-float">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-violet-600 to-indigo-500 dark:from-violet-400 dark:to-emerald-400 bg-clip-text text-transparent">So‘z Ustasi</h1>
+            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">O‘yinli lug‘at va xotira platformasi</p>
+          </div>
+        </div>
+        <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-105 transition" title="Mavzuni o'zgartirish">
+          <svg id="theme-icon-auth" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+      </div>
+
+      <div class="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-3.5 mb-6 text-xs text-slate-700 dark:text-slate-300 flex items-start gap-2.5">
+        <span class="text-base">⚡</span>
+        <span>Parol va email shart emas! Shunchaki <b>To‘liq Ism-Familiyangizni</b> kiriting — barcha natijalar, darajalar va shaxsiy lug‘atlar avtomatik saqlanadi.</span>
+      </div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="fullname-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">To‘liq Ism-Familiya</label>
+          <input type="text" id="fullname-input" maxlength="45" placeholder="Masalan: Azizbek Karimov" required
+            class="w-full px-4 py-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border-2 border-transparent focus:border-violet-500 focus:bg-white dark:focus:bg-slate-900 outline-none font-semibold text-base transition" />
+          <p id="auth-error" class="text-rose-500 text-xs font-semibold mt-1.5 hidden"></p>
+        </div>
+
+        <!-- Collision Warning Box (shown if profile exists) -->
+        <div id="collision-box" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-3 animate-pop">
+          <div class="flex items-start gap-2.5">
+            <span class="text-lg">⚠️</span>
+            <div class="text-xs">
+              <p class="font-bold text-amber-600 dark:text-amber-400">Bu ism-familiya tizimda mavjud!</p>
+              <p class="text-slate-600 dark:text-slate-300 mt-0.5">Avvalgi natijalar bilan davom etasizmi yoki o‘zingiz uchun qisqa unikal PIN/kod qo‘shib yangi profil ochasizmi?</p>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button type="button" id="continue-existing-btn" class="flex-1 py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition shadow-md">
+              Davom etish (<span id="existing-xp-label">0 XP</span>)
+            </button>
+            <button type="button" id="create-with-pin-btn" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 font-bold text-xs transition">
+              + Unikal kod bilan ochish
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="start-btn" class="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold text-base shadow-lg shadow-violet-600/30 active:scale-[0.99] transition flex items-center justify-center gap-2">
+          <span>Boshlash</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </button>
+      </form>
+
+      <!-- Existing Profiles Quick Switcher -->
+      <div id="saved-profiles-section" class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 hidden">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Saqlangan profillar (Tezkor kirish):</p>
+        <div id="saved-profiles-list" class="flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. MAIN APPLICATION SHELL ==================== -->
+  <div id="app-shell" class="hidden flex-1 flex flex-col">
+    
+    <!-- Top Gamified HUD Navbar -->
+    <header class="sticky top-0 z-40 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
+      <div class="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+        <!-- Brand & User Badge -->
+        <div class="flex items-center gap-2.5 min-w-0">
+          <button onclick="switchTab('dashboard')" class="flex items-center gap-2 group shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-md group-hover:scale-105 transition">S</div>
+            <span class="font-black text-lg tracking-tight hidden md:inline">So‘z Ustasi</span>
+          </button>
+          <div class="h-5 w-[1px] bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
+          <button onclick="openBackupModal()" class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-800 transition truncate max-w-[150px] sm:max-w-[210px]" title="Profil va Zaxira nusxa">
+            <span id="user-avatar" class="w-6 h-6 rounded-lg bg-violet-600 text-white text-xs font-extrabold flex items-center justify-center shrink-0">AK</span>
+            <span id="header-username" class="text-xs font-bold truncate">Azizbek Karimov</span>
+          </button>
+        </div>
+
+        <!-- Live Gamification Metrics -->
+        <div class="flex items-center gap-1.5 sm:gap-3">
+          <!-- Daily Streak -->
+          <div class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400" title="Kunlik seriya (Daily Streak)">
+            <span class="text-sm">🔥</span>
+            <span id="stat-streak" class="text-xs sm:text-sm font-extrabold">1</span>
+          </div>
+
+          <!-- XP Points -->
+          <div class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400" title="Jami XP ochkolari">
+            <span class="text-sm">⚡</span>
+            <span id="stat-xp" class="text-xs sm:text-sm font-extrabold">0</span>
+            <span class="text-[10px] font-bold hidden sm:inline">XP</span>
+          </div>
+
+          <!-- Level Badge -->
+          <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400" title="Darajangiz">
+            <span class="text-xs font-extrabold">LVL <span id="stat-level">1</span></span>
+          </div>
+
+          <!-- Sound Toggle -->
+          <button onclick="toggleSound()" id="sound-toggle-btn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ovoz effektlari">
+            <svg id="sound-on-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+            <svg id="sound-off-icon" class="w-4 h-4 hidden text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Yorug'/Qorong'i rejim">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          </button>
+
+          <!-- Logout / Switch User -->
+          <button onclick="logoutUser()" class="p-2 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition" title="Profilni almashtirish">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="max-w-6xl mx-auto px-3 sm:px-6 flex items-center gap-1 overflow-x-auto no-scrollbar pb-2">
+        <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-1.5 bg-violet-600 text-white">
+          <span>🎯</span> Bosqichlar & O‘yinlar
+        </button>
+        <button onclick="switchTab('custom')" data-tab="custom" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <span>📚</span> Shaxsiy Lug‘at
+        </button>
+        <button onclick="switchTab('hard')" data-tab="hard" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <span>🧠</span> Qiyin So‘zlar <span id="hard-count-badge" class="px-1.5 py-0.5 text-[10px] rounded-full bg-rose-500 text-white">0</span>
+        </button>
+        <button onclick="switchTab('leaderboard')" data-tab="leaderboard" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <span>🏆</span> Haftalik Reyting
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6">
+
+      <!-- ==================== TAB 1: DASHBOARD (STAGES & MINI-GAMES) ==================== -->
+      <div id="view-dashboard" class="space-y-8 animate-pop">
+        
+        <!-- Progress Banner & Level Bar -->
+        <div class="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 rounded-3xl p-5 sm:p-7 text-white shadow-xl relative overflow-hidden">
+          <div class="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl pointer-events-none"></div>
+          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-extrabold uppercase tracking-wider mb-2">Daraja <span id="banner-level">1</span> • Spaced Repetition Faol</span>
+              <h2 class="text-xl sm:text-2xl font-black">Salom, <span id="banner-name">Foydalanuvchi</span>! 👋</h2>
+              <p class="text-violet-100 text-xs sm:text-sm mt-1">Keyingi darajaga o‘tish uchun mashqlar va mini-o‘yinlar orqali XP to‘plang.</p>
+            </div>
+            <div class="w-full md:w-72 bg-black/20 backdrop-blur-md rounded-2xl p-4 border border-white/15">
+              <div class="flex justify-between text-xs font-bold mb-1.5">
+                <span>Daraja progressi</span>
+                <span id="xp-progress-text">0 / 100 XP</span>
+              </div>
+              <div class="w-full h-3 bg-white/20 rounded-full overflow-hidden">
+                <div id="xp-progress-bar" class="h-full bg-gradient-to-r from-amber-300 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between items-center mt-2.5 text-[11px] text-violet-200">
+                <span>O‘zlashtirilgan: <strong id="mastered-words-count" class="text-white">0</strong> so‘z</span>
+                <button onclick="openBackupModal()" class="underline hover:text-white font-semibold">Zaxira (JSON/CSV)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini-Games Launcher Strip -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+              <span>🎮</span> Tezkor Mini-O‘yinlar
+            </h3>
+            <select id="minigame-deck-select" class="text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 outline-none focus:border-violet-500">
+              <option value="all_unlocked">Barcha ochiq so‘zlar</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Game 1: Speed Match -->
+            <button onclick="startGameMode('match')" class="group text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all relative overflow-hidden">
+              <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">⚡</div>
+              <h4 class="font-extrabold text-base">Tezkor Juftlashtirish</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">So‘z va tarjimalarni vaqtga qarshi moslashtiring. Combo bonus!</p>
+              <span class="inline-block mt-3 text-xs font-extrabold text-emerald-600 dark:text-emerald-400">O‘ynash →</span>
+            </button>
+
+            <!-- Game 2: Word Scramble -->
+            <button onclick="startGameMode('scramble')" class="group text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all relative overflow-hidden">
+              <div class="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">🧩</div>
+              <h4 class="font-extrabold text-base">Harflardan So‘z Yig‘ish</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Aralashgan harflarni ketma-ket bosib to‘g‘ri so‘zni tuzing.</p>
+              <span class="inline-block mt-3 text-xs font-extrabold text-amber-600 dark:text-amber-400">O‘ynash →</span>
+            </button>
+
+            <!-- Game 3: 60s Sprint -->
+            <button onclick="startGameMode('sprint')" class="group text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-rose-500 dark:hover:border-rose-500 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all relative overflow-hidden">
+              <div class="w-11 h-11 rounded-2xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">⏱️</div>
+              <h4 class="font-extrabold text-base">60 Soniyalik Sprint</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">1 daqiqa ichida imkon qadar ko‘p tarjimani To‘g‘ri/Noto‘g‘ri toping!</p>
+              <span class="inline-block mt-3 text-xs font-extrabold text-rose-600 dark:text-rose-400">O‘ynash →</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stages Grid (Darajali Bosqichlar) -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+                <span>🗺️</span> Darajali Bosqichlar
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Keyingi bosqichni ochish uchun testdan kamida <strong>80%</strong> natija to‘plang.</p>
+            </div>
+          </div>
+
+          <div id="stages-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 2: CUSTOM VOCABULARY BUILDER ==================== -->
+      <div id="view-custom" class="hidden space-y-6 animate-pop">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6">
+          <div>
+            <h2 class="text-xl font-black flex items-center gap-2"><span>📚</span> Shaxsiy Lug‘at Konstruktori</h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">O‘zingiz uchun maxsus to‘plamlar yarating, so‘z va misol gaplar qo‘shing hamda ularni o‘yinlarda mashq qiling.</p>
+          </div>
+          <button onclick="openCreateDeckModal()" class="px-5 py-3 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm shadow-lg shadow-violet-600/25 transition shrink-0 flex items-center justify-center gap-2">
+            <span>+ Yangi To‘plam (Papka)</span>
+          </button>
+        </div>
+
+        <div id="custom-decks-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Custom decks rendered here -->
+        </div>
+      </div>
+
+      <!-- ==================== TAB 3: HARD WORDS & SPACED REPETITION ==================== -->
+      <div id="view-hard" class="hidden space-y-6 animate-pop">
+        <div class="bg-gradient-to-r from-rose-500/15 to-amber-500/15 border border-rose-500/25 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-black text-rose-600 dark:text-rose-400 flex items-center gap-2"><span>🧠</span> Xatolar Ustida Ishlash & Aqliy Takrorlash</h2>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">Testlarda xato qilingan yoki "Qiyin" deb belgilangan so‘zlar unutish egri chizig‘iga ko‘ra shu yerda jamlanadi.</p>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button onclick="startHardWordsSession('flashcards')" class="px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold text-xs sm:text-sm hover:border-violet-500 transition">
+              🃏 Kartochkalar
+            </button>
+            <button onclick="startHardWordsSession('quiz')" class="px-4 py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-rose-600/25 transition">
+              🎯 Xatolarni Tuzatish
+            </button>
+          </div>
+        </div>
+
+        <div id="hard-words-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Hard words list rendered here -->
+        </div>
+      </div>
+
+      <!-- ==================== TAB 4: WEEKLY LEADERBOARD ==================== -->
+      <div id="view-leaderboard" class="hidden space-y-6 animate-pop">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-7">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <div>
+              <h2 class="text-xl font-black flex items-center gap-2"><span>🏆</span> Haftalik Eng Faol O‘quvchilar</h2>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">XP ochkolar va kunlik seriya (Streak) bo‘yicha jonli reyting jadvali.</p>
+            </div>
+            <span class="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold self-start">
+              🟢 Jonli sinxronizatsiya
+            </span>
+          </div>
+
+          <div id="leaderboard-list" class="space-y-2.5">
+            <!-- Leaderboard rows -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ACTIVE STUDY / GAME ARENA OVERLAY ==================== -->
+      <div id="study-arena" class="hidden max-w-2xl mx-auto animate-pop">
+        <!-- Arena Top Bar -->
+        <div class="flex items-center justify-between gap-3 mb-5">
+          <button onclick="exitArena()" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300 font-bold text-xs flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            <span>Chiqish</span>
+          </button>
+
+          <!-- Progress Bar -->
+          <div class="flex-1 h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="arena-progress-bar" class="h-full bg-gradient-to-r from-violet-500 to-emerald-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+
+          <!-- Combo Multiplier Pill -->
+          <div id="combo-badge" class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black text-xs flex items-center gap-1 transition-transform">
+            <span>🔥</span>
+            <span id="combo-text">1x</span>
+          </div>
+        </div>
+
+        <!-- Arena Dynamic Stage Content -->
+        <div id="arena-content" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-8 shadow-xl min-h-[380px] flex flex-col justify-between">
+          <!-- Injected per mode: Flashcards, Adaptive Quiz, Speed Match, Scramble, Sprint, or Results -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal 1: Create Custom Deck / Add Words -->
+  <div id="deck-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-pop max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="deck-modal-title" class="text-lg font-black">Yangi Shaxsiy To‘plam</h3>
+        <button onclick="closeDeckModal()" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+      </div>
+
+      <form id="deck-form" class="space-y-4">
+        <input type="hidden" id="editing-deck-id" />
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 mb-1">To‘plam nomi (Papka)</label>
+          <input type="text" id="deck-title-input" placeholder="Masalan: IELTS Essential, IT Terminlar..." required maxlength="40"
+            class="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-transparent focus:border-violet-500 outline-none text-sm font-semibold" />
+        </div>
+
+        <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
+          <p class="text-xs font-bold uppercase text-slate-500 mb-2">Yangi so‘z qo‘shish</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
+            <input type="text" id="new-word-en" placeholder="So‘z (Inglizcha, masalan: Achieve)"
+              class="px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-violet-500" />
+            <input type="text" id="new-word-uz" placeholder="Tarjimasi (O‘zbekcha, masalan: Erishmoq)"
+              class="px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-violet-500" />
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="new-word-ex" placeholder="Misol gap (ixtiyoriy): She worked hard to achieve her goals."
+              class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-violet-500" />
+            <button type="button" onclick="addWordToDraft()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0">
+              + Qo‘shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Words inside this deck -->
+        <div id="draft-words-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="closeDeckModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs">Bekor qilish</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs shadow-lg">Saqlash</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Profile Backup / Export / Import -->
+  <div id="backup-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-pop">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-black">Profil & Zaxira Nusxa (Backup)</h3>
+        <button onclick="closeBackupModal()" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+      </div>
+
+      <div class="bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-4 mb-4 space-y-1 text-xs">
+        <p><span class="text-slate-500">Foydalanuvchi:</span> <strong id="modal-profile-name"></strong></p>
+        <p><span class="text-slate-500">Jami XP:</span> <strong id="modal-profile-xp"></strong></p>
+        <p><span class="text-slate-500">O‘zlashtirilgan so‘zlar:</span> <strong id="modal-profile-mastered"></strong></p>
+      </div>
+
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Ma’lumotlaringiz qurilmangizda avtomatik saqlanadi. Boshqa qurilmaga o‘tkazish uchun JSON yoki CSV formatida yuklab oling:</p>
+
+      <div class="grid grid-cols-2 gap-2.5 mb-4">
+        <button onclick="exportDataJSON()" class="py-3 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+          <span>📥 JSON Yuklash</span>
+        </button>
+        <button onclick="exportDataCSV()" class="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+          <span>📊 CSV (Excel)</span>
+        </button>
+      </div>
+
+      <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
+        <label class="block text-xs font-bold mb-2">JSON Zaxira faylini tiklash (Import):</label>
+        <input type="file" id="import-json-input" accept=".json" onchange="importDataJSON(event)"
+          class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-200 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-300 cursor-pointer" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
+  <script>
+    /**
+     * 1. BUILT-IN CURRICULUM DATA (STAGES & WORDS)
+     */
+    const BUILTIN_STAGES = [
+      {
+        id: 'stage_1',
+        number: 1,
+        title: '1-Bosqich: Asosiy so‘zlar',
+        subtitle: 'Kundalik hayotda eng ko‘p ishlatiladigan muhim fe’l va sifatlar',
+        icon: '🌱',
+        color: 'from-emerald-500 to-teal-600',
+        unlockThreshold: 0,
+        words: [
+          { id: 's1_1', en: 'Achieve', uz: 'Erishmoq', ex: 'You can achieve anything with consistent effort.' },
+          { id: 's1_2', en: 'Improve', uz: 'Yaxshilamoq', ex: 'Reading daily will improve your vocabulary.' },
+          { id: 's1_3', en: 'Confident', uz: 'O‘ziga ishongan', ex: 'She felt confident before the presentation.' },
+          { id: 's1_4', en: 'Decision', uz: 'Qaror', ex: 'Making the right decision takes careful thought.' },
+          { id: 's1_5', en: 'Opportunity', uz: 'Imkoniyat', ex: 'Every challenge brings a new opportunity.' },
+          { id: 's1_6', en: 'Reliable', uz: 'Ishonchli', ex: 'He is a very reliable friend and partner.' },
+          { id: 's1_7', en: 'Discover', uz: 'Kashf qilmoq', ex: 'Travel helps us discover new cultures.' },
+          { id: 's1_8', en: 'Essential', uz: 'Juda muhim / Zarur', ex: 'Water is essential for all living things.' }
+        ]
+      },
+      {
+        id: 'stage_2',
+        number: 2,
+        title: '2-Bosqich: Kundalik iboralar',
+        subtitle: 'Muloqotni tabiiy va ravon qiluvchi faol iboralar',
+        icon: '🚀',
+        color: 'from-blue-500 to-indigo-600',
+        unlockThreshold: 80,
+        words: [
+          { id: 's2_1', en: 'Figure out', uz: 'Tushunib yetmoq / Yechim topmoq', ex: 'We need to figure out how this system works.' },
+          { id: 's2_2', en: 'Look forward to', uz: 'Intizorlik bilan kutmoq', ex: 'I look forward to meeting you tomorrow.' },
+          { id: 's2_3', en: 'Make sense', uz: 'Mantiqiy bo‘lmoq / Tushunarli bo‘lmoq', ex: 'Your explanation makes complete sense.' },
+          { id: 's2_4', en: 'Keep in mind', uz: 'Yodda tutmoq', ex: 'Keep in mind that practice makes perfect.' },
+          { id: 's2_5', en: 'Run out of', uz: 'Tugab qolmoq', ex: 'We ran out of time during the final test.' },
+          { id: 's2_6', en: 'Take advantage of', uz: 'Unimlı foydalanmoq', ex: 'Take advantage of free learning resources.' },
+          { id: 's2_7', en: 'Give up', uz: 'Taslim bo‘lmoq / Tashlamoq', ex: 'Never give up on your biggest dreams.' },
+          { id: 's2_8', en: 'In the long run', uz: 'Uzoq muddatda / Oxir-oqibat', ex: 'Learning languages pays off in the long run.' }
+        ]
+      },
+      {
+        id: 'stage_3',
+        number: 3,
+        title: '3-Bosqich: Biznes va Texnologiya',
+        subtitle: 'Zamonaviy kasbiy muhit va IT sohasiga oid atamalar',
+        icon: '💻',
+        color: 'from-violet-500 to-purple-600',
+        unlockThreshold: 80,
+        words: [
+          { id: 's3_1', en: 'Efficient', uz: 'Samarali / Tejamkor', ex: 'The new algorithm is twice as efficient.' },
+          { id: 's3_2', en: 'Collaborate', uz: 'Hamkorlik qilmoq', ex: 'Teams collaborate globally using cloud tools.' },
+          { id: 's3_3', en: 'Implement', uz: 'Joriy qilmoq / Amalga oshirmoq', ex: 'We will implement the update next week.' },
+          { id: 's3_4', en: 'Scalable', uz: 'Kengaytiriladigan', ex: 'Startups need a scalable business model.' },
+          { id: 's3_5', en: 'Deadline', uz: 'Oxirgi muddat', ex: 'They finished the project ahead of the deadline.' },
+          { id: 's3_6', en: 'Breakthrough', uz: 'Katta yutuq / Burilish', ex: 'Scientists announced a major medical breakthrough.' },
+          { id: 's3_7', en: 'Negotiate', uz: 'Muzokara olib bormoq', ex: 'It is important to negotiate fair terms.' },
+          { id: 's3_8', en: 'Sustainable', uz: 'Barqaror / Uzoqqa chidaydigan', ex: 'Green energy is key to sustainable growth.' }
+        ]
+      },
+      {
+        id: 'stage_4',
+        number: 4,
+        title: '4-Bosqich: Ilg‘or Kontekst & Idiomalar',
+        subtitle: 'Yuqori darajadagi nutq va murakkab tushunchalar',
+        icon: '👑',
+        color: 'from-amber-500 to-rose-600',
+        unlockThreshold: 80,
+        words: [
+          { id: 's4_1', en: 'Resilient', uz: 'Matonatli / Tez tiklanuvchan', ex: 'Resilient people bounce back stronger after failure.' },
+          { id: 's4_2', en: 'Eloquent', uz: 'Notiq / Ta’sirchan so‘zlovchi', ex: 'She gave an eloquent speech at the conference.' },
+          { id: 's4_3', en: 'Inevitable', uz: 'Muqarrar / Qochib bo‘lmaydigan', ex: 'Change is an inevitable part of progress.' },
+          { id: 's4_4', en: 'Perspective', uz: 'Nuqtai nazar / Dunyoqarash', ex: 'Reading broadens your perspective on life.' },
+          { id: 's4_5', en: 'Piece of cake', uz: 'Juda oson ish', ex: 'For a master, that puzzle was a piece of cake.' },
+          { id: 's4_6', en: 'Meticulous', uz: 'O‘ta sinchkov / Puxta', ex: 'A meticulous designer checks every single pixel.' },
+          { id: 's4_7', en: 'Ambiguous', uz: 'Noaniq / Ikki ma’noli', ex: 'Avoid ambiguous instructions in contracts.' },
+          { id: 's4_8', en: 'Phenomenon', uz: 'Nodir hodisa / Fenomen', ex: 'The northern lights are a stunning natural phenomenon.' }
+        ]
+      }
+    ];
+
+    const SIMULATED_LEADERBOARD = [
+      { name: 'Malika Toshpulatova', xp: 1480, streak: 14, level: 15 },
+      { name: 'Sardor Alimov', xp: 1120, streak: 9, level: 12 },
+      { name: 'Nilufar Karimova', xp: 890, streak: 7, level: 9 },
+      { name: 'Jasur Rahimov', xp: 640, streak: 5, level: 7 },
+      { name: 'Madina Usmonova', xp: 410, streak: 4, level: 5 },
+      { name: 'Bobur Tursunov', xp: 250, streak: 2, level: 3 }
+    ];
+
+    /**
+     * 2. APPLICATION STATE & STORAGE ENGINE
+     */
+    const STORAGE_KEY = 'soz_ustasi_profiles_v1';
+    const ACTIVE_USER_KEY = 'soz_ustasi_active_user_v1';
+
+    let profiles = {};
+    let currentUser = null;
+    let soundEnabled = true;
+    let audioCtx = null;
+    let draftDeckWords = [];
+
+    // Active Game/Study Session State
+    let session = {
+      active: false,
+      mode: null, // 'flashcards' | 'quiz' | 'match' | 'scramble' | 'sprint'
+      sourceId: null,
+      words: [],
+      index: 0,
+      score: 0,
+      correctCount: 0,
+      combo: 1,
+      maxCombo: 1,
+      earnedXP: 0,
+      timerInterval: null,
+      timeLeft: 0,
+      matchSelected: null,
+      matchPairs: [],
+      scrambleCurrent: [],
+      scramblePool: []
+    };
+
+    /**
+     * Security: XSS Sanitization & Input Validation
+     */
+    function sanitizeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .trim();
+    }
+
+    function escapeJSArg(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '&quot;')
+        .replace(/\r?\n/g, ' ');
+    }
+
+    function normalizeKey(fullName) {
+      return fullName.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    /**
+     * Web Audio API Sound Synthesizer (Zero external audio dependencies)
+     */
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.12); // G5
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.linearRampToValueAtTime(130, now + 0.22);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+          osc.start(now);
+          osc.stop(now + 0.24);
+        } else if (type === 'levelup') {
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, idx) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'triangle';
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.frequency.setValueAtTime(freq, now + idx * 0.09);
+            g.gain.setValueAtTime(0.18, now + idx * 0.09);
+            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.3);
+            o.start(now + idx * 0.09);
+            o.stop(now + idx * 0.09 + 0.3);
+          });
+        } else if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(420, now);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        }
+      } catch (e) {
+        // Ignore audio errors on restricted devices
+      }
+    }
+
+    /**
+     * Text-to-Speech (TTS) Pronunciation
+     */
+    function speakText(text, event) {
+      if (event) event.stopPropagation();
+      if (!('speechSynthesis' in window)) {
+        showToast('Brauzeringiz ovozli talaffuzni qo‘llab-quvvatlamaydi.', 'warning');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.92;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /**
+     * Toast Notification System (Replaces alert)
+     */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const colors = {
+        success: 'bg-emerald-600 text-white border-emerald-400',
+        error: 'bg-rose-600 text-white border-rose-400',
+        warning: 'bg-amber-500 text-white border-amber-300',
+        info: 'bg-slate-900 dark:bg-slate-800 text-white border-violet-500'
+      };
+      const icons = { success: '✅', error: '❌', warning: '⚠️', info: '✨' };
+
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-bold animate-pop ${colors[type] || colors.info}`;
+      el.innerHTML = `<span>${icons[type]}</span><span>${sanitizeHTML(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-10px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 250);
+      }, 3000);
+    }
+
+    /**
+     * Confetti Celebration Effect
+     */
+    function triggerConfetti() {
+      const colors = ['#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'];
+      for (let i = 0; i < 45; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.top = '-12px';
+        document.body.appendChild(piece);
+
+        const destX = (Math.random() - 0.5) * 240;
+        const destY = window.innerHeight + 30;
+        const rot = Math.random() * 720;
+
+        piece.animate([
+          { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+          { transform: `translate(${destX}px, ${destY}px) rotate(${rot}deg)`, opacity: 0 }
+        ], {
+          duration: 1400 + Math.random() * 900,
+          easing: 'cubic-bezier(.25,.46,.45,.94)'
+        }).onfinish = () => piece.remove();
+      }
+    }
+
+    /**
+     * 3. PROFILE PERSISTENCE & AUTH FLOW
+     */
+    function loadAllProfiles() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        profiles = raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        profiles = {};
+      }
+    }
+
+    function saveAllProfiles() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+        if (currentUser) {
+          localStorage.setItem(ACTIVE_USER_KEY, currentUser.key);
+        }
+      } catch (e) {
+        showToast('Xotiraga saqlashda xatolik yuz berdi.', 'error');
+      }
+    }
+
+    function createDefaultProfile(displayName, key) {
+      const today = new Date().toISOString().split('T')[0];
+      return {
+        key,
+        name: displayName,
+        xp: 0,
+        streak: 1,
+        lastActiveDate: today,
+        stageScores: { stage_1: 0, stage_2: 0, stage_3: 0, stage_4: 0 },
+        unlockedStages: ['stage_1'],
+        hardWords: {}, // { wordId: { wordObj, mistakes, nextReview } }
+        masteredWords: [],
+        customDecks: []
+      };
+    }
+
+    function updateDailyStreak(profile) {
+      const today = new Date().toISOString().split('T')[0];
+      if (profile.lastActiveDate === today) return;
+
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      if (profile.lastActiveDate === yesterday) {
+        profile.streak += 1;
+        showToast(`🔥 Ajoyib! Kunlik seriyangiz ${profile.streak} kunga yetdi!`, 'success');
+      } else {
+        profile.streak = 1;
+      }
+      profile.lastActiveDate = today;
+    }
+
+    function renderSavedProfilesList() {
+      const keys = Object.keys(profiles);
+      const section = document.getElementById('saved-profiles-section');
+      const list = document.getElementById('saved-profiles-list');
+      if (keys.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+      section.classList.remove('hidden');
+      list.innerHTML = keys.map(k => {
+        const p = profiles[k];
+        return `
+          <button type="button" onclick="loginWithProfileKey('${k}')"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-violet-600 hover:text-white text-xs font-bold transition flex items-center gap-1.5">
+            <span>${sanitizeHTML(p.name)}</span>
+            <span class="opacity-70 text-[10px]">(${p.xp} XP)</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function loginWithProfileKey(key) {
+      if (!profiles[key]) return;
+      currentUser = profiles[key];
+      updateDailyStreak(currentUser);
+      saveAllProfiles();
+      enterApp();
+    }
+
+    // Auth Form Submission & Collision Check
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inputEl = document.getElementById('fullname-input');
+      const errorEl = document.getElementById('auth-error');
+      const collisionBox = document.getElementById('collision-box');
+
+      const rawName = inputEl.value.trim().replace(/\s+/g, ' ');
+      // Validate: no dangerous chars, at least 3 chars
+      if (rawName.length < 3) {
+        errorEl.textContent = 'Iltimos, to‘liq ism-familiyangizni kiriting (kamida 3 ta belgi).';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (/[<>{};$]/.test(rawName)) {
+        errorEl.textContent = 'Taqiqlangan belgilar kiritildi. Faqat harflar va raqamlardan foydalaning.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      errorEl.classList.add('hidden');
+      const key = normalizeKey(rawName);
+
+      // Check collision
+      if (profiles[key] && collisionBox.classList.contains('hidden')) {
+        document.getElementById('existing-xp-label').textContent = `${profiles[key].xp} XP`;
+        collisionBox.classList.remove('hidden');
+
+        document.getElementById('continue-existing-btn').onclick = () => {
+          collisionBox.classList.add('hidden');
+          loginWithProfileKey(key);
+        };
+
+        document.getElementById('create-with-pin-btn').onclick = () => {
+          const randomPin = Math.floor(100 + Math.random() * 900);
+          const uniqueName = `${rawName} #${randomPin}`;
+          const uniqueKey = normalizeKey(uniqueName);
+          profiles[uniqueKey] = createDefaultProfile(uniqueName, uniqueKey);
+          collisionBox.classList.add('hidden');
+          loginWithProfileKey(uniqueKey);
+          showToast(`Yangi unikal profil yaratildi: ${uniqueName}`, 'success');
+        };
+        return;
+      }
+
+      if (!profiles[key]) {
+        profiles[key] = createDefaultProfile(rawName, key);
+        showToast(`Xush kelibsiz, ${rawName}! Profilingiz yaratildi.`, 'success');
+      }
+      loginWithProfileKey(key);
+    });
+
+    function enterApp() {
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('app-shell').classList.remove('hidden');
+      playSound('correct');
+      updateAllUI();
+    }
+
+    function logoutUser() {
+      exitArena();
+      localStorage.removeItem(ACTIVE_USER_KEY);
+      currentUser = null;
+      document.getElementById('fullname-input').value = '';
+      document.getElementById('collision-box').classList.add('hidden');
+      document.getElementById('app-shell').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('hidden');
+      renderSavedProfilesList();
+    }
+
+    /**
+     * 4. UI UPDATES & GAMIFICATION ENGINE
+     */
+    function calculateLevel(xp) {
+      return Math.floor(xp / 100) + 1;
+    }
+
+    function addXP(amount) {
+      if (!currentUser || amount <= 0) return;
+      const oldLevel = calculateLevel(currentUser.xp);
+      currentUser.xp += amount;
+      const newLevel = calculateLevel(currentUser.xp);
+      saveAllProfiles();
+      updateHUD();
+
+      if (newLevel > oldLevel) {
+        playSound('levelup');
+        triggerConfetti();
+        showToast(`🎉 TABRIKLAYMIZ! Siz ${newLevel}-Darajaga ko‘tarildingiz!`, 'success');
+      }
+    }
+
+    function recordWordMistake(wordObj) {
+      if (!currentUser) return;
+      const existing = currentUser.hardWords[wordObj.id];
+      currentUser.hardWords[wordObj.id] = {
+        word: wordObj,
+        mistakes: existing ? existing.mistakes + 1 : 1,
+        lastMissed: Date.now()
+      };
+      saveAllProfiles();
+      updateHUD();
+    }
+
+    function recordWordMastered(wordObj) {
+      if (!currentUser) return;
+      if (!currentUser.masteredWords.includes(wordObj.id)) {
+        currentUser.masteredWords.push(wordObj.id);
+      }
+      // Reduce mistake count or remove from hardWords if answered correctly
+      if (currentUser.hardWords[wordObj.id]) {
+        currentUser.hardWords[wordObj.id].mistakes -= 1;
+        if (currentUser.hardWords[wordObj.id].mistakes <= 0) {
+          delete currentUser.hardWords[wordObj.id];
+        }
+      }
+      saveAllProfiles();
+      updateHUD();
+    }
+
+    function updateHUD() {
+      if (!currentUser) return;
+      const level = calculateLevel(currentUser.xp);
+      const xpInLevel = currentUser.xp % 100;
+
+      // Initials avatar
+      const parts = currentUser.name.split(' ');
+      const initials = (parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '');
+      document.getElementById('user-avatar').textContent = initials.toUpperCase();
+      document.getElementById('header-username').textContent = currentUser.name;
+      document.getElementById('banner-name').textContent = currentUser.name.split(' ')[0];
+
+      document.getElementById('stat-streak').textContent = currentUser.streak;
+      document.getElementById('stat-xp').textContent = currentUser.xp;
+      document.getElementById('stat-level').textContent = level;
+      document.getElementById('banner-level').textContent = level;
+
+      document.getElementById('xp-progress-text').textContent = `${xpInLevel} / 100 XP`;
+      document.getElementById('xp-progress-bar').style.width = `${xpInLevel}%`;
+      document.getElementById('mastered-words-count').textContent = currentUser.masteredWords.length;
+
+      const hardCount = Object.keys(currentUser.hardWords).length;
+      document.getElementById('hard-count-badge').textContent = hardCount;
+    }
+
+    function updateAllUI() {
+      updateHUD();
+      renderStages();
+      renderCustomDecks();
+      renderHardWords();
+      renderLeaderboard();
+      populateMiniGameDeckSelector();
+    }
+
+    function switchTab(tabId) {
+      exitArena();
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = 'nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-1.5 bg-violet-600 text-white shadow-md shadow-violet-600/20';
+        } else {
+          btn.className = 'nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+        }
+      });
+
+      ['dashboard', 'custom', 'hard', 'leaderboard'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.toggle('hidden', v !== tabId);
+      });
+
+      if (tabId === 'leaderboard') renderLeaderboard();
+      if (tabId === 'hard') renderHardWords();
+      if (tabId === 'custom') renderCustomDecks();
+    }
+
+    /**
+     * 5. RENDER STAGES, CUSTOM DECKS, HARD WORDS, LEADERBOARD
+     */
+    function renderStages() {
+      const grid = document.getElementById('stages-grid');
+      grid.innerHTML = BUILTIN_STAGES.map((stage) => {
+        const isUnlocked = currentUser.unlockedStages.includes(stage.id);
+        const bestScore = currentUser.stageScores[stage.id] || 0;
+
+        return `
+          <div class="bg-white dark:bg-slate-900 border ${isUnlocked ? 'border-slate-200 dark:border-slate-800' : 'border-slate-200/60 dark:border-slate-800/60 opacity-75'} rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div>
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${stage.color} text-white flex items-center justify-center text-2xl shadow-lg">
+                  ${isUnlocked ? stage.icon : '🔒'}
+                </div>
+                <div class="text-right">
+                  <span class="inline-block px-2.5 py-1 rounded-xl text-xs font-extrabold ${bestScore >= 80 ? 'bg-emerald-500/15 text-emerald-500' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
+                    Natija: ${bestScore}%
+                  </span>
+                  <p class="text-[11px] text-slate-400 mt-1">${stage.words.length} ta so‘z</p>
+                </div>
+              </div>
+
+              <h4 class="font-extrabold text-base sm:text-lg">${stage.title}</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${stage.subtitle}</p>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+              ${isUnlocked ? `
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button onclick="startStageSession('${stage.id}', 'flashcards')" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-violet-600 hover:text-white font-bold text-xs transition flex items-center justify-center gap-1.5">
+                    <span>🃏 Kartochkalar</span>
+                  </button>
+                  <button onclick="startStageSession('${stage.id}', 'quiz')" class="py-2.5 px-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs shadow-md shadow-violet-600/20 transition flex items-center justify-center gap-1.5">
+                    <span>🎯 Bosqich Testi</span>
+                  </button>
+                </div>
+              ` : `
+                <div class="text-center py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800/70 text-xs font-bold text-slate-500">
+                  🔒 Ochish uchun avvalgi bosqichda 80% to‘plang
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function populateMiniGameDeckSelector() {
+      const select = document.getElementById('minigame-deck-select');
+      let options = `<option value="all_unlocked">Barcha ochiq bosqich so‘zlari</option>`;
+      BUILTIN_STAGES.forEach(s => {
+        if (currentUser.unlockedStages.includes(s.id)) {
+          options += `<option value="${s.id}">${s.title}</option>`;
+        }
+      });
+      currentUser.customDecks.forEach(d => {
+        if (d.words.length >= 3) {
+          options += `<option value="${d.id}">📁 ${sanitizeHTML(d.title)} (${d.words.length})</option>`;
+        }
+      });
+      select.innerHTML = options;
+    }
+
+    /**
+     * Custom Decks Builder Logic
+     */
+    function renderCustomDecks() {
+      const container = document.getElementById('custom-decks-container');
+      if (currentUser.customDecks.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-6">
+            <div class="text-4xl mb-3">📂</div>
+            <h3 class="font-extrabold text-base">Hozircha shaxsiy to‘plamlar yo‘q</h3>
+            <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">O‘zingiz o‘rganmoqchi bo‘lgan yangi so‘zlarni kiriting va shaxsiy mini-o‘yinlaringizni yarating.</p>
+            <button onclick="openCreateDeckModal()" class="mt-4 px-5 py-2.5 rounded-xl bg-violet-600 text-white font-bold text-xs">Birinchi to‘plamni yaratish</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = currentUser.customDecks.map(deck => `
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <span class="text-xs font-bold text-violet-500 uppercase tracking-wider">Shaxsiy Papka</span>
+                <h3 class="text-lg font-black mt-0.5">${sanitizeHTML(deck.title)}</h3>
+              </div>
+              <div class="flex gap-1">
+                <button onclick="editCustomDeck('${deck.id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:text-violet-500 text-xs font-bold" title="Tahrirlash">✏️</button>
+                <button onclick="deleteCustomDeck('${deck.id}')" class="p-2 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white text-xs font-bold" title="O‘chirish">🗑️</button>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">${deck.words.length} ta so‘z mavjud</p>
+
+            <div class="mt-3 space-y-1.5 max-h-36 overflow-y-auto pr-1">
+              ${deck.words.map(w => `
+                <div class="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/60 px-3 py-2 rounded-xl">
+                  <div class="truncate pr-2">
+                    <strong class="text-slate-800 dark:text-slate-100">${sanitizeHTML(w.en)}</strong> — <span class="text-slate-500 dark:text-slate-400">${sanitizeHTML(w.uz)}</span>
+                  </div>
+                  <button onclick="speakText('${escapeJSArg(w.en)}', event)" class="text-violet-500 hover:scale-110 transition shrink-0">🔊</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <button onclick="startCustomDeckSession('${deck.id}', 'flashcards')" class="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-violet-600 hover:text-white font-bold text-xs transition">
+              🃏 Kartochkalar
+            </button>
+            <button onclick="startCustomDeckSession('${deck.id}', 'quiz')" class="py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs transition">
+              🎯 Test Boshlash
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openCreateDeckModal() {
+      document.getElementById('editing-deck-id').value = '';
+      document.getElementById('deck-title-input').value = '';
+      document.getElementById('deck-modal-title').textContent = 'Yangi Shaxsiy To‘plam';
+      draftDeckWords = [];
+      renderDraftWords();
+      document.getElementById('deck-modal').classList.remove('hidden');
+      document.getElementById('deck-modal').classList.add('flex');
+    }
+
+    function editCustomDeck(deckId) {
+      const deck = currentUser.customDecks.find(d => d.id === deckId);
+      if (!deck) return;
+      document.getElementById('editing-deck-id').value = deck.id;
+      document.getElementById('deck-title-input').value = deck.title;
+      document.getElementById('deck-modal-title').textContent = 'To‘plamni Tahrirlash';
+      draftDeckWords = JSON.parse(JSON.stringify(deck.words));
+      renderDraftWords();
+      document.getElementById('deck-modal').classList.remove('hidden');
+      document.getElementById('deck-modal').classList.add('flex');
+    }
+
+    function closeDeckModal() {
+      document.getElementById('deck-modal').classList.add('hidden');
+      document.getElementById('deck-modal').classList.remove('flex');
+    }
+
+    function addWordToDraft() {
+      const en = document.getElementById('new-word-en').value.trim();
+      const uz = document.getElementById('new-word-uz').value.trim();
+      const ex = document.getElementById('new-word-ex').value.trim();
+
+      if (!en || !uz) {
+        showToast('So‘z va tarjimasini kiriting!', 'warning');
+        return;
+      }
+      draftDeckWords.push({
+        id: 'cw_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        en,
+        uz,
+        ex: ex || `Example with "${en}".`
+      });
+      document.getElementById('new-word-en').value = '';
+      document.getElementById('new-word-uz').value = '';
+      document.getElementById('new-word-ex').value = '';
+      playSound('click');
+      renderDraftWords();
+    }
+
+    function removeDraftWord(index) {
+      draftDeckWords.splice(index, 1);
+      renderDraftWords();
+    }
+
+    function renderDraftWords() {
+      const list = document.getElementById('draft-words-list');
+      if (draftDeckWords.length === 0) {
+        list.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">Hali so‘z qo‘shilmadi (kamida 1 ta so‘z qo‘shing).</p>`;
+        return;
+      }
+      list.innerHTML = draftDeckWords.map((w, idx) => `
+        <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl text-xs">
+          <div>
+            <strong>${sanitizeHTML(w.en)}</strong> — <span>${sanitizeHTML(w.uz)}</span>
+          </div>
+          <button type="button" onclick="removeDraftWord(${idx})" class="text-rose-500 font-bold px-2">✕</button>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('deck-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('deck-title-input').value.trim();
+      const editId = document.getElementById('editing-deck-id').value;
+
+      if (!title) return;
+      if (draftDeckWords.length === 0) {
+        showToast('Kamida 1 ta so‘z qo‘shing!', 'warning');
+        return;
+      }
+
+      if (editId) {
+        const idx = currentUser.customDecks.findIndex(d => d.id === editId);
+        if (idx !== -1) {
+          currentUser.customDecks[idx].title = title;
+          currentUser.customDecks[idx].words = draftDeckWords;
+        }
+        showToast('To‘plam yangilandi!', 'success');
+      } else {
+        currentUser.customDecks.push({
+          id: 'deck_' + Date.now(),
+          title,
+          words: draftDeckWords
+        });
+        showToast('Yangi shaxsiy lug‘at yaratildi!', 'success');
+      }
+
+      saveAllProfiles();
+      closeDeckModal();
+      renderCustomDecks();
+      populateMiniGameDeckSelector();
+    });
+
+    function deleteCustomDeck(deckId) {
+      currentUser.customDecks = currentUser.customDecks.filter(d => d.id !== deckId);
+      saveAllProfiles();
+      renderCustomDecks();
+      populateMiniGameDeckSelector();
+      showToast('To‘plam o‘chirildi.', 'info');
+    }
+
+    /**
+     * Hard Words (Spaced Repetition Queue)
+     */
+    function renderHardWords() {
+      const list = document.getElementById('hard-words-list');
+      const entries = Object.values(currentUser.hardWords);
+
+      if (entries.length === 0) {
+        list.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6">
+            <div class="text-4xl mb-2">🌟</div>
+            <h3 class="font-extrabold text-base">Ajoyib! Qiyin so‘zlar ro‘yxati bo‘sh</h3>
+            <p class="text-xs text-slate-500 mt-1">Testlarda xato qilgan yoki takrorlash kerak bo‘lgan so‘zlar avtomatik shu yerda paydo bo‘ladi.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = entries.map(item => `
+        <div class="bg-white dark:bg-slate-900 border border-rose-500/25 rounded-2xl p-4 flex items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-base font-extrabold">${sanitizeHTML(item.word.en)}</strong>
+              <span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-500 text-[10px] font-extrabold">${item.mistakes}x xato</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${sanitizeHTML(item.word.uz)}</p>
+          </div>
+          <button onclick="speakText('${escapeJSArg(item.word.en)}', event)" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-violet-600 hover:text-white transition">🔊</button>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * Leaderboard Rendering
+     */
+    function renderLeaderboard() {
+      const list = document.getElementById('leaderboard-list');
+      // Merge simulated learners with all local profiles
+      const allUsers = [...SIMULATED_LEADERBOARD];
+      Object.values(profiles).forEach(p => {
+        allUsers.push({
+          name: p.name,
+          xp: p.xp,
+          streak: p.streak,
+          level: calculateLevel(p.xp),
+          isCurrent: currentUser && p.key === currentUser.key
+        });
+      });
+
+      allUsers.sort((a, b) => b.xp - a.xp);
+
+      list.innerHTML = allUsers.map((u, idx) => {
+        const rank = idx + 1;
+        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+        return `
+          <div class="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border ${u.isCurrent ? 'bg-violet-600/10 border-violet-500 shadow-sm' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-800'}">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shrink-0 ${rank <= 3 ? 'bg-amber-500/20 text-amber-500' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}">
+                ${medal}
+              </div>
+              <div class="truncate">
+                <p class="font-extrabold text-sm truncate flex items-center gap-1.5">
+                  <span>${sanitizeHTML(u.name)}</span>
+                  ${u.isCurrent ? '<span class="px-2 py-0.5 text-[10px] rounded-full bg-violet-600 text-white">Siz</span>' : ''}
+                </p>
+                <p class="text-[11px] text-slate-500">Daraja ${u.level} • 🔥 ${u.streak} kunlik seriya</p>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="font-black text-sm sm:text-base text-violet-600 dark:text-violet-400">${u.xp} XP</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 6. STUDY & MINI-GAMES ENGINE
+     */
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getAllAvailableWords() {
+      let pool = [];
+      BUILTIN_STAGES.forEach(s => {
+        if (currentUser.unlockedStages.includes(s.id)) {
+          pool = pool.concat(s.words);
+        }
+      });
+      currentUser.customDecks.forEach(d => {
+        pool = pool.concat(d.words);
+      });
+      return pool;
+    }
+
+    function startStageSession(stageId, mode) {
+      const stage = BUILTIN_STAGES.find(s => s.id === stageId);
+      if (!stage) return;
+      // Prioritize hard words from this stage if any exist
+      const prioritized = [...stage.words].sort((a, b) => {
+        const aHard = currentUser.hardWords[a.id] ? 1 : 0;
+        const bHard = currentUser.hardWords[b.id] ? 1 : 0;
+        return bHard - aHard;
+      });
+      launchArena(mode, stageId, shuffleArray(prioritized));
+    }
+
+    function startCustomDeckSession(deckId, mode) {
+      const deck = currentUser.customDecks.find(d => d.id === deckId);
+      if (!deck || deck.words.length === 0) return;
+      launchArena(mode, deckId, shuffleArray(deck.words));
+    }
+
+    function startHardWordsSession(mode) {
+      const entries = Object.values(currentUser.hardWords).map(e => e.word);
+      if (entries.length === 0) {
+        showToast('Qiyin so‘zlar ro‘yxati hozircha bo‘sh!', 'info');
+        return;
+      }
+      launchArena(mode, 'hard_words', shuffleArray(entries));
+    }
+
+    function startGameMode(mode) {
+      const selected = document.getElementById('minigame-deck-select').value;
+      let words = [];
+      if (selected === 'all_unlocked') {
+        words = getAllAvailableWords();
+      } else if (selected.startsWith('stage_')) {
+        const st = BUILTIN_STAGES.find(s => s.id === selected);
+        words = st ? st.words : [];
+      } else {
+        const dk = currentUser.customDecks.find(d => d.id === selected);
+        words = dk ? dk.words : [];
+      }
+
+      if (words.length < 3) {
+        showToast('Mini-o‘yin uchun kamida 3 ta so‘z kerak!', 'warning');
+        return;
+      }
+      launchArena(mode, selected, shuffleArray(words));
+    }
+
+    function launchArena(mode, sourceId, words) {
+      clearInterval(session.timerInterval);
+      session = {
+        active: true,
+        mode,
+        sourceId,
+        words,
+        index: 0,
+        score: 0,
+        correctCount: 0,
+        combo: 1,
+        maxCombo: 1,
+        earnedXP: 0,
+        timerInterval: null,
+        timeLeft: mode === 'sprint' ? 60 : 0,
+        matchSelected: null,
+        matchPairs: [],
+        scrambleCurrent: [],
+        scramblePool: []
+      };
+
+      // Hide all tab views, show arena
+      ['dashboard', 'custom', 'hard', 'leaderboard'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+      });
+      document.getElementById('study-arena').classList.remove('hidden');
+      updateComboUI();
+
+      if (mode === 'flashcards') renderFlashcardStep();
+      else if (mode === 'quiz') renderQuizStep();
+      else if (mode === 'match') initSpeedMatchGame();
+      else if (mode === 'scramble') renderScrambleStep();
+      else if (mode === 'sprint') initSprintGame();
+    }
+
+    function exitArena() {
+      clearInterval(session.timerInterval);
+      session.active = false;
+      document.getElementById('study-arena').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.remove('hidden');
+      updateAllUI();
+    }
+
+    function updateComboUI() {
+      const badge = document.getElementById('combo-badge');
+      document.getElementById('combo-text').textContent = `${session.combo}x`;
+      badge.classList.add('scale-110');
+      setTimeout(() => badge.classList.remove('scale-110'), 150);
+    }
+
+    function updateArenaProgress(pct) {
+      document.getElementById('arena-progress-bar').style.width = `${Math.min(100, Math.max(0, pct))}%`;
+    }
+
+    /**
+     * MODE A: 3D FLASHCARDS & SPACED REPETITION
+     */
+    function renderFlashcardStep() {
+      if (session.index >= session.words.length) {
+        finishSession();
+        return;
+      }
+      const w = session.words[session.index];
+      updateArenaProgress((session.index / session.words.length) * 100);
+
+      const arena = document.getElementById('arena-content');
+      arena.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-3">
+          <span>Kartochka ${session.index + 1} / ${session.words.length}</span>
+          <span>Aylantirish uchun kartani bosing</span>
+        </div>
+
+        <div onclick="this.querySelector('.card-inner').classList.toggle('rotate-y-180'); playSound('click');"
+          class="perspective-1000 w-full h-64 sm:h-72 cursor-pointer select-none my-auto">
+          <div class="card-inner relative w-full h-full transition-transform duration-500 transform-style-3d">
+            
+            <!-- Front -->
+            <div class="backface-hidden absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-800/70 border border-slate-300 dark:border-slate-700 rounded-3xl p-6 flex flex-col items-center justify-center text-center shadow-inner">
+              <button onclick="speakText('${escapeJSArg(w.en)}', event)" class="mb-4 w-12 h-12 rounded-2xl bg-violet-600 text-white flex items-center justify-center text-xl shadow-lg hover:scale-105 transition" title="Talaffuzni eshitish">
+                🔊
+              </button>
+              <h3 class="text-3xl sm:text-4xl font-black tracking-tight">${sanitizeHTML(w.en)}</h3>
+              <p class="text-xs text-slate-400 mt-4 font-semibold">Tarjimasini ko‘rish uchun bosing ↻</p>
+            </div>
+
+            <!-- Back -->
+            <div class="backface-hidden rotate-y-180 absolute inset-0 bg-gradient-to-br from-violet-600 to-indigo-700 text-white rounded-3xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
+              <span class="text-xs uppercase tracking-widest text-violet-200 font-bold mb-1">Tarjimasi</span>
+              <h3 class="text-2xl sm:text-3xl font-black">${sanitizeHTML(w.uz)}</h3>
+              <div class="mt-4 p-3 rounded-2xl bg-black/20 text-xs sm:text-sm text-violet-100 max-w-md flex items-center gap-2">
+                <span>“${sanitizeHTML(w.ex)}”</span>
+                <button onclick="speakText('${escapeJSArg(w.ex)}', event)" class="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 shrink-0">🔊</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2.5 mt-6">
+          <button onclick="rateFlashcard('hard')" class="py-3 rounded-2xl bg-rose-500/15 hover:bg-rose-500 text-rose-600 hover:text-white font-extrabold text-xs transition">
+            😓 Qiyin (Takrorlash)
+          </button>
+          <button onclick="rateFlashcard('good')" class="py-3 rounded-2xl bg-amber-500/15 hover:bg-amber-500 text-amber-600 hover:text-white font-extrabold text-xs transition">
+            🤔 Yaxshi (+5 XP)
+          </button>
+          <button onclick="rateFlashcard('easy')" class="py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500 text-emerald-600 hover:text-white font-extrabold text-xs transition">
+            😎 Oson (+10 XP)
+          </button>
+        </div>
+      `;
+    }
+
+    function rateFlashcard(rating) {
+      const w = session.words[session.index];
+      if (rating === 'hard') {
+        playSound('wrong');
+        recordWordMistake(w);
+        session.combo = 1;
+        // Re-insert word later in the session for active recall
+        session.words.push(w);
+      } else {
+        playSound('correct');
+        const xp = rating === 'easy' ? 10 : 5;
+        session.earnedXP += xp;
+        session.correctCount += 1;
+        session.combo = Math.min(5, session.combo + 1);
+        recordWordMastered(w);
+      }
+      updateComboUI();
+      session.index += 1;
+      renderFlashcardStep();
+    }
+
+    /**
+     * MODE B: ADAPTIVE QUIZ (4-OPTION MULTIPLE CHOICE + WRITTEN SPELLING)
+     */
+    function renderQuizStep() {
+      if (session.index >= session.words.length) {
+        finishSession();
+        return;
+      }
+
+      const w = session.words[session.index];
+      updateArenaProgress((session.index / session.words.length) * 100);
+
+      // Every 3rd question is a Written Spelling Test (Yozma sinov)
+      const isWritten = (session.index % 3 === 2);
+      const arena = document.getElementById('arena-content');
+
+      if (isWritten) {
+        arena.innerHTML = `
+          <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+            <span>Savol ${session.index + 1} / ${session.words.length}</span>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-500">✍️ Yozma sinov</span>
+          </div>
+
+          <div class="my-auto text-center space-y-3 py-4">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Ushbu tarjimaning inglizcha so‘zini yozing:</p>
+            <h3 class="text-2xl sm:text-3xl font-black text-violet-600 dark:text-violet-400">${sanitizeHTML(w.uz)}</h3>
+            <p class="text-xs text-slate-500 italic">Misol: “${sanitizeHTML(w.ex.replace(new RegExp(w.en, 'gi'), '_____'))}”</p>
+          </div>
+
+          <form id="written-quiz-form" class="space-y-3">
+            <input type="text" id="written-answer-input" autocomplete="off" placeholder="Inglizcha so‘zni yozing..." required
+              class="w-full px-4 py-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent focus:border-violet-500 outline-none text-center font-extrabold text-lg" />
+            <div id="quiz-feedback" class="hidden text-center text-xs font-bold py-2.5 rounded-xl"></div>
+            <button type="submit" id="written-submit-btn" class="w-full py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-sm shadow-lg transition">
+              Tekshirish
+            </button>
+          </form>
+        `;
+
+        const inputEl = document.getElementById('written-answer-input');
+        inputEl.focus();
+
+        document.getElementById('written-quiz-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const userAns = inputEl.value.trim().toLowerCase();
+          const target = w.en.trim().toLowerCase();
+          const isRight = userAns === target;
+
+          handleQuizAnswer(isRight, w, w.en);
+        });
+      } else {
+        // 4-option Multiple Choice (alternate En->Uz and Uz->En)
+        const reverseDir = session.index % 2 === 1;
+        const allPool = getAllAvailableWords();
+        const distractors = shuffleArray(allPool.filter(item => item.id !== w.id)).slice(0, 3);
+        const options = shuffleArray([w, ...distractors]);
+
+        arena.innerHTML = `
+          <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+            <span>Savol ${session.index + 1} / ${session.words.length}</span>
+            <span class="px-2.5 py-1 rounded-lg bg-violet-500/15 text-violet-500">🎯 4 Variantli Test</span>
+          </div>
+
+          <div class="my-auto text-center py-4">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">To‘g‘ri tarjimani tanlang:</p>
+            <div class="flex items-center justify-center gap-2.5">
+              <h3 class="text-2xl sm:text-3xl font-black">${sanitizeHTML(reverseDir ? w.uz : w.en)}</h3>
+              ${!reverseDir ? `<button onclick="speakText('${escapeJSArg(w.en)}', event)" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-violet-600 hover:text-white transition">🔊</button>` : ''}
+            </div>
+          </div>
+
+          <div id="mc-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${options.map(opt => `
+              <button type="button" onclick="selectMCOption(this, '${opt.id === w.id}', '${escapeJSArg(reverseDir ? w.en : w.uz)}')"
+                class="mc-opt-btn p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/90 hover:bg-violet-600/15 border-2 border-transparent hover:border-violet-500 font-bold text-sm text-left transition">
+                ${sanitizeHTML(reverseDir ? opt.en : opt.uz)}
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-feedback" class="hidden text-center text-xs font-bold py-2.5 rounded-xl mt-3"></div>
+        `;
+      }
+    }
+
+    function selectMCOption(btnEl, isCorrectStr, correctAnswerText) {
+      const isRight = isCorrectStr === 'true';
+      document.querySelectorAll('.mc-opt-btn').forEach(b => b.disabled = true);
+      if (isRight) {
+        btnEl.classList.add('!bg-emerald-500', '!text-white', '!border-emerald-400');
+      } else {
+        btnEl.classList.add('!bg-rose-500', '!text-white', '!border-rose-400', 'animate-shake');
+      }
+      handleQuizAnswer(isRight, session.words[session.index], correctAnswerText);
+    }
+
+    function handleQuizAnswer(isRight, wordObj, correctText) {
+      const fb = document.getElementById('quiz-feedback');
+      fb.classList.remove('hidden');
+
+      if (isRight) {
+        playSound('correct');
+        const xpGain = 10 * session.combo;
+        session.earnedXP += xpGain;
+        session.correctCount += 1;
+        session.combo = Math.min(5, session.combo + 1);
+        session.maxCombo = Math.max(session.maxCombo, session.combo);
+        recordWordMastered(wordObj);
+
+        fb.className = 'text-center text-xs font-extrabold py-2.5 rounded-xl mt-3 bg-emerald-500/15 text-emerald-500 animate-pop';
+        fb.textContent = `✅ Barakalla! +${xpGain} XP (${session.combo - 1}x Combo)`;
+      } else {
+        playSound('wrong');
+        session.combo = 1;
+        recordWordMistake(wordObj);
+
+        fb.className = 'text-center text-xs font-extrabold py-2.5 rounded-xl mt-3 bg-rose-500/15 text-rose-500 animate-shake';
+        fb.textContent = `❌ Noto‘g‘ri! To‘g‘ri javob: ${correctText}`;
+      }
+
+      updateComboUI();
+      setTimeout(() => {
+        session.index += 1;
+        renderQuizStep();
+      }, 1150);
+    }
+
+    /**
+     * MINI-GAME 1: TEZKOR JUFTLASHTIRISH (SPEED MATCH)
+     */
+    function initSpeedMatchGame() {
+      const subset = session.words.slice(0, 6);
+      let cards = [];
+      subset.forEach(w => {
+        cards.push({ uid: w.id + '_en', pairId: w.id, text: w.en, lang: 'en', matched: false });
+        cards.push({ uid: w.id + '_uz', pairId: w.id, text: w.uz, lang: 'uz', matched: false });
+      });
+      session.matchPairs = shuffleArray(cards);
+      session.timeLeft = 0;
+
+      session.timerInterval = setInterval(() => {
+        session.timeLeft += 1;
+        const timerEl = document.getElementById('match-timer');
+        if (timerEl) timerEl.textContent = `${session.timeLeft}s`;
+      }, 1000);
+
+      renderSpeedMatchBoard();
+    }
+
+    function renderSpeedMatchBoard() {
+      const matchedCount = session.matchPairs.filter(c => c.matched).length;
+      updateArenaProgress((matchedCount / session.matchPairs.length) * 100);
+
+      if (matchedCount === session.matchPairs.length) {
+        clearInterval(session.timerInterval);
+        session.correctCount = session.matchPairs.length / 2;
+        session.words = session.words.slice(0, 6);
+        finishSession();
+        return;
+      }
+
+      const arena = document.getElementById('arena-content');
+      arena.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-bold mb-4">
+          <span class="text-emerald-500">⚡ So‘z va tarjimalarni juftlang</span>
+          <span class="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 font-black">⏱️ <span id="match-timer">${session.timeLeft}s</span></span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 my-auto">
+          ${session.matchPairs.map((card, idx) => {
+            if (card.matched) {
+              return `<div class="h-20 rounded-2xl border border-dashed border-emerald-500/30 bg-emerald-500/5 flex items-center justify-center text-emerald-500 text-xs font-bold">✓ Topildi</div>`;
+            }
+            const isSelected = session.matchSelected === idx;
+            return `
+              <button onclick="handleMatchClick(${idx})"
+                class="h-20 p-3 rounded-2xl border-2 font-extrabold text-xs sm:text-sm transition flex items-center justify-center text-center ${isSelected ? 'bg-violet-600 text-white border-violet-400 scale-105 shadow-lg' : 'bg-slate-100 dark:bg-slate-800 border-transparent hover:border-violet-500'}">
+                ${sanitizeHTML(card.text)}
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function handleMatchClick(idx) {
+      playSound('click');
+      if (session.matchSelected === null) {
+        session.matchSelected = idx;
+        renderSpeedMatchBoard();
+        return;
+      }
+      if (session.matchSelected === idx) {
+        session.matchSelected = null;
+        renderSpeedMatchBoard();
+        return;
+      }
+
+      const first = session.matchPairs[session.matchSelected];
+      const second = session.matchPairs[idx];
+
+      if (first.pairId === second.pairId && first.lang !== second.lang) {
+        playSound('correct');
+        first.matched = true;
+        second.matched = true;
+        session.earnedXP += 12 * session.combo;
+        session.combo = Math.min(5, session.combo + 1);
+        session.matchSelected = null;
+        updateComboUI();
+        renderSpeedMatchBoard();
+      } else {
+        playSound('wrong');
+        session.combo = 1;
+        session.matchSelected = null;
+        updateComboUI();
+        renderSpeedMatchBoard();
+      }
+    }
+
+    /**
+     * MINI-GAME 2: HARFLARDAN SO‘Z YIG‘ISH (WORD SCRAMBLE)
+     */
+    function renderScrambleStep() {
+      const subset = session.words.slice(0, 6);
+      if (session.index >= subset.length) {
+        session.words = subset;
+        finishSession();
+        return;
+      }
+
+      const w = subset[session.index];
+      updateArenaProgress((session.index / subset.length) * 100);
+
+      // Clean word letters (only letters)
+      const cleanLetters = w.en.toUpperCase().replace(/[^A-Z]/g, '').split('');
+      session.scramblePool = shuffleArray(cleanLetters.map((ch, i) => ({ id: i, ch, used: false })));
+      session.scrambleCurrent = [];
+
+      renderScrambleUI(w);
+    }
+
+    function renderScrambleUI(w) {
+      const targetLen = w.en.toUpperCase().replace(/[^A-Z]/g, '').length;
+      const arena = document.getElementById('arena-content');
+
+      arena.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-bold text-slate-400">
+          <span>So‘z ${session.index + 1} / ${Math.min(6, session.words.length)}</span>
+          <span class="text-amber-500">🧩 Harflardan so‘z tuzing</span>
+        </div>
+
+        <div class="text-center my-4">
+          <p class="text-xs uppercase font-bold text-slate-400 mb-1">Tarjimasi:</p>
+          <h3 class="text-2xl font-black text-violet-600 dark:text-violet-400">${sanitizeHTML(w.uz)}</h3>
+        </div>
+
+        <!-- Answer Slots -->
+        <div class="flex flex-wrap justify-center gap-2 my-4 min-h-[52px]">
+          ${Array.from({ length: targetLen }).map((_, slotIdx) => {
+            const letterObj = session.scrambleCurrent[slotIdx];
+            return `
+              <button onclick="removeScrambleLetter(${slotIdx})"
+                class="w-11 h-12 rounded-xl font-black text-lg flex items-center justify-center border-2 transition ${letterObj ? 'bg-violet-600 text-white border-violet-400 shadow-md' : 'bg-slate-100 dark:bg-slate-800 border-dashed border-slate-300 dark:border-slate-700'}">
+                ${letterObj ? letterObj.ch : ''}
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- Scrambled Pool -->
+        <div class="flex flex-wrap justify-center gap-2 my-4">
+          ${session.scramblePool.map((item, poolIdx) => `
+            <button onclick="pickScrambleLetter(${poolIdx})" ${item.used ? 'disabled' : ''}
+              class="w-11 h-12 rounded-xl font-black text-lg transition ${item.used ? 'opacity-20 bg-slate-200 dark:bg-slate-800' : 'bg-amber-500/15 hover:bg-amber-500 text-amber-600 dark:text-amber-400 hover:text-white border border-amber-500/30 shadow-sm'}">
+              ${item.ch}
+            </button>
+          `).join('')}
+        </div>
+
+        <div class="flex justify-center gap-3 mt-2">
+          <button onclick="renderScrambleStep()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">↻ Qayta aralashtirish</button>
+        </div>
+      `;
+    }
+
+    function pickScrambleLetter(poolIdx) {
+      const w = session.words[session.index];
+      const targetStr = w.en.toUpperCase().replace(/[^A-Z]/g, '');
+      const item = session.scramblePool[poolIdx];
+      if (!item || item.used) return;
+
+      playSound('click');
+      item.used = true;
+      session.scrambleCurrent.push(item);
+      renderScrambleUI(w);
+
+      if (session.scrambleCurrent.length === targetStr.length) {
+        const built = session.scrambleCurrent.map(x => x.ch).join('');
+        if (built === targetStr) {
+          playSound('correct');
+          session.earnedXP += 15 * session.combo;
+          session.correctCount += 1;
+          session.combo = Math.min(5, session.combo + 1);
+          recordWordMastered(w);
+          updateComboUI();
+          setTimeout(() => {
+            session.index += 1;
+            renderScrambleStep();
+          }, 500);
+        } else {
+          playSound('wrong');
+          session.combo = 1;
+          updateComboUI();
+          showToast('Harflar tartibi noto‘g‘ri! Qayta urinib ko‘ring.', 'error');
+          setTimeout(() => {
+            session.scramblePool.forEach(p => p.used = false);
+            session.scrambleCurrent = [];
+            renderScrambleUI(w);
+          }, 550);
+        }
+      }
+    }
+
+    function removeScrambleLetter(slotIdx) {
+      const removed = session.scrambleCurrent[slotIdx];
+      if (!removed) return;
+      removed.used = false;
+      session.scrambleCurrent.splice(slotIdx, 1);
+      renderScrambleUI(session.words[session.index]);
+    }
+
+    /**
+     * MINI-GAME 3: 60-SECOND SPRINT (BLITZ TRUE/FALSE)
+     */
+    function initSprintGame() {
+      session.timeLeft = 60;
+      session.timerInterval = setInterval(() => {
+        session.timeLeft -= 1;
+        const el = document.getElementById('sprint-timer');
+        if (el) el.textContent = `${session.timeLeft}s`;
+        updateArenaProgress(((60 - session.timeLeft) / 60) * 100);
+
+        if (session.timeLeft <= 0) {
+          clearInterval(session.timerInterval);
+          finishSession();
+        }
+      }, 1000);
+
+      renderSprintQuestion();
+    }
+
+    function renderSprintQuestion() {
+      const pool = session.words;
+      const w = pool[Math.floor(Math.random() * pool.length)];
+      const isMatch = Math.random() > 0.45;
+      let shownUz = w.uz;
+
+      if (!isMatch && pool.length > 1) {
+        const other = pool.filter(x => x.id !== w.id);
+        shownUz = other[Math.floor(Math.random() * other.length)].uz;
+      }
+
+      const arena = document.getElementById('arena-content');
+      arena.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-bold">
+          <span class="text-rose-500">⏱️ 60 Soniyalik Sprint</span>
+          <span class="px-3 py-1 rounded-xl bg-rose-500/15 text-rose-500 font-black text-sm">⏳ <span id="sprint-timer">${session.timeLeft}s</span></span>
+        </div>
+
+        <div class="my-auto text-center py-6 space-y-3">
+          <p class="text-xs uppercase font-bold text-slate-400">Tarjima to‘g‘rimi?</p>
+          <h3 class="text-3xl font-black">${sanitizeHTML(w.en)}</h3>
+          <div class="text-xl font-bold text-violet-500">=</div>
+          <h4 class="text-2xl font-extrabold text-slate-700 dark:text-slate-200">${sanitizeHTML(shownUz)}</h4>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="answerSprint(false, ${isMatch})" class="py-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-base shadow-lg transition">
+            ✕ NOTO‘G‘RI
+          </button>
+          <button onclick="answerSprint(true, ${isMatch})" class="py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-base shadow-lg transition">
+            ✓ TO‘G‘RI
+          </button>
+        </div>
+      `;
+    }
+
+    function answerSprint(userChoice, actualMatch) {
+      session.index += 1;
+      if (userChoice === actualMatch) {
+        playSound('correct');
+        session.correctCount += 1;
+        session.earnedXP += 8 * session.combo;
+        session.combo = Math.min(5, session.combo + 1);
+      } else {
+        playSound('wrong');
+        session.combo = 1;
+      }
+      updateComboUI();
+      renderSprintQuestion();
+    }
+
+    /**
+     * SESSION COMPLETION & STAGE UNLOCK CHECK
+     */
+    function finishSession() {
+      clearInterval(session.timerInterval);
+      updateArenaProgress(100);
+
+      const total = Math.max(1, session.mode === 'sprint' ? session.index : session.words.length);
+      const accuracy = Math.min(100, Math.round((session.correctCount / total) * 100));
+
+      let unlockedNextMsg = '';
+
+      // Check stage unlock if this was a stage quiz
+      if (session.mode === 'quiz' && session.sourceId && session.sourceId.startsWith('stage_')) {
+        const prevBest = currentUser.stageScores[session.sourceId] || 0;
+        if (accuracy > prevBest) {
+          currentUser.stageScores[session.sourceId] = accuracy;
+        }
+
+        const stageIdx = BUILTIN_STAGES.findIndex(s => s.id === session.sourceId);
+        if (accuracy >= 80 && stageIdx !== -1 && stageIdx + 1 < BUILTIN_STAGES.length) {
+          const nextStage = BUILTIN_STAGES[stageIdx + 1];
+          if (!currentUser.unlockedStages.includes(nextStage.id)) {
+            currentUser.unlockedStages.push(nextStage.id);
+            unlockedNextMsg = `🔓 Yangi bosqich ochildi: ${nextStage.title}!`;
+            triggerConfetti();
+          }
+        }
+      }
+
+      if (accuracy >= 80) {
+        playSound('levelup');
+        triggerConfetti();
+      } else {
+        playSound('correct');
+      }
+
+      addXP(session.earnedXP);
+      saveAllProfiles();
+
+      const arena = document.getElementById('arena-content');
+      arena.innerHTML = `
+        <div class="my-auto text-center space-y-4 py-4 animate-pop">
+          <div class="text-5xl">${accuracy >= 80 ? '🏆' : '🎯'}</div>
+          <h3 class="text-2xl font-black">${accuracy >= 80 ? 'Ajoyib Natija!' : 'Yaxshi Harakat!'}</h3>
+          ${unlockedNextMsg ? `<div class="px-4 py-2 rounded-xl bg-emerald-500/15 text-emerald-500 font-extrabold text-xs inline-block">${unlockedNextMsg}</div>` : ''}
+
+          <div class="grid grid-cols-3 gap-3 max-w-md mx-auto pt-2">
+            <div class="bg-slate-100 dark:bg-slate-800 p-3.5 rounded-2xl">
+              <p class="text-[11px] text-slate-400 font-bold">Aniqlik</p>
+              <p class="text-xl font-black text-emerald-500">${accuracy}%</p>
+            </div>
+            <div class="bg-slate-100 dark:bg-slate-800 p-3.5 rounded-2xl">
+              <p class="text-[11px] text-slate-400 font-bold">To‘plangan XP</p>
+              <p class="text-xl font-black text-amber-500">+${session.earnedXP}</p>
+            </div>
+            <div class="bg-slate-100 dark:bg-slate-800 p-3.5 rounded-2xl">
+              <p class="text-[11px] text-slate-400 font-bold">Maks Combo</p>
+              <p class="text-xl font-black text-violet-500">${session.maxCombo}x</p>
+            </div>
+          </div>
+
+          <div class="pt-4 flex justify-center gap-3">
+            <button onclick="exitArena()" class="px-6 py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-sm shadow-lg transition">
+              Davom etish →
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * 7. BACKUP, EXPORT (JSON/CSV) & THEME CONTROLS
+     */
+    function openBackupModal() {
+      document.getElementById('modal-profile-name').textContent = currentUser.name;
+      document.getElementById('modal-profile-xp').textContent = `${currentUser.xp} XP (Daraja ${calculateLevel(currentUser.xp)})`;
+      document.getElementById('modal-profile-mastered').textContent = `${currentUser.masteredWords.length} ta so‘z`;
+      document.getElementById('backup-modal').classList.remove('hidden');
+      document.getElementById('backup-modal').classList.add('flex');
+    }
+
+    function closeBackupModal() {
+      document.getElementById('backup-modal').classList.add('hidden');
+      document.getElementById('backup-modal').classList.remove('flex');
+    }
+
+    function exportDataJSON() {
+      const dataStr = JSON.stringify(currentUser, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SozUstasi_${currentUser.key.replace(/\s+/g, '_')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('JSON zaxira fayli yuklab olindi!', 'success');
+    }
+
+    function exportDataCSV() {
+      let csv = 'To\'plam,So\'z (Inglizcha),Tarjima (O\'zbekcha),Misol gap\n';
+      BUILTIN_STAGES.forEach(s => {
+        s.words.forEach(w => {
+          csv += `"${s.title}","${w.en}","${w.uz}","${w.ex}"\n`;
+        });
+      });
+      currentUser.customDecks.forEach(d => {
+        d.words.forEach(w => {
+          csv += `"Shaxsiy: ${d.title}","${w.en}","${w.uz}","${w.ex}"\n`;
+        });
+      });
+
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SozUstasi_Lugat_${currentUser.key.replace(/\s+/g, '_')}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV jadval yuklab olindi!', 'success');
+    }
+
+    function importDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!imported.name || typeof imported.xp !== 'number') {
+            throw new Error('Noto‘g‘ri fayl formati');
+          }
+          const key = normalizeKey(imported.name);
+          imported.key = key;
+          profiles[key] = imported;
+          currentUser = imported;
+          saveAllProfiles();
+          updateAllUI();
+          closeBackupModal();
+          showToast(`Profil muvaffaqiyatli tiklandi: ${imported.name}`, 'success');
+        } catch (err) {
+          showToast('Zaxira faylini o‘qishda xatolik yuz berdi.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('soz_ustasi_theme', html.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-on-icon').classList.toggle('hidden', !soundEnabled);
+      document.getElementById('sound-off-icon').classList.toggle('hidden', soundEnabled);
+      if (soundEnabled) playSound('click');
+    }
+
+    /**
+     * 8. INITIALIZATION ON PAGE LOAD
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Restore theme
+      const savedTheme = localStorage.getItem('soz_ustasi_theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+      }
+
+      loadAllProfiles();
+      const activeKey = localStorage.getItem(ACTIVE_USER_KEY);
+      if (activeKey && profiles[activeKey]) {
+        loginWithProfileKey(activeKey);
+      } else {
+        renderSavedProfilesList();
+      }
+    });
+  </script>
+</body>
+</html>
