@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GARDEN PRO — Luxury Botanical & Landscape Architecture</title>
+
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js CDN for 3D Garden Showcase -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: "#123D2B",   // Asosiy to'q yashil
+            olive: "#78945A",    // Aksent zaytun
+            ivory: "#F8FAF5",    // Fon oq
+            sage: "#DDE9D5",     // Kartalar och yashil
+            obsidian: "#17221B", // Matn qora
+          },
+          fontFamily: {
+            serif: ["'Playfair Display'", "Georgia", "serif"],
+            sans: ["'Plus Jakarta Sans'", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #F8FAF5;
+      color: #17221B;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Subtle floating botanical animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floatSlow 6s ease-in-out infinite;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F8FAF5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #78945A;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #123D2B;
+    }
+
+    /* 3D Canvas Styling */
+    #garden-3d-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #garden-3d-canvas:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-forest selection:text-ivory">
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- =========================================================
+       MAIN CLIENT VIEW
+  ========================================================== -->
+  <div id="client-view">
+
+    <!-- GLASSMORPHISM NAVBAR -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-ivory/85 backdrop-blur-xl border-b border-forest/10 transition-all">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+        <!-- Animated Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-11 h-11 rounded-2xl bg-forest text-ivory flex items-center justify-center shadow-lg shadow-forest/20 group-hover:rotate-12 transition-transform duration-300">
+            <i data-lucide="leaf" class="w-5 h-5 text-sage"></i>
+          </div>
+          <div>
+            <span class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-forest block leading-none">
+              GARDEN <span class="text-olive">PRO</span>
+            </span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-obsidian/50 font-semibold">Botanical Art</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-obsidian/80">
+          <a href="#about" data-i18n="navAbout" class="hover:text-forest transition">Biz haqimizda</a>
+          <a href="#services" data-i18n="navServices" class="hover:text-forest transition">Xizmatlar</a>
+          <a href="#portfolio" data-i18n="navPortfolio" class="hover:text-forest transition">Portfolio</a>
+          <a href="#pricing" data-i18n="navPricing" class="hover:text-forest transition">Narxlar</a>
+          <a href="#plants" data-i18n="navCatalog" class="hover:text-forest transition">Katalog & Blog</a>
+          <a href="#contact" data-i18n="navContact" class="hover:text-forest transition">Aloqa</a>
+        </nav>
+
+        <!-- Actions: Lang Switcher, Admin Toggle, Order Button -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Language Switcher -->
+          <div class="flex bg-sage/70 p-1 rounded-full text-xs font-bold border border-forest/10">
+            <button onclick="setLanguage('uz')" id="lang-uz" class="px-2.5 py-1 rounded-full bg-forest text-ivory transition">UZ</button>
+            <button onclick="setLanguage('ru')" id="lang-ru" class="px-2.5 py-1 rounded-full text-forest/70 hover:text-forest transition">RU</button>
+            <button onclick="setLanguage('en')" id="lang-en" class="px-2.5 py-1 rounded-full text-forest/70 hover:text-forest transition">EN</button>
+          </div>
+
+          <!-- Admin Panel Button -->
+          <button onclick="toggleAdminView(true)" class="inline-flex items-center gap-1.5 bg-sage/80 hover:bg-sage text-forest px-3.5 py-2 rounded-full text-xs font-bold border border-forest/15 transition">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Admin</span>
+            <span id="admin-badge" class="bg-forest text-ivory text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+          </button>
+
+          <!-- Order CTA -->
+          <a href="#order" data-i18n="navOrder" class="hidden sm:inline-flex items-center gap-2 bg-forest text-ivory px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-forest/90 transition shadow-lg shadow-forest/20">
+            Buyurtma
+          </a>
+
+          <!-- Mobile Menu Button -->
+          <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl bg-sage/60 text-forest">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Nav -->
+      <div id="mobile-menu" class="hidden lg:hidden bg-ivory border-b border-forest/10 px-6 py-4 space-y-3">
+        <a href="#about" onclick="toggleMobileMenu()" data-i18n="navAbout" class="block py-2 text-sm font-medium text-forest">Biz haqimizda</a>
+        <a href="#services" onclick="toggleMobileMenu()" data-i18n="navServices" class="block py-2 text-sm font-medium text-forest">Xizmatlar</a>
+        <a href="#portfolio" onclick="toggleMobileMenu()" data-i18n="navPortfolio" class="block py-2 text-sm font-medium text-forest">Portfolio</a>
+        <a href="#pricing" onclick="toggleMobileMenu()" data-i18n="navPricing" class="block py-2 text-sm font-medium text-forest">Narxlar</a>
+        <a href="#plants" onclick="toggleMobileMenu()" data-i18n="navCatalog" class="block py-2 text-sm font-medium text-forest">Katalog & Blog</a>
+        <a href="#contact" onclick="toggleMobileMenu()" data-i18n="navContact" class="block py-2 text-sm font-medium text-forest">Aloqa</a>
+        <a href="#order" onclick="toggleMobileMenu()" data-i18n="orderBtn" class="block text-center bg-forest text-ivory py-3 rounded-full text-sm font-semibold">Xizmat buyurtma qilish</a>
+      </div>
+    </header>
+
+    <!-- 01. PREMIUM HERO SECTION -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-sage/35 via-ivory to-ivory">
+      <!-- Decorative organic glow -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-olive/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-1/2 -left-24 w-80 h-80 bg-forest/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
+        <!-- Hero Text -->
+        <div class="lg:col-span-7 space-y-7">
+          <div class="inline-flex items-center gap-2 bg-sage/90 text-forest px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase border border-forest/10">
+            <i data-lucide="sparkles" class="w-4 h-4 text-olive"></i>
+            <span data-i18n="heroBadge">Luxury Botanical Architecture</span>
+          </div>
+
+          <h1 data-i18n="heroTitle" class="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold text-forest leading-[1.08] tracking-tight">
+            Tabiatni san'atga aylantiramiz
+          </h1>
+
+          <p data-i18n="heroSub" class="text-base sm:text-xl text-obsidian/75 max-w-2xl leading-relaxed">
+            Premium landshaft dizayni, aqlli avtomatik sug‘orish tizimlari va elit bog‘ingiz uchun professional botanik parvarish xizmati.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <a href="#order" class="bg-forest text-ivory px-7 sm:px-8 py-4 rounded-full font-semibold flex items-center gap-2.5 hover:bg-forest/90 transition shadow-xl shadow-forest/25">
+              <span data-i18n="orderBtn">Xizmat buyurtma qilish</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="#portfolio" data-i18n="workBtn" class="bg-sage/80 text-forest px-7 sm:px-8 py-4 rounded-full font-semibold hover:bg-sage transition border border-forest/10">
+              Ishlarimizni ko‘rish
+            </a>
+          </div>
+
+          <!-- Key Statistics -->
+          <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-8 border-t border-forest/15">
+            <div>
+              <p class="font-serif text-3xl sm:text-4xl font-bold text-forest">150+</p>
+              <p data-i18n="stat1" class="text-xs sm:text-sm text-obsidian/65 mt-1">Bajarilgan loyiha</p>
+            </div>
+            <div>
+              <p class="font-serif text-3xl sm:text-4xl font-bold text-forest">10+</p>
+              <p data-i18n="stat2" class="text-xs sm:text-sm text-obsidian/65 mt-1">Yil tajriba</p>
+            </div>
+            <div>
+              <p class="font-serif text-3xl sm:text-4xl font-bold text-forest">98%</p>
+              <p data-i18n="stat3" class="text-xs sm:text-sm text-obsidian/65 mt-1">Mamnun mijozlar</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Visual Showcase -->
+        <div class="lg:col-span-5">
+          <div class="relative h-[460px] sm:h-[540px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white group">
+            <img
+              src="https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=1000&q=85"
+              onerror="this.src='https://placehold.co/800x1000/123D2B/F8FAF5?text=GARDEN+PRO'"
+              alt="Luxury Botanical Garden"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-obsidian/50 via-transparent to-transparent"></div>
+
+            <!-- Floating Glassmorphism Card -->
+            <div class="animate-float absolute bottom-5 left-5 right-5 bg-ivory/90 backdrop-blur-xl p-5 rounded-3xl border border-white/60 shadow-xl">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <span class="text-[11px] font-bold text-olive uppercase tracking-wider">Eksklyuziv Rezidensiya</span>
+                  <h3 class="font-serif text-lg font-bold text-forest mt-0.5">Villa Botanica — Toshkent</h3>
+                  <p class="text-xs text-obsidian/65 mt-0.5">To‘liq landshaft arxitekturasi va Hunter auto-sug‘orish</p>
+                </div>
+                <span class="bg-forest text-ivory text-xs font-bold px-3.5 py-2 rounded-2xl shrink-0">1 400 m²</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02. BIZ HAQIMIZDA (ABOUT) -->
+    <section id="about" class="py-24 bg-sage/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <!-- Gardener Portrait -->
+        <div class="lg:col-span-5 relative">
+          <div class="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-ivory h-[460px]">
+            <img
+              src="https://images.unsplash.com/photo-1592419044706-39796d40f98c?auto=format&fit=crop&w=900&q=85"
+              onerror="this.src='https://placehold.co/800x900/123D2B/DDE9D5?text=Master+Gardener'"
+              alt="Bosh Agronom va Landshaft Dizayneri"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <!-- Certification Badge -->
+          <div class="mt-4 sm:mt-0 sm:absolute sm:-bottom-6 sm:-right-6 bg-forest text-ivory p-6 rounded-3xl shadow-2xl max-w-xs border border-sage/20">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-olive/30 flex items-center justify-center">
+                <i data-lucide="award" class="w-5 h-5 text-sage"></i>
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider text-sage">ISO & EU Sertifikat</span>
+            </div>
+            <p class="font-serif text-lg font-bold leading-snug">Bosh Landshaft Arxitektori — Azizbek Rahimov</p>
+            <p class="text-xs text-ivory/75 mt-1.5">12 yillik xalqaro tajriba. Har bir o‘simlikka 2 yillik rasmiy kafolat.</p>
+          </div>
+        </div>
+
+        <!-- Bio, Principles & Expertise -->
+        <div class="lg:col-span-7 space-y-6">
+          <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]" data-i18n="aboutLabel">Biz haqimizda</span>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest leading-tight" data-i18n="aboutTitle">
+            Har bir hovlida tirik ekotizim va abadiy go‘zallik yaratamiz
+          </h2>
+          <p class="text-obsidian/75 leading-relaxed text-base">
+            GARDEN PRO — O‘zbekistonning yetakchi landshaft dizaynerlari, dendrologlari va muhandis-irrigatorlaridan tashkil topgan professional jamoa. Biz oddiy ko‘kalamzorlashtirish bilan cheklanmaymiz: tuproqning kimyoviy tahlilidan tortib, mikroiqlimga mos noyob manzarali daraxtlar va aqlli sug‘orish tizimlarigacha mukammal loyihalaymiz.
+          </p>
+
+          <!-- Principles Grid -->
+          <div class="grid sm:grid-cols-2 gap-4 pt-2">
+            <div class="bg-ivory p-5 rounded-3xl border border-forest/10 shadow-sm">
+              <div class="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center mb-3">
+                <i data-lucide="compass" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-serif font-bold text-lg text-forest">3D Arxitektura Loyiha</h4>
+              <p class="text-xs text-obsidian/70 mt-1">Ish boshlanishidan oldin bog‘ingizning fotorealistik 3D ko‘rinishini taqdim etamiz.</p>
+            </div>
+
+            <div class="bg-ivory p-5 rounded-3xl border border-forest/10 shadow-sm">
+              <div class="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center mb-3">
+                <i data-lucide="sprout" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-serif font-bold text-lg text-forest">Elit Ko‘chatlar Importi</h4>
+              <p class="text-xs text-obsidian/70 mt-1">Gollandiya, Italiya va mahalliy pitomniklardan saralangan sog‘lom daraxt va gullar.</p>
+            </div>
+
+            <div class="bg-ivory p-5 rounded-3xl border border-forest/10 shadow-sm">
+              <div class="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center mb-3">
+                <i data-lucide="droplets" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-serif font-bold text-lg text-forest">Aqlli Irrigatsiya</h4>
+              <p class="text-xs text-obsidian/70 mt-1">Ob-havo sensorlariga ulangan Hunter va RainBird avtomatik sug‘orish tizimlari.</p>
+            </div>
+
+            <div class="bg-ivory p-5 rounded-3xl border border-forest/10 shadow-sm">
+              <div class="w-10 h-10 rounded-xl bg-sage text-forest flex items-center justify-center mb-3">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+              </div>
+              <h4 class="font-serif font-bold text-lg text-forest">Doimiy Agronom Nazorati</h4>
+              <p class="text-xs text-obsidian/70 mt-1">Mavsumiy o‘g‘itlash, zararkunandalardan himoya va badiiy shakl berish.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03. XIZMATLAR (SERVICES) -->
+    <section id="services" class="py-24 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]">Xizmatlarimiz</span>
+        <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest mt-2">
+          Bog‘ingiz uchun mukammal yechimlar
+        </h2>
+        <p class="text-obsidian/70 text-sm sm:text-base mt-3">
+          Har bir xizmat turi tajribali mutaxassislar tomonidan zamonaviy texnika va ekologik vositalar yordamida bajariladi.
+        </p>
+      </div>
+
+      <div id="services-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- 04. PORTFOLIO, BEFORE/AFTER SLIDER & 3D GARDEN SHOWCASE -->
+    <section id="portfolio" class="py-24 bg-forest text-ivory">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 space-y-20">
+
+        <!-- Section Header + Category Filters -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <span class="text-sage font-bold text-xs uppercase tracking-[0.2em]">Portfolio & 3D</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-bold mt-2">Bajarilgan ishlar va Transformatsiya</h2>
+          </div>
+
+          <div class="flex flex-wrap gap-2" id="portfolio-filters">
+            <button onclick="filterPortfolio('all')" data-cat="all" class="portfolio-filter-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-ivory text-forest transition">
+              Barcha loyihalar
+            </button>
+            <button onclick="filterPortfolio('dizayn')" data-cat="dizayn" class="portfolio-filter-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-ivory transition">
+              Bog‘ dizayni
+            </button>
+            <button onclick="filterPortfolio('maysazor')" data-cat="maysazor" class="portfolio-filter-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-ivory transition">
+              Maysazor
+            </button>
+            <button onclick="filterPortfolio('daraxt')" data-cat="daraxt" class="portfolio-filter-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-ivory transition">
+              Daraxt va gullar
+            </button>
+          </div>
+        </div>
+
+        <!-- Portfolio Gallery Grid -->
+        <div id="portfolio-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+        <!-- INTERACTIVE BEFORE / AFTER SLIDER -->
+        <div class="pt-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <span class="text-olive font-bold text-xs uppercase tracking-wider">Jonli Taqqoslash</span>
+              <h3 class="font-serif text-2xl sm:text-3xl font-bold text-ivory mt-1">Oldin va Keyin — Slayderni suring</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-sage/80">Mirzo Ulug‘bek tumani, 8 sotixli xususiy hovli transformatsiyasi</p>
+          </div>
+
+          <div id="ba-container" class="relative w-full h-[360px] sm:h-[520px] rounded-[2rem] overflow-hidden select-none cursor-ew-resize shadow-2xl border-2 border-sage/30">
+            <!-- AFTER IMAGE (Full Background) -->
+            <img
+              src="https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=1400&q=85"
+              alt="Keyin"
+              class="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            />
+            <span class="absolute top-5 right-5 z-10 bg-forest/90 backdrop-blur-md text-ivory px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-sage/30">
+              Keyin (Natija)
+            </span>
+
+            <!-- BEFORE IMAGE (Clipped Overlay) -->
+            <div id="ba-before-wrapper" style="width: 50%;" class="absolute inset-0 overflow-hidden pointer-events-none">
+              <img
+                id="ba-before-img"
+                src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1400&q=85"
+                alt="Oldin"
+                class="h-full object-cover max-w-none filter sepia-[0.25] brightness-90"
+              />
+              <span class="absolute top-5 left-5 z-10 bg-obsidian/85 backdrop-blur-md text-ivory px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                Oldin (Boshlang‘ich holat)
+              </span>
+            </div>
+
+            <!-- SLIDER HANDLE -->
+            <div id="ba-handle" style="left: 50%;" class="absolute top-0 bottom-0 w-1 bg-ivory shadow-[0_0_20px_rgba(0,0,0,0.6)] -translate-x-1/2 flex items-center justify-center pointer-events-none">
+              <div class="w-12 h-12 rounded-full bg-forest text-ivory border-2 border-ivory flex items-center justify-center shadow-2xl">
+                <i data-lucide="move-horizontal" class="w-5 h-5"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D GARDEN SHOWCASE (THREE.JS) -->
+        <div class="pt-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <span class="text-olive font-bold text-xs uppercase tracking-wider">3D Architectural Engine</span>
+              <h3 class="font-serif text-2xl sm:text-3xl font-bold text-ivory mt-1">3D Interaktiv Bog‘ Sahnasi</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="reset3DCamera()" class="bg-white/10 hover:bg-white/20 text-ivory px-4 py-2 rounded-full text-xs font-semibold transition flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Kamerani tiklash
+              </button>
+              <button onclick="toggle3DRotation()" id="toggle-rot-btn" class="bg-olive text-ivory px-4 py-2 rounded-full text-xs font-semibold transition flex items-center gap-1.5">
+                <i data-lucide="pause" class="w-3.5 h-3.5"></i> Avto-aylanish
+              </button>
+            </div>
+          </div>
+
+          <div id="garden-3d-wrapper" class="relative w-full h-[420px] sm:h-[500px] rounded-[2rem] overflow-hidden bg-gradient-to-b from-[#1a4d37] to-[#0d2b1e] border border-sage/25 shadow-2xl">
+            <div class="absolute top-5 left-5 z-10 bg-obsidian/70 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 pointer-events-none">
+              <p class="text-xs font-bold text-sage uppercase tracking-wider">Interaktiv 3D Maket</p>
+              <p class="text-[11px] text-ivory/80 mt-0.5">Aylantirish uchun bosing va suring • Yaqinlashtirish uchun g‘ildirakni aylantiring</p>
+            </div>
+            <canvas id="garden-3d-canvas"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 05. NARXLAR (PRICING TIERS - EDITABLE FROM ADMIN) -->
+    <section id="pricing" class="py-24 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]">Tariflar</span>
+        <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest mt-2">Shaffof narx siyosati</h2>
+        <p class="text-obsidian/70 text-sm sm:text-base mt-3">
+          Hovlingiz maydoni va ehtiyojlariga mos tarifni tanlang. Narxlar admin panel orqali real vaqtda yangilanadi.
+        </p>
+      </div>
+
+      <div id="pricing-grid" class="grid md:grid-cols-3 gap-8 items-center">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- 06. ONLAYN BUYURTMA TIZIMI (ORDER SYSTEM) -->
+    <section id="order" class="py-24 bg-sage/45">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="bg-ivory p-6 sm:p-12 rounded-[2.5rem] shadow-2xl border border-forest/10">
+          <div class="text-center mb-10">
+            <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]">Onlayn Ariza</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest mt-2">
+              Xizmat buyurtma qilish
+            </h2>
+            <p class="text-sm text-obsidian/70 mt-2">
+              Ma’lumotlaringizni qoldiring — bosh agronomimiz 15 daqiqa ichida bog‘lanib bepul konsultatsiya beradi.
+            </p>
+          </div>
+
+          <form id="order-form" onsubmit="submitOrder(event)" class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Ism va familiya *</label>
+              <input
+                type="text"
+                id="ord-name"
+                required
+                placeholder="Masalan: Sardor Karimov"
+                class="w-full px-4 py-3.5 rounded-2xl bg-sage/30 border border-forest/15 focus:outline-none focus:border-forest text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Telefon raqami *</label>
+              <input
+                type="tel"
+                id="ord-phone"
+                required
+                placeholder="+998 90 123 45 67"
+                class="w-full px-4 py-3.5 rounded-2xl bg-sage/30 border border-forest/15 focus:outline-none focus:border-forest text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Kerakli xizmat *</label>
+              <select
+                id="ord-service"
+                class="w-full px-4 py-3.5 rounded-2xl bg-sage/30 border border-forest/15 focus:outline-none focus:border-forest text-sm font-medium"
+              >
+                <option value="Maysazor parvarishi">Maysazor parvarishi</option>
+                <option value="Landshaft dizayni">Landshaft dizayni</option>
+                <option value="Daraxt va butalar">Daraxt va butalar</option>
+                <option value="Sug‘orish tizimi">Sug‘orish tizimi</option>
+                <option value="Gul ekish">Gul ekish</option>
+                <option value="Kompleks parvarish">Kompleks parvarish</option>
+                <option value="Basic tarifi">Basic tarifi</option>
+                <option value="Premium tarifi">Premium tarifi</option>
+                <option value="Luxury tarifi">Luxury tarifi</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Manzil *</label>
+              <input
+                type="text"
+                id="ord-address"
+                required
+                placeholder="Shahar, tuman, ko‘cha"
+                class="w-full px-4 py-3.5 rounded-2xl bg-sage/30 border border-forest/15 focus:outline-none focus:border-forest text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Qulay sana</label>
+              <input
+                type="date"
+                id="ord-date"
+                class="w-full px-4 py-3.5 rounded-2xl bg-sage/30 border border-forest/15 focus:outline-none focus:border-forest text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Bog‘ rasmini yuborish (ixtiyoriy)</label>
+              <input
+                type="file"
+                id="ord-photo"
+                accept="image/*"
+                onchange="previewOrderPhoto(event)"
+                class="w-full px-4 py-2.5 rounded-2xl bg-sage/30 border border-forest/15 text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-forest file:text-ivory file:font-semibold"
+              />
+              <div id="ord-photo-preview-box" class="hidden mt-2 flex items-center gap-2">
+                <img id="ord-photo-preview" src="" alt="Preview" class="w-12 h-12 rounded-xl object-cover border border-forest/20" />
+                <span class="text-xs text-forest font-medium">Rasm yuklandi</span>
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold uppercase tracking-wider text-forest mb-2">Qo‘shimcha izoh</label>
+              <textarea
+                id="ord-notes"
+                rows="3"
+                placeholder="Hovli maydoni (sotix) yoki maxsus istaklaringizni yozing..."
+                class="w-full px-4 py-3.5 rounded-2xl bg-sage/30 border border-forest/15 focus:outline-none focus:border-forest text-sm"
+              ></textarea>
+            </div>
+
+            <div class="md:col-span-2">
+              <button
+                type="submit"
+                class="w-full bg-forest text-ivory py-4 rounded-2xl font-bold text-base hover:bg-forest/90 transition flex items-center justify-center gap-2 shadow-xl shadow-forest/20"
+              >
+                <span>Buyurtma yuborish</span>
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07. MIJOZLAR FIKRLARI (REVIEWS + SUBMISSION TO ADMIN) -->
+    <section id="reviews" class="py-24 max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+        <div>
+          <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]">Mijozlar fikrlari</span>
+          <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest mt-2">Bizga ishongan mijozlar</h2>
+        </div>
+        <button onclick="openReviewModal()" class="inline-flex items-center gap-2 bg-forest text-ivory px-6 py-3.5 rounded-full text-sm font-semibold hover:bg-forest/90 transition shadow-lg">
+          <i data-lucide="message-square-plus" class="w-4 h-4"></i> Fikr qoldirish
+        </button>
+      </div>
+
+      <div id="reviews-grid" class="grid md:grid-cols-3 gap-7">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- 08. O'SIMLIKLAR KATALOGI VA BLOG -->
+    <section id="plants" class="py-24 bg-sage/35">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 space-y-24">
+
+        <!-- Plant Catalog -->
+        <div>
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]">Botanika Ensiklopediyasi</span>
+              <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest mt-2">O‘simliklar Katalogi</h2>
+            </div>
+            <div class="relative w-full md:w-80">
+              <i data-lucide="search" class="w-4 h-4 text-forest/50 absolute left-4 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                id="plant-search"
+                oninput="renderPlants()"
+                placeholder="O‘simlik nomini qidiring..."
+                class="w-full pl-11 pr-4 py-3 rounded-full bg-ivory border border-forest/15 text-sm focus:outline-none focus:border-forest"
+              />
+            </div>
+          </div>
+
+          <div id="plants-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Blog & Helpful Advice -->
+        <div>
+          <div class="mb-12">
+            <span class="text-olive font-bold text-xs uppercase tracking-[0.2em]">Foydali Maslahatlar</span>
+            <h2 class="font-serif text-3xl sm:text-5xl font-bold text-forest mt-2">Bog‘bon kundaligi va Blog</h2>
+          </div>
+
+          <div id="blog-grid" class="grid md:grid-cols-3 gap-7">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 09. ALOQA VA FOOTER -->
+    <footer id="contact" class="bg-obsidian text-ivory pt-20 pb-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 lg:grid-cols-4 gap-10 pb-16 border-b border-white/10">
+        <!-- Brand -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2.5 text-2xl font-serif font-bold">
+            <div class="w-9 h-9 rounded-xl bg-forest flex items-center justify-center">
+              <i data-lucide="leaf" class="w-5 h-5 text-sage"></i>
+            </div>
+            GARDEN <span class="text-olive">PRO</span>
+          </div>
+          <p class="text-sm text-ivory/70 leading-relaxed">
+            Tabiat nafisligi va zamonaviy landshaft arxitekturasi uyg‘unligi. Sizning orzuingizdagi bog‘ni yaratamiz.
+          </p>
+          <div class="flex gap-3 pt-2">
+            <a href="https://t.me" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-olive flex items-center justify-center transition">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-olive flex items-center justify-center transition">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </a>
+            <a href="tel:+998909998877" class="w-10 h-10 rounded-full bg-white/10 hover:bg-olive flex items-center justify-center transition">
+              <i data-lucide="phone" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Contact Details -->
+        <div class="space-y-3 text-sm">
+          <h4 class="font-bold text-sage uppercase tracking-wider text-xs">Bog‘lanish</h4>
+          <p class="flex items-center gap-2.5 text-ivory/85"><i data-lucide="phone" class="w-4 h-4 text-olive"></i> +998 90 999 88 77</p>
+          <p class="flex items-center gap-2.5 text-ivory/85"><i data-lucide="send" class="w-4 h-4 text-olive"></i> @gardenpro_uz</p>
+          <p class="flex items-center gap-2.5 text-ivory/85"><i data-lucide="instagram" class="w-4 h-4 text-olive"></i> @gardenpro.luxury</p>
+          <p class="flex items-center gap-2.5 text-ivory/85"><i data-lucide="map-pin" class="w-4 h-4 text-olive"></i> Toshkent sh., Mirzo Ulug‘bek tumani</p>
+          <p class="flex items-center gap-2.5 text-ivory/85"><i data-lucide="clock" class="w-4 h-4 text-olive"></i> Dush–Shan: 08:00 – 20:00</p>
+        </div>
+
+        <!-- Quick Contact Form -->
+        <div>
+          <h4 class="font-bold text-sage uppercase tracking-wider text-xs mb-3">Tezkor savol yuborish</h4>
+          <form onsubmit="submitQuickContact(event)" class="space-y-2.5">
+            <input type="text" required placeholder="Ismingiz" class="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/10 text-xs text-ivory placeholder-ivory/50 focus:outline-none focus:border-olive" />
+            <input type="tel" required placeholder="Telefon raqamingiz" class="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/10 text-xs text-ivory placeholder-ivory/50 focus:outline-none focus:border-olive" />
+            <button type="submit" class="w-full bg-olive hover:bg-olive/90 text-ivory py-2.5 rounded-xl text-xs font-bold transition">
+              Qo‘ng‘iroq so‘rash
+            </button>
+          </form>
+        </div>
+
+        <!-- Google Maps -->
+        <div>
+          <h4 class="font-bold text-sage uppercase tracking-wider text-xs mb-3">Bizning ofis xaritada</h4>
+          <iframe
+            title="Garden Pro Office Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d47936.98967754341!2d69.279737!3d41.329248!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38aef4d376395311%3A0x2f977e6f6b98ad7!2sMirzo%20Ulugbek%20District%2C%20Tashkent!5e0!3m2!1sen!2suz!4v1700000000000"
+            class="w-full h-40 rounded-2xl border-0 opacity-90"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-ivory/50 gap-3">
+        <p>© 2026 GARDEN PRO. Barcha huquqlar himoyalangan.</p>
+        <button onclick="toggleAdminView(true)" class="text-sage hover:underline font-semibold flex items-center gap-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5"></i> Boshqaruv Paneli (Admin Panel)
+        </button>
+      </div>
+    </footer>
+
+  </div> <!-- END CLIENT VIEW -->
+
+
+  <!-- =========================================================
+       PROFESSIONAL ADMIN PANEL VIEW
+  ========================================================== -->
+  <div id="admin-view" class="hidden min-h-screen bg-ivory text-obsidian">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+
+      <!-- Admin Sidebar -->
+      <aside class="w-full lg:w-72 bg-forest text-ivory p-6 flex flex-col justify-between shrink-0">
+        <div>
+          <div class="flex items-center justify-between lg:justify-start gap-3 mb-10">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-olive flex items-center justify-center">
+                <i data-lucide="leaf" class="w-5 h-5 text-ivory"></i>
+              </div>
+              <div>
+                <span class="font-serif text-xl font-bold block leading-none">GARDEN PRO</span>
+                <span class="text-[10px] uppercase tracking-widest text-sage">Admin Control</span>
+              </div>
+            </div>
+            <button onclick="toggleAdminView(false)" class="lg:hidden bg-white/10 px-3 py-1.5 rounded-full text-xs">
+              Saytga qaytish
+            </button>
+          </div>
+
+          <nav class="flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0">
+            <button onclick="switchAdminTab('orders')" id="tab-btn-orders" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold bg-ivory text-forest whitespace-nowrap">
+              <i data-lucide="shopping-bag" class="w-4 h-4"></i> Buyurtmalar
+            </button>
+            <button onclick="switchAdminTab('pricing')" id="tab-btn-pricing" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold hover:bg-white/10 text-ivory whitespace-nowrap">
+              <i data-lucide="dollar-sign" class="w-4 h-4"></i> Tarif & Narxlar
+            </button>
+            <button onclick="switchAdminTab('reviews')" id="tab-btn-reviews" class="admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold hover:bg-white/10 text-ivory whitespace-nowrap">
+              <i data-lucide="message-square" class="w-4 h-4"></i> Sharhlar moderatsiyasi
+            </button>
+          </nav>
+        </div>
+
+        <div class="hidden lg:block pt-8 border-t border-white/10">
+          <button onclick="toggleAdminView(false)" class="w-full bg-sage text-forest py-3 rounded-2xl text-sm font-bold hover:bg-ivory transition flex items-center justify-center gap-2">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Asosiy saytga qaytish
+          </button>
+        </div>
+      </aside>
+
+      <!-- Admin Main Content -->
+      <main class="flex-1 p-5 sm:p-10">
+        <!-- Dashboard Summary Cards -->
+        <div class="grid sm:grid-cols-3 gap-6 mb-10">
+          <div class="bg-sage/50 p-6 rounded-3xl border border-forest/10">
+            <p class="text-xs font-bold uppercase text-forest/70">Jami Buyurtmalar</p>
+            <p id="stat-total-orders" class="font-serif text-4xl font-bold text-forest mt-2">0</p>
+          </div>
+          <div class="bg-sage/50 p-6 rounded-3xl border border-forest/10">
+            <p class="text-xs font-bold uppercase text-forest/70">Yangi (Kutilayotgan)</p>
+            <p id="stat-new-orders" class="font-serif text-4xl font-bold text-olive mt-2">0</p>
+          </div>
+          <div class="bg-sage/50 p-6 rounded-3xl border border-forest/10">
+            <p class="text-xs font-bold uppercase text-forest/70">Tasdiqlanmagan Sharhlar</p>
+            <p id="stat-pending-reviews" class="font-serif text-4xl font-bold text-forest mt-2">0</p>
+          </div>
+        </div>
+
+        <!-- TAB 1: ORDERS MANAGEMENT -->
+        <div id="admin-tab-orders" class="admin-tab-panel space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-forest">Kelib tushgan buyurtmalar</h2>
+          </div>
+
+          <div class="bg-white rounded-3xl shadow-sm border border-forest/10 overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[700px]">
+              <thead>
+                <tr class="bg-sage/60 text-forest text-xs uppercase">
+                  <th class="p-4">Mijoz</th>
+                  <th class="p-4">Telefon</th>
+                  <th class="p-4">Xizmat</th>
+                  <th class="p-4">Manzil & Sana</th>
+                  <th class="p-4">Holat</th>
+                  <th class="p-4">Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody" class="divide-y divide-forest/10 text-sm">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 2: PRICING MANAGEMENT -->
+        <div id="admin-tab-pricing" class="admin-tab-panel hidden space-y-6">
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-forest">Tarif narxlarini tahrirlash</h2>
+          <p class="text-sm text-obsidian/70">Bu yerda o‘zgartirilgan narxlar darhol asosiy saytdagi «Narxlar» bo‘limida yangilanadi.</p>
+          <div id="admin-pricing-list" class="grid md:grid-cols-3 gap-6">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- TAB 3: REVIEWS MODERATION -->
+        <div id="admin-tab-reviews" class="admin-tab-panel hidden space-y-6">
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-forest">Mijozlar sharhlarini boshqarish</h2>
+          <div id="admin-reviews-list" class="grid md:grid-cols-2 gap-6">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+
+  <!-- =========================================================
+       MODALS (PROJECT DETAILS, BLOG ARTICLE, LEAVE REVIEW)
+  ========================================================== -->
+  <div id="universal-modal" class="hidden fixed inset-0 z-[90] bg-obsidian/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-ivory max-w-2xl w-full rounded-[2rem] p-6 sm:p-8 shadow-2xl border border-forest/15 relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal()" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-sage/70 hover:bg-sage text-forest flex items-center justify-center transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================
+       APPLICATION LOGIC (DATA, THREE.JS, SLIDER, ADMIN, I18N)
+  ========================================================== -->
+  <script>
+    /* -----------------------------------------------------------
+       1. INITIAL DATA & LOCALSTORAGE STATE
+    ----------------------------------------------------------- */
+    const defaultServices = [
+      {
+        title: "Maysazor parvarishi",
+        desc: "Maysani professional kesish, o‘g‘itlash, aeratsiya qilish va qishdan keyin tiklash xizmati.",
+        price: "350 000 so‘mdan",
+        icon: "leaf",
+        image: "https://images.unsplash.com/photo-1592419044706-39796d40f98c?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        title: "Landshaft dizayni",
+        desc: "Hovlingiz uchun 3D loyihalash, relef plastikasi, tosh bog‘lar va zamonaviy yashil arxitektura.",
+        price: "2 500 000 so‘mdan",
+        icon: "sparkles",
+        image: "https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        title: "Daraxt va butalar",
+        desc: "Manzarali daraxt va butalarga badiiy shakl berish (topiari), sanitar va mavsumiy kesish.",
+        price: "150 000 so‘mdan",
+        icon: "scissors",
+        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        title: "Sug‘orish tizimi",
+        desc: "Hunter va RainBird uskunalari asosida aqlli avtomatik tomchilatib va yomg‘irlatib sug‘orish.",
+        price: "4 000 000 so‘mdan",
+        icon: "droplets",
+        image: "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        title: "Gul ekish",
+        desc: "Yilning to‘rt faslida gullab turadigan ko‘p yillik va mavsumiy gullar kompozitsiyasini yaratish.",
+        price: "250 000 so‘mdan",
+        icon: "flower-2",
+        image: "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=700&q=80"
+      },
+      {
+        title: "Kompleks parvarish",
+        desc: "Bog‘ingizni yil davomida doimiy agronomik nazorat, o‘g‘itlash va zararkunandalardan himoya qilish.",
+        price: "1 800 000 so‘m/oy",
+        icon: "trees",
+        image: "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=700&q=80"
+      }
+    ];
+
+    const portfolioItems = [
+      {
+        id: 1,
+        title: "Villa Botanica Rezidensiyasi",
+        category: "dizayn",
+        catLabel: "Bog‘ dizayni",
+        area: "1 400 m²",
+        duration: "21 kun",
+        image: "https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=900&q=85",
+        details: "Zamonaviy minimalizm uslubidagi hovli landshafti. Yapon klyonlari, dekorativ sharshara, tungi LED yoritish va avtomatik sug‘orish tizimi o‘rnatildi."
+      },
+      {
+        id: 2,
+        title: "Qibray Eco-Hovli Maysazori",
+        category: "maysazor",
+        catLabel: "Maysazor",
+        area: "650 m²",
+        duration: "5 kun",
+        image: "https://images.unsplash.com/photo-1592419044706-39796d40f98c?auto=format&fit=crop&w=900&q=85",
+        details: "Tuproq drenaji yangilanib, Kanada navli premium rulonli maysazor yotqizildi hamda yashirin purkagichlar o‘rnatildi."
+      },
+      {
+        id: 3,
+        title: "Topiari & Lavanda Alleysi",
+        category: "daraxt",
+        catLabel: "Daraxt va gullar",
+        area: "420 m²",
+        duration: "7 kun",
+        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=900&q=85",
+        details: "Buxus (samshit) butalariga geometrik shakl berildi va yo‘lak bo‘ylab xushbo‘y Fransuz lavandasi ekildi."
+      },
+      {
+        id: 4,
+        title: "Tashkent Hills Terassa Bog‘i",
+        category: "dizayn",
+        catLabel: "Bog‘ dizayni",
+        area: "900 m²",
+        duration: "18 kun",
+        image: "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=900&q=85",
+        details: "Ko‘p pog‘onali tosh terassalar, Thuja Smaragd jonli devori va dam olish zonasi barpo etildi."
+      },
+      {
+        id: 5,
+        title: "Samarqand Darvoza Atrium",
+        category: "daraxt",
+        catLabel: "Daraxt va gullar",
+        area: "300 m²",
+        duration: "6 kun",
+        image: "https://images.unsplash.com/photo-1509100194014-d49809396daa?auto=format&fit=crop&w=900&q=85",
+        details: "Ekzotik qizil bargli Acer va ko‘p yillik manzarali gullar ansambli yaratildi."
+      },
+      {
+        id: 6,
+        title: "Chorbog‘ Dacha Landshafti",
+        category: "maysazor",
+        catLabel: "Maysazor",
+        area: "1 100 m²",
+        duration: "10 kun",
+        image: "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?auto=format&fit=crop&w=900&q=85",
+        details: "Tog‘ iqlimiga chidamli zumrad maysazor va toshli so‘qmoqlar tizimi."
+      }
+    ];
+
+    const plantsCatalog = [
+      {
+        name: "Thuja Smaragd",
+        latin: "Thuja occidentalis",
+        sun: "Quyoshsevar",
+        water: "Haftada 2 marta",
+        care: "Yil davomida yashil rangini saqlaydi. Bahorda maxsus ignabargli o‘g‘it talab qiladi.",
+        image: "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        name: "Yapon Klyoni",
+        latin: "Acer palmatum",
+        sun: "Yarim soya",
+        water: "Haftada 3 marta",
+        care: "Kuchli shamoldan himoyalangan, namgarchilikni yaxshi ko‘radigan elit manzarali daraxt.",
+        image: "https://images.unsplash.com/photo-1509100194014-d49809396daa?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        name: "Lavanda Angustifolia",
+        latin: "Lavandula",
+        sun: "To‘liq quyosh",
+        water: "Kam sug‘oriladi",
+        care: "Qurg‘oqchilikka chidamli, xushbo‘y gullaydi. Gullashdan so‘ng yengil qirqish tavsiya etiladi.",
+        image: "https://images.unsplash.com/photo-1528183429752-a97d0bf99b5a?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        name: "Buxus (Samshit)",
+        latin: "Buxus sempervirens",
+        sun: "Har qanday",
+        water: "Haftada 2 marta",
+        care: "Topiari (shakl berish) uchun eng ideal buta. Yozda 2-3 marta badiiy qirqiladi.",
+        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    const blogPosts = [
+      {
+        title: "Maysazorni yoz jaziramasida zumraddek saqlash sirlari",
+        date: "14 May, 2026",
+        readTime: "4 daqiqa",
+        excerpt: "Sug‘orish vaqti, o‘rish balandligi va kaliyli o‘g‘itlarning maysa ildiziga ta’siri haqida agronom tavsiyalari.",
+        content: "Yoz oylarida maysazorni kunduzi quyosh tik kelganda sug‘orish barglarning kuyishiga olib keladi. Eng maqbul vaqt — tonggi soat 05:00 dan 07:30 gacha. Shuningdek, iyul-avgust oylarida maysani 5-6 sm dan past o‘rmaslik tuproq namligini 40% ko‘proq saqlab qoladi.",
+        image: "https://images.unsplash.com/photo-1592419044706-39796d40f98c?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        title: "Daraxt va butalarni qachon va qanday kesish kerak?",
+        date: "28 Aprel, 2026",
+        readTime: "5 daqiqa",
+        excerpt: "Bahorgi sanitar kesish va yozgi shakllantirish o‘rtasidagi farqlar hamda bog‘ qaychisini dezinfeksiya qilish.",
+        content: "Mevali va manzarali daraxtlarga asosiy shakl berish erta bahorda — shira harakati boshlanishidan oldin amalga oshiriladi. Ignabargli daraxtlar (Thuja, Archa) esa may oyining oxiri va avgustda yengil tekislanadi.",
+        image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        title: "O‘zbekiston iqlimiga eng chidamli 7 ta manzarali o‘simlik",
+        date: "10 Aprel, 2026",
+        readTime: "6 daqiqa",
+        excerpt: "Issiq yoz va sovuq qishga bardoshli, kam parvarish talab qiluvchi premium o‘simliklar ro‘yxati.",
+        content: "O‘zbekistonning keskin kontinental iqlimida Thuja Smaragd, Leyland kiparisi, Lavanda, Katalpa va Hind sireni (Lagerstroemia) o‘zini a’lo darajada his qiladi va hovliga hashamatli ko‘rinish beradi.",
+        image: "https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=800&q=80"
+      }
+    ];
+
+    // Persistent State via localStorage
+    let state = {
+      lang: "uz",
+      pricing: JSON.parse(localStorage.getItem("gp_pricing")) || [
+        {
+          id: "basic",
+          name: "Basic",
+          price: "1 200 000 so‘m",
+          desc: "Oddiy bog‘ parvarishi va mavsumiy tozalash",
+          features: ["Maysa o‘rish (oyiga 2 marta)", "Begona o‘tlardan tozalash", "Asosiy o‘g‘itlash", "Agronom ko‘rigi"],
+          popular: false
+        },
+        {
+          id: "premium",
+          name: "Premium",
+          price: "2 800 000 so‘m",
+          desc: "To‘liq bog‘ parvarishi va dekorativ shakl berish",
+          features: ["Maysa va butalar parvarishi", "Sug‘orish tizimi nazorati", "Zararkunandalarga qarshi himoya", "Mavsumiy gullar ekish"],
+          popular: true
+        },
+        {
+          id: "luxury",
+          name: "Luxury",
+          price: "Individual",
+          desc: "To‘liq landshaft dizayni va VIP boshqaruv",
+          features: ["3D Landshaft loyihasi", "Avtomatik sug‘orish o‘rnatish", "Ekzotik daraxtlar importi", "Shaxsiy bog‘bon biriktirish"],
+          popular: false
+        }
+      ],
+      orders: JSON.parse(localStorage.getItem("gp_orders")) || [
+        {
+          id: "ORD-101",
+          name: "Jamshid Tursunov",
+          phone: "+998 90 321 44 55",
+          service: "Landshaft dizayni",
+          address: "Toshkent, Yunusobod 4-kvartal",
+          date: "2026-11-28",
+          notes: "6 sotixli yangi hovli uchun 3D dizayn kerak.",
+          status: "YANGI"
+        }
+      ],
+      reviews: JSON.parse(localStorage.getItem("gp_reviews")) || [
+        {
+          id: 1,
+          name: "Jasur Alimov",
+          rating: 5,
+          text: "12 sotixli hovlimizni 2 haftada tanib bo‘lmas darajada go‘zal bog‘ga aylantirishdi. Avtomatik sug‘orish benuqson ishlayapti.",
+          approved: true
+        },
+        {
+          id: 2,
+          name: "Dilnoza Rahimova",
+          rating: 5,
+          text: "Daraxtlarga berilgan shakllar va gullar uyg‘unligi xuddi Yevropa bog‘laridek. Juda tartibli va madaniyatli jamoa!",
+          approved: true
+        },
+        {
+          id: 3,
+          name: "Otabek Tursunov",
+          rating: 5,
+          text: "Premium tarifiga obuna bo‘lganmiz. Har hafta bog‘bon kelib maysazor va daraxtlarni ideal holatda ushlab turadi.",
+          approved: true
+        }
+      ]
+    };
+
+    function saveState() {
+      localStorage.setItem("gp_pricing", JSON.stringify(state.pricing));
+      localStorage.setItem("gp_orders", JSON.stringify(state.orders));
+      localStorage.setItem("gp_reviews", JSON.stringify(state.reviews));
+      updateAdminBadges();
+    }
+
+    /* -----------------------------------------------------------
+       2. MULTI-LANGUAGE (UZ / RU / EN)
+    ----------------------------------------------------------- */
+    const i18nDict = {
+      uz: {
+        navAbout: "Biz haqimizda",
+        navServices: "Xizmatlar",
+        navPortfolio: "Portfolio",
+        navPricing: "Narxlar",
+        navCatalog: "Katalog & Blog",
+        navContact: "Aloqa",
+        navOrder: "Buyurtma",
+        heroBadge: "Luxury Botanical Architecture",
+        heroTitle: "Tabiatni san'atga aylantiramiz",
+        heroSub: "Premium landshaft dizayni, aqlli avtomatik sug‘orish tizimlari va elit bog‘ingiz uchun professional botanik parvarish xizmati.",
+        orderBtn: "Xizmat buyurtma qilish",
+        workBtn: "Ishlarimizni ko‘rish",
+        stat1: "Bajarilgan loyiha",
+        stat2: "Yil tajriba",
+        stat3: "Mamnun mijozlar",
+        aboutLabel: "Biz haqimizda",
+        aboutTitle: "Har bir hovlida tirik ekotizim va abadiy go‘zallik yaratamiz"
+      },
+      ru: {
+        navAbout: "О нас",
+        navServices: "Услуги",
+        navPortfolio: "Портфолио",
+        navPricing: "Цены",
+        navCatalog: "Каталог и Блог",
+        navContact: "Контакты",
+        navOrder: "Заказать",
+        heroBadge: "Luxury Botanical Architecture",
+        heroTitle: "Превращаем природу в искусство",
+        heroSub: "Премиальный ландшафтный дизайн, умные системы автополива и профессиональный уход за вашим садом.",
+        orderBtn: "Заказать услугу",
+        workBtn: "Смотреть работы",
+        stat1: "Выполненных проектов",
+        stat2: "Лет опыта",
+        stat3: "Довольных клиентов",
+        aboutLabel: "О нашей команде",
+        aboutTitle: "Создаём живую экосистему и вечную эстетику в каждом дворе"
+      },
+      en: {
+        navAbout: "About Us",
+        navServices: "Services",
+        navPortfolio: "Portfolio",
+        navPricing: "Pricing",
+        navCatalog: "Catalog & Blog",
+        navContact: "Contact",
+        navOrder: "Book Now",
+        heroBadge: "Luxury Botanical Architecture",
+        heroTitle: "Turning Nature Into Living Art",
+        heroSub: "Bespoke landscape architecture, smart automated irrigation systems, and master botanical care for your estate.",
+        orderBtn: "Book a Service",
+        workBtn: "Explore Portfolio",
+        stat1: "Completed Projects",
+        stat2: "Years Experience",
+        stat3: "Happy Clients",
+        aboutLabel: "About Us",
+        aboutTitle: "Crafting living ecosystems and timeless beauty in every courtyard"
+      }
+    };
+
+    function setLanguage(lang) {
+      state.lang = lang;
+      ["uz", "ru", "en"].forEach(l => {
+        const btn = document.getElementById(`lang-${l}`);
+        if (l === lang) {
+          btn.className = "px-2.5 py-1 rounded-full bg-forest text-ivory transition";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-full text-forest/70 hover:text-forest transition";
+        }
+      });
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (i18nDict[lang][key]) {
+          el.textContent = i18nDict[lang][key];
+        }
+      });
+    }
+
+    /* -----------------------------------------------------------
+       3. RENDERING SECTIONS (SERVICES, PORTFOLIO, PRICING, REVIEWS, PLANTS, BLOG)
+    ----------------------------------------------------------- */
+    function renderServices() {
+      const grid = document.getElementById("services-grid");
+      grid.innerHTML = defaultServices.map(srv => `
+        <div class="group bg-sage/45 hover:bg-forest transition-all duration-500 rounded-[2rem] overflow-hidden border border-forest/10 flex flex-col justify-between shadow-sm hover:shadow-2xl">
+          <div>
+            <div class="h-48 overflow-hidden relative">
+              <img src="${srv.image}" alt="${srv.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div class="absolute top-4 left-4 w-11 h-11 rounded-2xl bg-ivory/90 backdrop-blur-md text-forest flex items-center justify-center shadow">
+                <i data-lucide="${srv.icon}" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <div class="p-7">
+              <h3 class="font-serif text-2xl font-bold text-forest group-hover:text-ivory transition-colors">${srv.title}</h3>
+              <p class="text-obsidian/75 group-hover:text-ivory/80 mt-2.5 text-sm leading-relaxed transition-colors">${srv.desc}</p>
+            </div>
+          </div>
+          <div class="px-7 pb-7 pt-4 border-t border-forest/10 group-hover:border-ivory/15 flex items-center justify-between">
+            <span class="font-bold text-forest group-hover:text-sage text-sm">${srv.price}</span>
+            <a href="#order" onclick="selectServiceForOrder('${srv.title}')" class="inline-flex items-center gap-1.5 bg-forest group-hover:bg-ivory text-ivory group-hover:text-forest px-4 py-2 rounded-full text-xs font-bold transition">
+              Buyurtma <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </div>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    function renderPortfolio(category = "all") {
+      const grid = document.getElementById("portfolio-grid");
+      const filtered = category === "all" ? portfolioItems : portfolioItems.filter(p => p.category === category);
+
+      grid.innerHTML = filtered.map(item => `
+        <div onclick="openPortfolioModal(${item.id})" class="group cursor-pointer bg-white/5 hover:bg-white/10 border border-white/10 rounded-[2rem] overflow-hidden transition-all duration-500">
+          <div class="h-60 overflow-hidden relative">
+            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <span class="absolute top-4 left-4 bg-forest/90 backdrop-blur-md text-sage text-xs font-bold px-3.5 py-1.5 rounded-full">
+              ${item.catLabel}
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="font-serif text-xl font-bold text-ivory group-hover:text-sage transition">${item.title}</h3>
+            <div class="flex items-center gap-4 text-xs text-ivory/65 mt-3">
+              <span>📐 Maydon: ${item.area}</span>
+              <span>⏱ Muddat: ${item.duration}</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function filterPortfolio(cat) {
+      document.querySelectorAll(".portfolio-filter-btn").forEach(btn => {
+        if (btn.getAttribute("data-cat") === cat) {
+          btn.className = "portfolio-filter-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-ivory text-forest transition";
+        } else {
+          btn.className = "portfolio-filter-btn px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-ivory transition";
+        }
+      });
+      renderPortfolio(cat);
+    }
+
+    function renderPricing() {
+      const grid = document.getElementById("pricing-grid");
+      grid.innerHTML = state.pricing.map(plan => `
+        <div class="rounded-[2.2rem] p-8 border transition-all ${
+          plan.popular
+            ? "bg-forest text-ivory border-forest shadow-2xl md:scale-105"
+            : "bg-sage/45 text-obsidian border-forest/15"
+        }">
+          ${plan.popular ? `<span class="bg-olive text-ivory text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">Eng mashhur tarif</span>` : ""}
+          <h3 class="font-serif text-3xl font-bold mt-4">${plan.name}</h3>
+          <p class="text-2xl sm:text-3xl font-bold mt-2 ${plan.popular ? "text-sage" : "text-olive"}">${plan.price}</p>
+          <p class="text-sm mt-2 ${plan.popular ? "text-ivory/80" : "text-obsidian/70"}">${plan.desc}</p>
+
+          <ul class="space-y-3.5 my-8">
+            ${plan.features.map(f => `
+              <li class="flex items-center gap-2.5 text-sm">
+                <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 ${plan.popular ? "text-sage" : "text-forest"}"></i>
+                <span>${f}</span>
+              </li>
+            `).join("")}
+          </ul>
+
+          <a href="#order" onclick="selectServiceForOrder('${plan.name} tarifi')" class="block text-center py-3.5 rounded-full font-bold text-sm transition ${
+            plan.popular ? "bg-ivory text-forest hover:bg-sage" : "bg-forest text-ivory hover:bg-forest/90"
+          }">
+            Tarifni tanlash
+          </a>
+        </div>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    function renderReviews() {
+      const grid = document.getElementById("reviews-grid");
+      const approvedReviews = state.reviews.filter(r => r.approved);
+      grid.innerHTML = approvedReviews.map(rev => `
+        <div class="bg-ivory p-7 rounded-[2rem] border border-forest/15 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex gap-1 text-olive mb-4">
+              ${Array(rev.rating).fill('<i data-lucide="star" class="w-4 h-4 fill-current"></i>').join("")}
+            </div>
+            <p class="text-sm text-obsidian/80 leading-relaxed italic">"${rev.text}"</p>
+          </div>
+          <div class="flex items-center gap-3 mt-6 pt-4 border-t border-forest/10">
+            <div class="w-10 h-10 rounded-full bg-forest text-ivory flex items-center justify-center font-serif font-bold">
+              ${rev.name.charAt(0)}
+            </div>
+            <div>
+              <p class="font-serif font-bold text-forest text-sm">${rev.name}</p>
+              <p class="text-[11px] text-obsidian/50">Tasdiqlangan mijoz</p>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    function renderPlants() {
+      const query = (document.getElementById("plant-search")?.value || "").toLowerCase();
+      const filtered = plantsCatalog.filter(p => p.name.toLowerCase().includes(query) || p.latin.toLowerCase().includes(query));
+      const grid = document.getElementById("plants-grid");
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="bg-ivory rounded-[2rem] overflow-hidden border border-forest/10 shadow-sm hover:shadow-xl transition">
+          <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover" />
+          <div class="p-5">
+            <span class="text-[11px] italic text-olive font-medium">${p.latin}</span>
+            <h3 class="font-serif text-xl font-bold text-forest mt-0.5">${p.name}</h3>
+            <div class="space-y-1.5 mt-3 text-xs text-obsidian/75">
+              <p class="flex items-center gap-2"><i data-lucide="droplets" class="w-3.5 h-3.5 text-forest"></i> ${p.water}</p>
+              <p class="flex items-center gap-2"><i data-lucide="sun" class="w-3.5 h-3.5 text-olive"></i> ${p.sun}</p>
+            </div>
+            <p class="text-xs text-obsidian/65 mt-3 pt-3 border-t border-forest/10 leading-relaxed">${p.care}</p>
+          </div>
+        </div>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    function renderBlog() {
+      const grid = document.getElementById("blog-grid");
+      grid.innerHTML = blogPosts.map((post, idx) => `
+        <article class="bg-ivory rounded-[2rem] overflow-hidden border border-forest/10 shadow-sm flex flex-col justify-between">
+          <div>
+            <img src="${post.image}" alt="${post.title}" class="w-full h-48 object-cover" />
+            <div class="p-6">
+              <div class="flex items-center gap-3 text-[11px] font-semibold text-olive uppercase">
+                <span>${post.date}</span> • <span>${post.readTime}</span>
+              </div>
+              <h3 class="font-serif text-xl font-bold text-forest mt-2 leading-snug">${post.title}</h3>
+              <p class="text-xs text-obsidian/70 mt-2.5 leading-relaxed">${post.excerpt}</p>
+            </div>
+          </div>
+          <div class="px-6 pb-6">
+            <button onclick="openBlogModal(${idx})" class="text-xs font-bold text-forest hover:text-olive inline-flex items-center gap-1.5 transition">
+              Maqolani o‘qish <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </article>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    /* -----------------------------------------------------------
+       4. BEFORE / AFTER SLIDER LOGIC
+    ----------------------------------------------------------- */
+    function initBeforeAfterSlider() {
+      const container = document.getElementById("ba-container");
+      const beforeWrapper = document.getElementById("ba-before-wrapper");
+      const beforeImg = document.getElementById("ba-before-img");
+      const handle = document.getElementById("ba-handle");
+
+      function syncImageWidth() {
+        if (container && beforeImg) {
+          beforeImg.style.width = container.offsetWidth + "px";
+        }
+      }
+      syncImageWidth();
+      window.addEventListener("resize", syncImageWidth);
+
+      function updateSlider(clientX) {
+        const rect = container.getBoundingClientRect();
+        const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+        const percent = (x / rect.width) * 100;
+        beforeWrapper.style.width = percent + "%";
+        handle.style.left = percent + "%";
+      }
+
+      container.addEventListener("mousemove", e => updateSlider(e.clientX));
+      container.addEventListener("touchmove", e => {
+        if (e.touches.length > 0) updateSlider(e.touches[0].clientX);
+      }, { passive: true });
+    }
+
+    /* -----------------------------------------------------------
+       5. THREE.JS 3D GARDEN SHOWCASE
+    ----------------------------------------------------------- */
+    let scene, camera, renderer, gardenGroup, autoRotate = true;
+
+    function init3DGarden() {
+      const wrapper = document.getElementById("garden-3d-wrapper");
+      const canvas = document.getElementById("garden-3d-canvas");
+      if (!wrapper || !canvas || typeof THREE === "undefined") return;
+
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(42, wrapper.clientWidth / wrapper.clientHeight, 0.1, 100);
+      camera.position.set(6.5, 5.2, 7.5);
+      camera.lookAt(0, 0.5, 0);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+      scene.add(ambientLight);
+
+      const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.3);
+      sunLight.position.set(8, 12, 6);
+      sunLight.castShadow = true;
+      scene.add(sunLight);
+
+      gardenGroup = new THREE.Group();
+      scene.add(gardenGroup);
+
+      // Soil Base Cylinder
+      const soilGeo = new THREE.CylinderGeometry(4.2, 3.9, 0.45, 48);
+      const soilMat = new THREE.MeshStandardMaterial({ color: 0x3b2d22, roughness: 0.9 });
+      const soil = new THREE.Mesh(soilGeo, soilMat);
+      soil.position.y = -0.25;
+      gardenGroup.add(soil);
+
+      // Lush Lawn Top
+      const lawnGeo = new THREE.CylinderGeometry(4.22, 4.22, 0.12, 48);
+      const lawnMat = new THREE.MeshStandardMaterial({ color: 0x78945A, roughness: 0.75 });
+      const lawn = new THREE.Mesh(lawnGeo, lawnMat);
+      lawn.position.y = 0.02;
+      lawn.receiveShadow = true;
+      gardenGroup.add(lawn);
+
+      // Decorative Reflective Pond
+      const pondGeo = new THREE.CircleGeometry(1.25, 36);
+      const pondMat = new THREE.MeshStandardMaterial({ color: 0x246b61, roughness: 0.15, metalness: 0.5 });
+      const pond = new THREE.Mesh(pondGeo, pondMat);
+      pond.rotation.x = -Math.PI / 2;
+      pond.position.set(1.4, 0.09, 1.1);
+      gardenGroup.add(pond);
+
+      // Modern Architectural Pavilion / Gazebo
+      const deckGeo = new THREE.BoxGeometry(2.1, 0.14, 1.8);
+      const deckMat = new THREE.MeshStandardMaterial({ color: 0xd9cbb8, roughness: 0.6 });
+      const deck = new THREE.Mesh(deckGeo, deckMat);
+      deck.position.set(-1.3, 0.12, 1.2);
+      gardenGroup.add(deck);
+
+      const roofGeo = new THREE.BoxGeometry(2.3, 0.12, 2.0);
+      const roofMat = new THREE.MeshStandardMaterial({ color: 0x123D2B, roughness: 0.5 });
+      const roof = new THREE.Mesh(roofGeo, roofMat);
+      roof.position.set(-1.3, 1.55, 1.2);
+      gardenGroup.add(roof);
+
+      const pillarGeo = new THREE.CylinderGeometry(0.06, 0.06, 1.4, 12);
+      const pillarMat = new THREE.MeshStandardMaterial({ color: 0xf8faf5 });
+      [[-2.2, 0.4], [-0.4, 0.4], [-2.2, 2.0], [-0.4, 2.0]].forEach(([px, pz]) => {
+        const p = new THREE.Mesh(pillarGeo, pillarMat);
+        p.position.set(px, 0.85, pz);
+        gardenGroup.add(p);
+      });
+
+      // Helper to add stylized botanical trees
+      function addBotanicalTree(x, z, scale = 1, crownColor = 0x123D2B) {
+        const tree = new THREE.Group();
+        const trunk = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.1, 0.18, 1.3, 10),
+          new THREE.MeshStandardMaterial({ color: 0x4a3525, roughness: 0.9 })
+        );
+        trunk.position.y = 0.65;
+        tree.add(trunk);
+
+        const c1 = new THREE.Mesh(
+          new THREE.DodecahedronGeometry(0.85, 1),
+          new THREE.MeshStandardMaterial({ color: crownColor, roughness: 0.65 })
+        );
+        c1.position.y = 1.65;
+        tree.add(c1);
+
+        const c2 = new THREE.Mesh(
+          new THREE.DodecahedronGeometry(0.55, 1),
+          new THREE.MeshStandardMaterial({ color: 0x5c7d43, roughness: 0.65 })
+        );
+        c2.position.set(0.4, 1.35, 0.25);
+        tree.add(c2);
+
+        tree.position.set(x, 0.05, z);
+        tree.scale.setScalar(scale);
+        gardenGroup.add(tree);
+      }
+
+      addBotanicalTree(-1.5, -1.6, 1.15, 0x123D2B);
+      addBotanicalTree(0.4, -2.1, 0.9, 0x1d543c);
+      addBotanicalTree(2.1, -0.8, 0.8, 0x123D2B);
+      addBotanicalTree(-2.7, -0.3, 0.75, 0x266348);
+
+      // Stone Stepping Path
+      for (let i = 0; i < 6; i++) {
+        const stone = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.24, 0.26, 0.05, 16),
+          new THREE.MeshStandardMaterial({ color: 0xe6e8e3 })
+        );
+        stone.position.set(-0.3 + i * 0.35, 0.09, 0.2 + Math.sin(i) * 0.25);
+        gardenGroup.add(stone);
+      }
+
+      // Mouse & Touch Orbit Controls
+      let isDragging = false;
+      let prevX = 0, prevY = 0;
+
+      canvas.addEventListener("mousedown", e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+      window.addEventListener("mouseup", () => { isDragging = false; });
+      window.addEventListener("mousemove", e => {
+        if (!isDragging) return;
+        const dx = e.clientX - prevX;
+        const dy = e.clientY - prevY;
+        gardenGroup.rotation.y += dx * 0.008;
+        gardenGroup.rotation.x = Math.max(-0.35, Math.min(0.45, gardenGroup.rotation.x + dy * 0.005));
+        prevX = e.clientX;
+        prevY = e.clientY;
+      });
+
+      canvas.addEventListener("touchstart", e => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          prevX = e.touches[0].clientX;
+          prevY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      canvas.addEventListener("touchend", () => { isDragging = false; });
+      canvas.addEventListener("touchmove", e => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - prevX;
+        gardenGroup.rotation.y += dx * 0.01;
+        prevX = e.touches[0].clientX;
+      }, { passive: true });
+
+      // Zoom with wheel
+      canvas.addEventListener("wheel", e => {
+        e.preventDefault();
+        camera.position.z = Math.max(4.5, Math.min(12, camera.position.z + e.deltaY * 0.005));
+      }, { passive: false });
+
+      // Resize Handler
+      window.addEventListener("resize", () => {
+        if (!wrapper) return;
+        camera.aspect = wrapper.clientWidth / wrapper.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+      });
+
+      // Animation Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        if (autoRotate && !isDragging) {
+          gardenGroup.rotation.y += 0.003;
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    function reset3DCamera() {
+      if (camera && gardenGroup) {
+        camera.position.set(6.5, 5.2, 7.5);
+        gardenGroup.rotation.set(0, 0, 0);
+      }
+    }
+
+    function toggle3DRotation() {
+      autoRotate = !autoRotate;
+      const btn = document.getElementById("toggle-rot-btn");
+      btn.innerHTML = autoRotate
+        ? `<i data-lucide="pause" class="w-3.5 h-3.5"></i> Avto-aylanish`
+        : `<i data-lucide="play" class="w-3.5 h-3.5"></i> Davom ettirish`;
+      lucide.createIcons();
+    }
+
+    /* -----------------------------------------------------------
+       6. ORDER SYSTEM & FORMS
+    ----------------------------------------------------------- */
+    function selectServiceForOrder(serviceName) {
+      const select = document.getElementById("ord-service");
+      if (select) {
+        for (let opt of select.options) {
+          if (opt.value === serviceName) {
+            select.value = serviceName;
+            break;
+          }
+        }
+      }
+    }
+
+    function previewOrderPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById("ord-photo-preview").src = e.target.result;
+        document.getElementById("ord-photo-preview-box").classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function submitOrder(event) {
+      event.preventDefault();
+      const newOrder = {
+        id: "ORD-" + Math.floor(100 + Math.random() * 900),
+        name: document.getElementById("ord-name").value,
+        phone: document.getElementById("ord-phone").value,
+        service: document.getElementById("ord-service").value,
+        address: document.getElementById("ord-address").value,
+        date: document.getElementById("ord-date").value || "Kelishiladi",
+        notes: document.getElementById("ord-notes").value,
+        status: "YANGI"
+      };
+
+      state.orders.unshift(newOrder);
+      saveState();
+      event.target.reset();
+      document.getElementById("ord-photo-preview-box").classList.add("hidden");
+      showToast("Buyurtmangiz qabul qilindi! Admin panelga saqlandi.");
+    }
+
+    function submitQuickContact(event) {
+      event.preventDefault();
+      event.target.reset();
+      showToast("So‘rovingiz yuborildi! Tez orada bog‘lanamiz.");
+    }
+
+    /* -----------------------------------------------------------
+       7. MODALS (PORTFOLIO, BLOG, REVIEW SUBMISSION)
+    ----------------------------------------------------------- */
+    function openPortfolioModal(id) {
+      const item = portfolioItems.find(p => p.id === id);
+      if (!item) return;
+      document.getElementById("modal-body").innerHTML = `
+        <img src="${item.image}" alt="${item.title}" class="w-full h-64 object-cover rounded-2xl mb-5" />
+        <span class="bg-sage text-forest text-xs font-bold px-3 py-1 rounded-full">${item.catLabel}</span>
+        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-forest mt-3">${item.title}</h3>
+        <div class="flex gap-6 text-xs font-semibold text-olive mt-2">
+          <span>Maydon: ${item.area}</span>
+          <span>Muddat: ${item.duration}</span>
+        </div>
+        <p class="text-sm text-obsidian/80 leading-relaxed mt-4">${item.details}</p>
+        <div class="mt-6 pt-4 border-t border-forest/10 flex justify-end">
+          <a href="#order" onclick="closeModal(); selectServiceForOrder('Landshaft dizayni')" class="bg-forest text-ivory px-6 py-3 rounded-full text-xs font-bold">
+            Shunday loyiha buyurtma qilish
+          </a>
+        </div>
+      `;
+      document.getElementById("universal-modal").classList.remove("hidden");
+    }
+
+    function openBlogModal(idx) {
+      const post = blogPosts[idx];
+      document.getElementById("modal-body").innerHTML = `
+        <img src="${post.image}" alt="${post.title}" class="w-full h-56 object-cover rounded-2xl mb-5" />
+        <span class="text-xs font-bold text-olive uppercase">${post.date} • ${post.readTime}</span>
+        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-forest mt-2">${post.title}</h3>
+        <p class="text-sm text-obsidian/80 leading-relaxed mt-4">${post.content}</p>
+      `;
+      document.getElementById("universal-modal").classList.remove("hidden");
+    }
+
+    function openReviewModal() {
+      document.getElementById("modal-body").innerHTML = `
+        <h3 class="font-serif text-2xl font-bold text-forest mb-2">Xizmatimiz haqida fikr qoldiring</h3>
+        <p class="text-xs text-obsidian/65 mb-5">Fikringiz admin tasdig‘idan so‘ng asosiy sahifada ko‘rinadi.</p>
+        <form onsubmit="submitNewReview(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-forest mb-1">Ismingiz *</label>
+            <input type="text" id="rev-name" required placeholder="Ism familiyangiz" class="w-full px-4 py-3 rounded-xl bg-sage/30 border border-forest/15 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-forest mb-1">Baho (1–5 yulduz)</label>
+            <select id="rev-rating" class="w-full px-4 py-3 rounded-xl bg-sage/30 border border-forest/15 text-sm font-bold">
+              <option value="5">⭐⭐⭐⭐⭐ (5 - A'lo)</option>
+              <option value="4">⭐⭐⭐⭐ (4 - Yaxshi)</option>
+              <option value="3">⭐⭐⭐ (3 - O'rtacha)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-forest mb-1">Fikringiz *</label>
+            <textarea id="rev-text" required rows="3" placeholder="Bog‘ingizdagi o‘zgarishlar haqida yozing..." class="w-full px-4 py-3 rounded-xl bg-sage/30 border border-forest/15 text-sm"></textarea>
+          </div>
+          <button type="submit" class="w-full bg-forest text-ivory py-3.5 rounded-xl font-bold text-sm">
+            Fikrni yuborish
+          </button>
+        </form>
+      `;
+      document.getElementById("universal-modal").classList.remove("hidden");
+    }
+
+    function submitNewReview(event) {
+      event.preventDefault();
+      state.reviews.unshift({
+        id: Date.now(),
+        name: document.getElementById("rev-name").value,
+        rating: parseInt(document.getElementById("rev-rating").value),
+        text: document.getElementById("rev-text").value,
+        approved: false
+      });
+      saveState();
+      closeModal();
+      showToast("Rahmat! Fikringiz admin tasdiqlashiga yuborildi.");
+    }
+
+    function closeModal() {
+      document.getElementById("universal-modal").classList.add("hidden");
+    }
+
+    /* -----------------------------------------------------------
+       8. ADMIN PANEL LOGIC
+    ----------------------------------------------------------- */
+    function toggleAdminView(showAdmin) {
+      const clientView = document.getElementById("client-view");
+      const adminView = document.getElementById("admin-view");
+
+      if (showAdmin) {
+        clientView.classList.add("hidden");
+        adminView.classList.remove("hidden");
+        renderAdminDashboard();
+      } else {
+        adminView.classList.add("hidden");
+        clientView.classList.remove("hidden");
+        renderPricing();
+        renderReviews();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function switchAdminTab(tab) {
+      document.querySelectorAll(".admin-tab-panel").forEach(p => p.classList.add("hidden"));
+      document.getElementById(`admin-tab-${tab}`).classList.remove("hidden");
+
+      document.querySelectorAll(".admin-tab-btn").forEach(b => {
+        b.className = "admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold hover:bg-white/10 text-ivory whitespace-nowrap";
+      });
+      document.getElementById(`tab-btn-${tab}`).className = "admin-tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold bg-ivory text-forest whitespace-nowrap";
+    }
+
+    function renderAdminDashboard() {
+      updateAdminBadges();
+
+      // 1. Render Orders Table
+      const tbody = document.getElementById("admin-orders-tbody");
+      tbody.innerHTML = state.orders.map((ord, idx) => `
+        <tr class="hover:bg-ivory/80">
+          <td class="p-4">
+            <p class="font-bold text-forest">${ord.name}</p>
+            <span class="text-[11px] text-obsidian/50">${ord.id}</span>
+          </td>
+          <td class="p-4 font-medium">${ord.phone}</td>
+          <td class="p-4">
+            <span class="bg-sage/70 text-forest px-3 py-1 rounded-full text-xs font-bold">${ord.service}</span>
+            ${ord.notes ? `<p class="text-xs text-obsidian/60 mt-1 max-w-xs">${ord.notes}</p>` : ""}
+          </td>
+          <td class="p-4 text-xs">
+            <p class="font-semibold">${ord.address}</p>
+            <p class="text-obsidian/50 mt-0.5">${ord.date}</p>
+          </td>
+          <td class="p-4">
+            <select onchange="updateOrderStatus(${idx}, this.value)" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-forest/20 bg-ivory">
+              <option value="YANGI" ${ord.status === "YANGI" ? "selected" : ""}>🟡 YANGI</option>
+              <option value="JARAYONDA" ${ord.status === "JARAYONDA" ? "selected" : ""}>🔵 JARAYONDA</option>
+              <option value="YAKUNLANDI" ${ord.status === "YAKUNLANDI" ? "selected" : ""}>🟢 YAKUNLANDI</option>
+            </select>
+          </td>
+          <td class="p-4">
+            <button onclick="deleteOrder(${idx})" class="text-red-600 hover:bg-red-50 p-2 rounded-xl transition" title="O'chirish">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+
+      // 2. Render Pricing Editor
+      const pricingList = document.getElementById("admin-pricing-list");
+      pricingList.innerHTML = state.pricing.map((plan, idx) => `
+        <div class="bg-white p-6 rounded-3xl border border-forest/15 shadow-sm space-y-4">
+          <h3 class="font-serif text-2xl font-bold text-forest">${plan.name} Tarifi</h3>
+          <div>
+            <label class="block text-xs font-bold text-obsidian/60 mb-1">Narx matni</label>
+            <input type="text" value="${plan.price}" onchange="updatePlanPrice(${idx}, this.value)" class="w-full px-3.5 py-2.5 rounded-xl bg-sage/30 border border-forest/20 font-bold text-sm text-forest" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-obsidian/60 mb-1">Qisqa tavsif</label>
+            <input type="text" value="${plan.desc}" onchange="updatePlanDesc(${idx}, this.value)" class="w-full px-3.5 py-2.5 rounded-xl bg-sage/30 border border-forest/20 text-xs" />
+          </div>
+        </div>
+      `).join("");
+
+      // 3. Render Reviews Moderation
+      const reviewsList = document.getElementById("admin-reviews-list");
+      reviewsList.innerHTML = state.reviews.map((rev, idx) => `
+        <div class="bg-white p-6 rounded-3xl border border-forest/15 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-forest">${rev.name} (${rev.rating}⭐)</span>
+              <span class="text-xs font-bold px-3 py-1 rounded-full ${rev.approved ? "bg-sage text-forest" : "bg-amber-100 text-amber-800"}">
+                ${rev.approved ? "Tasdiqlangan" : "Kutilmoqda"}
+              </span>
+            </div>
+            <p class="text-sm text-obsidian/75">"${rev.text}"</p>
+          </div>
+          <div class="flex gap-2 mt-5 pt-4 border-t border-forest/10">
+            ${!rev.approved ? `<button onclick="approveReview(${idx})" class="bg-forest text-ivory px-4 py-2 rounded-xl text-xs font-bold">Tasdiqlash</button>` : ""}
+            <button onclick="deleteReview(${idx})" class="bg-red-100 text-red-700 px-4 py-2 rounded-xl text-xs font-bold">O‘chirish</button>
+          </div>
+        </div>
+      `).join("");
+
+      lucide.createIcons();
+    }
+
+    function updateOrderStatus(idx, newStatus) {
+      state.orders[idx].status = newStatus;
+      saveState();
+      updateAdminBadges();
+      showToast(`Buyurtma holati "${newStatus}" ga o‘zgartirildi.`);
+    }
+
+    function deleteOrder(idx) {
+      state.orders.splice(idx, 1);
+      saveState();
+      renderAdminDashboard();
+      showToast("Buyurtma o‘chirildi.");
+    }
+
+    function updatePlanPrice(idx, val) {
+      state.pricing[idx].price = val;
+      saveState();
+      showToast("Tarif narxi yangilandi!");
+    }
+
+    function updatePlanDesc(idx, val) {
+      state.pricing[idx].desc = val;
+      saveState();
+      showToast("Tarif tavsifi yangilandi!");
+    }
+
+    function approveReview(idx) {
+      state.reviews[idx].approved = true;
+      saveState();
+      renderAdminDashboard();
+      showToast("Sharh tasdiqlandi va saytga chiqarildi!");
+    }
+
+    function deleteReview(idx) {
+      state.reviews.splice(idx, 1);
+      saveState();
+      renderAdminDashboard();
+      showToast("Sharh o‘chirildi.");
+    }
+
+    function updateAdminBadges() {
+      const newOrders = state.orders.filter(o => o.status === "YANGI").length;
+      const pendingRevs = state.reviews.filter(r => !r.approved).length;
+
+      const badge = document.getElementById("admin-badge");
+      if (badge) badge.textContent = newOrders;
+
+      const sTotal = document.getElementById("stat-total-orders");
+      const sNew = document.getElementById("stat-new-orders");
+      const sRev = document.getElementById("stat-pending-reviews");
+      if (sTotal) sTotal.textContent = state.orders.length;
+      if (sNew) sNew.textContent = newOrders;
+      if (sRev) sRev.textContent = pendingRevs;
+    }
+
+    /* -----------------------------------------------------------
+       9. UTILITIES (TOAST & MOBILE MENU)
+    ----------------------------------------------------------- */
+    function toggleMobileMenu() {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+    }
+
+    function showToast(message) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "bg-forest text-ivory px-5 py-3.5 rounded-2xl shadow-2xl border border-sage/30 text-sm font-semibold flex items-center gap-2.5 transition-all duration-300";
+      toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-sage shrink-0"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(10px)";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* -----------------------------------------------------------
+       10. INITIALIZE ON WINDOW LOAD
+    ----------------------------------------------------------- */
+    window.onload = function () {
+      renderServices();
+      renderPortfolio("all");
+      renderPricing();
+      renderReviews();
+      renderPlants();
+      renderBlog();
+      initBeforeAfterSlider();
+      init3DGarden();
+      updateAdminBadges();
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
